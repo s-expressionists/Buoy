@@ -4,4 +4,5 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "single-float")))
+   (:file "single-float")
+   (:file "double-float")))
