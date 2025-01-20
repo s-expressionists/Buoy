@@ -15,11 +15,11 @@
         (mantissa (if (minusp rational) (- rational) rational))
         (exponent 0))
     (cond ((zerop mantissa)
-           (create-single-float-from-components 0 0 0))
+           (single-float-from-components 0 0 0))
           ((>= mantissa (expt 2 128))
-           (create-single-float-from-components sign 255 0))
+           (single-float-from-components sign 255 0))
           ((< mantissa (expt 2 -126))
-           (create-single-float-from-components
+           (single-float-from-components
             sign 0 (round (* mantissa (expt 2 (+ 23 126))))))
           (t
            (loop while (> mantissa (expt 2 23))
@@ -28,7 +28,7 @@
            (loop while (< mantissa (expt 2 23))
                  do (setf mantissa (* mantissa 2))
                     (decf exponent))
-           (create-single-float-from-components
+           (single-float-from-components
             sign (+ exponent 127 23) (- (round mantissa) (expt 2 23)))))))
 
 (defun rational-from-single-float (single-float)
