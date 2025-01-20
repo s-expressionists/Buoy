@@ -44,3 +44,23 @@
         (* sign
            (expt 2 (- exponent 127))
            (* (+ mantissa (expt 2 23)) (expt 2 -23))))))
+
+(defun single-float-binary-+ (single-float-1 single-float-2)
+  (single-float-from-rational
+   (+ (rational-from-single-float single-float-1)
+      (rational-from-single-float single-float-2))))
+
+(defun single-float-binary-- (single-float-1 single-float-2)
+  (single-float-from-rational
+   (- (rational-from-single-float single-float-1)
+      (rational-from-single-float single-float-2))))
+
+(defun single-float-binary-* (single-float-1 single-float-2)
+  (single-float-from-rational
+   (* (rational-from-single-float single-float-1)
+      (rational-from-single-float single-float-2))))
+
+(defun single-float-binary-/ (single-float-1 single-float-2)
+  (single-float-from-rational
+   (/ (rational-from-single-float single-float-1)
+      (rational-from-single-float single-float-2))))
