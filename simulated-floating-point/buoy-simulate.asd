@@ -5,4 +5,5 @@
   :components
   ((:file "packages")
    (:file "single-float")
-   (:file "double-float")))
+   (:file "double-float")
+   (:file "conversion")))
