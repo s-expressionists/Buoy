@@ -45,6 +45,9 @@
            (expt 2 (- exponent 127))
            (* (+ mantissa (expt 2 23)) (expt 2 -23))))))
 
+(defconstant most-positive-single-float
+  (single-float-from-components 0 254 (1- (expt 2 23))))
+
 (defun single-float-binary-+ (single-float-1 single-float-2)
   (single-float-from-rational
    (+ (rational-from-single-float single-float-1)
