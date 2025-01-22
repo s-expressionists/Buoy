@@ -31,6 +31,24 @@
            (double-float-from-components
             sign (+ exponent 127 52) (- (round mantissa) (expt 2 52)))))))
 
+(defconstant most-positive-double-float
+  (double-float-from-components 0 2047 (1- (expt 2 52))))
+
+(defconstant most-negative-double-float
+  (double-float-from-components 1 2047 (1- (expt 2 52))))
+
+(defconstant least-positive-double-float
+  (double-float-from-components 0 0 1))
+
+(defconstant least-positive-normalized-double-float
+  (double-float-from-components 0 1 0))
+
+(defconstant least-negative-double-float
+  (double-float-from-components 1 0 1))
+
+(defconstant least-negative-normalized-double-float
+  (double-float-from-components 1 1 0))
+
 (defun rational-from-double-float (double-float)
   (let ((sign (ldb (byte 1 63) double-float))
         (exponent (ldb (byte 11 52) double-float))
