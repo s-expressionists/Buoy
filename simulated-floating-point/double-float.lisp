@@ -49,6 +49,30 @@
 (defconstant least-negative-normalized-double-float
   (double-float-from-components 1 1 0))
 
+(defun integer-decode-double-float-normalized (double-float)
+  (values (+ (ldb (byte 52 0) double-float) (expt 2 52))
+          (- (ldb (byte 11 52) double-float) 1023 52)
+          (if (logbitp 63 double-float) -1 1)))
+
+(defun integer-decode-double-float-denormalized (double-float)
+  (values (ldb (byte 52 0) double-float)
+          (- (+ 1022 52))
+          (if (logbitp 63 double-float) -1 1)))
+
+(defun integer-decode-double-float (double-float)
+  (let ((exponent (ldb (byte 11 52) double-float))
+        (mantissa (ldb (byte 52 0) double-float)))
+    (cond ((= exponent 2047)
+           (if (zerop mantissa)
+               (error "Can't decode infinity")
+               (error "Can't decode NaN")))
+          ((zerop exponent)
+           (if (zerop mantissa)
+               (values 0 0 1)
+               (integer-decode-double-float-denormalized double-float)))
+          (t
+           (integer-decode-double-float-normalized double-float)))))
+
 (defun rational-from-double-float (double-float)
   (let ((sign (ldb (byte 1 63) double-float))
         (exponent (ldb (byte 11 52) double-float))
