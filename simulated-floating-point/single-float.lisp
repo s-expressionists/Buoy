@@ -57,7 +57,7 @@
 (defconstant least-positive-normalized-single-float
   (single-float-from-components 0 1 0))
 
-(defun integer-decode-single-float (single-float)
+(defun integer-decode-single-float-normalized (single-float)
   (values (+ (ldb (byte 23 0) single-float) (expt 2 23))
           (- (ldb (byte 8 23) single-float) 127 23)
           (if (logbitp 31 single-float) -1 1)))
