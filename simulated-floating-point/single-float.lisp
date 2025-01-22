@@ -51,6 +51,9 @@
 (defconstant most-negative-single-float
   (single-float-from-components 1 254 (1- (expt 2 23))))
 
+(defconstant least-positive-single-float
+  (single-float-from-components 0 0 1))
+
 (defun integer-decode-single-float (single-float)
   (values (+ (ldb (byte 23 0) single-float) (expt 2 23))
           (- (ldb (byte 8 23) single-float) 127 23)
