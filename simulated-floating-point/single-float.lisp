@@ -31,20 +31,6 @@
            (single-float-from-components
             sign (+ exponent 127 23) (- (round mantissa) (expt 2 23)))))))
 
-(defun rational-from-single-float (single-float)
-  (let ((sign (ldb (byte 1 31) single-float))
-        (exponent (ldb (byte 8 23) single-float))
-        (mantissa (ldb (byte 23 0) single-float)))
-    (when (= exponent 255)
-      (error "can't convert infinity or NaN to rational"))
-    (if (zerop exponent)
-        (if (zerop mantissa)
-            0
-            (* sign mantissa (expt 2 (- (+ 23 126)))))
-        (* sign
-           (expt 2 (- exponent 127))
-           (* (+ mantissa (expt 2 23)) (expt 2 -23))))))
-
 (defconstant most-positive-single-float
   (single-float-from-components 0 254 (1- (expt 2 23))))
 
@@ -80,6 +66,11 @@
                (integer-decode-single-float-denormalized single-float)))
           (t
            (integer-decode-single-float-normalized single-float)))))
+
+(defun rational-from-single-float (single-float)
+  (multiple-value-bind (mantissa exponent sign)
+      (integer-decode-single-float single-float)
+    (* sign mantissa (expt 2 exponent))))
 
 (defun single-float-binary-+ (single-float-1 single-float-2)
   (single-float-from-rational
