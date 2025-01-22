@@ -43,6 +43,12 @@
 (defconstant least-positive-normalized-single-float
   (single-float-from-components 0 1 0))
 
+(defconstant least-negative-single-float
+  (single-float-from-components 1 0 1))
+
+(defconstant least-negative-normalized-single-float
+  (single-float-from-components 1 1 0))
+
 (defun integer-decode-single-float-normalized (single-float)
   (values (+ (ldb (byte 23 0) single-float) (expt 2 23))
           (- (ldb (byte 8 23) single-float) 127 23)
