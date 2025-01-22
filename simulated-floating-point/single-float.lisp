@@ -67,6 +67,20 @@
           (- (+ 127 22))
           (if (logbitp 31 single-float) -1 1)))
 
+(defun integer-decode-single-float (single-float)
+  (let ((exponent (ldb (byte 8 23) single-float))
+        (mantissa (ldb (byte 23 0) single-float)))
+    (cond ((= exponent 255)
+           (if (zerop mantissa)
+               (error "Can't decode infinity")
+               (error "Can't decode NaN")))
+          ((zerop exponent)
+           (if (zerop mantissa)
+               (values 0 0 1)
+               (integer-decode-single-float-denormalized single-float)))
+          (t
+           (integer-decode-single-float-normalized single-float)))))
+
 (defun single-float-binary-+ (single-float-1 single-float-2)
   (single-float-from-rational
    (+ (rational-from-single-float single-float-1)
