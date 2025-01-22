@@ -74,18 +74,9 @@
            (integer-decode-double-float-normalized double-float)))))
 
 (defun rational-from-double-float (double-float)
-  (let ((sign (ldb (byte 1 63) double-float))
-        (exponent (ldb (byte 11 52) double-float))
-        (mantissa (ldb (byte 52 0) double-float)))
-    (when (= exponent 2047)
-      (error "can't convert infinity or NaN to rational"))
-    (if (zerop exponent)
-        (if (zerop mantissa)
-            0
-            (* sign mantissa (expt 2 (- (+ 52 1022)))))
-        (* sign
-           (expt 2 (- exponent 127))
-           (* (+ mantissa (expt 2 52)) (expt 2 -52))))))
+  (multiple-value-bind (mantissa exponent sign)
+      (integer-decode-double-float double-float)
+    (* sign mantissa (expt 2 exponent))))
 
 (defun double-float-binary-+ (double-float-1 double-float-2)
   (double-float-from-rational
