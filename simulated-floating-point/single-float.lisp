@@ -62,6 +62,11 @@
           (- (ldb (byte 8 23) single-float) 127 23)
           (if (logbitp 31 single-float) -1 1)))
 
+(defun integer-decode-single-float-denormalized (single-float)
+  (values (ldb (byte 23 0) single-float)
+          (- (+ 127 22))
+          (if (logbitp 31 single-float) -1 1)))
+
 (defun single-float-binary-+ (single-float-1 single-float-2)
   (single-float-from-rational
    (+ (rational-from-single-float single-float-1)
