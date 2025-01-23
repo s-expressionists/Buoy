@@ -7,8 +7,9 @@
 ;;; integer, the bits of which will be stored in bits 62-52 of the
 ;;; result.  MANTISSA taken to be a 52-bit non-negative integer, the
 ;;; bits of which will be stored in the bits 51-0 of the result.
-(defun double-float-from-components (sign exponent mantissa)
-  (logior (ash sign 63) (ash exponent 52) mantissa))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun double-float-from-components (sign exponent mantissa)
+    (logior (ash sign 63) (ash exponent 52) mantissa)))
 
 (defun double-float-from-rational (rational)
   (let ((sign (if (minusp rational) 1 0))
