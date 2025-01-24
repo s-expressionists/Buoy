@@ -33,10 +33,10 @@
             sign (+ exponent 127 52) (- (round mantissa) (expt 2 52)))))))
 
 (defconstant most-positive-double-float
-  (double-float-from-components 0 2047 (1- (expt 2 52))))
+  (double-float-from-components 0 2046 (1- (expt 2 52))))
 
 (defconstant most-negative-double-float
-  (double-float-from-components 1 2047 (1- (expt 2 52))))
+  (double-float-from-components 1 2046 (1- (expt 2 52))))
 
 (defconstant least-positive-double-float
   (double-float-from-components 0 0 1))
