@@ -36,7 +36,7 @@
   (setf *sin-table-exponent* (make-array 256 :element-type '(integer -8 0)))
   (setf (aref *sin-table-high* 0) 0)
   (setf (aref *sin-table-low* 0) 0)
-  (setf (aref *sin-table-exponent* 128) 0)
+  (setf (aref *sin-table-exponent* 0) 128)
   (loop for i from 1 below 256
         for sin-rational = (sin-rational (* +pi-rational+ (/ i 1024)))
         for exponent = 0
@@ -55,3 +55,25 @@
             for sign = -1 then (- sign)
             for factorial = 2 then (* factorial (1- i) i)
             sum (* sign (/ (expt x i) factorial)))))
+
+(defvar *cos-table-high*)
+
+(defvar *cos-table-low*)
+
+(defvar *cos-table-exponent*)
+
+(defun compute-cos-tables ()
+  (setf *cos-table-high* (make-array 256 :element-type '(unsigned-byte 64)))
+  (setf *cos-table-low* (make-array 256 :element-type '(unsigned-byte 64)))
+  (setf *cos-table-exponent* (make-array 256 :element-type '(integer -8 0)))
+  (setf (aref *cos-table-high* 0) (ash 1 63))
+  (setf (aref *cos-table-low* 0) 0)
+  (setf (aref *cos-table-exponent* 0) 1)
+  (loop for i from 1 below 256
+        for cos-rational = (cos-rational (* +pi-rational+ (/ i 1024)))
+        do (let ((128-bit-value (round (* cos-rational (expt 2 128)))))
+             (setf (aref *cos-table-high* i)
+                   (ldb (byte 64 64) 128-bit-value))
+             (setf (aref *cos-table-low* i)
+                   (ldb (byte 64 0) 128-bit-value))
+             (setf (aref *cos-table-exponent* i) 0))))
