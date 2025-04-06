@@ -49,3 +49,9 @@
              (setf (aref *sin-table-low* i)
                    (ldb (byte 64 0) 128-bit-value))
              (setf (aref *sin-table-exponent* i) exponent))))
+
+(defun cos-rational (x)
+  (1+ (loop for i from 2 to 200 by 2
+            for sign = -1 then (- sign)
+            for factorial = 2 then (* factorial (1- i) i)
+            sum (* sign (/ (expt x i) factorial)))))
