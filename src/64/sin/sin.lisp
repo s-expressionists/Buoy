@@ -1,6 +1,6 @@
 (cl:in-package #:buoy)
 
-(defun sin-rational (x)
+(defun very-slow-sin-rational (x)
   (loop for i from 1 to 200 by 2
         for sign = 1 then (- sign)
         for factorial = 1 then (* factorial (1- i) i)
@@ -26,7 +26,7 @@
   (setf (aref *sin-table-low* 0) 0)
   (setf (aref *sin-table-exponent* 0) 128)
   (loop for i from 1 below 256
-        for sin-rational = (sin-rational (* +pi-rational+ (/ i 1024)))
+        for sin-rational = (very-slot-sin-rational (* +pi-rational+ (/ i 1024)))
         for exponent = 0
         do (loop while (< sin-rational 1/2)
                  do (decf exponent)
@@ -38,7 +38,7 @@
                    (ldb (byte 64 0) 128-bit-value))
              (setf (aref *sin-table-exponent* i) exponent))))
 
-(defun cos-rational (x)
+(defun very-slot-cos-rational (x)
   (1+ (loop for i from 2 to 200 by 2
             for sign = -1 then (- sign)
             for factorial = 2 then (* factorial (1- i) i)
@@ -58,7 +58,7 @@
   (setf (aref *cos-table-low* 0) 0)
   (setf (aref *cos-table-exponent* 0) 1)
   (loop for i from 1 below 256
-        for cos-rational = (cos-rational (* +pi-rational+ (/ i 1024)))
+        for cos-rational = (very-slot-cos-rational (* +pi-rational+ (/ i 1024)))
         do (let ((128-bit-value (round (* cos-rational (expt 2 128)))))
              (setf (aref *cos-table-high* i)
                    (ldb (byte 64 64) 128-bit-value))
