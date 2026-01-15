@@ -42,9 +42,9 @@
                   (numerator-length (integer-length numerator))
                   (denominator (denominator mantissa))
                   (denominator-length (integer-length denominator))
-                  (difference (- numerator-length denominator-length)))
+                  (difference (- denominator-length numerator-length)))
              (setf numerator (ash numerator difference))
-             (setf exponent difference)
+             (setf exponent (- difference))
              ;; At this point either the numerator is less than the
              ;; denominator so that the quotient is less than 1, or
              ;; the numerator is greater than or equal to the
@@ -61,7 +61,9 @@
              (setf numerator (ash numerator 23))
              (decf exponent 23)
              (let ((value (* sign
-                             (ash 1 exponent)
+                             (if (minusp exponent)
+                                 (/ (ash 1 (- exponent)))
+                                 (ash 1 exponent))
                              (round (/ numerator denominator)))))
                (make-instance 'binary32-normal
                  :value value)))))))
