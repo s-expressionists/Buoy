@@ -37,7 +37,9 @@
   (let ((exponent 0)
         (sign (if (minusp rational) -1 1))
         (mantissa (if (minusp rational) (- rational) rational)))
-    (cond ((rational-can-be-normal-binary32 rational)
+    (cond ((zerop rational)
+           (make-instance 'binary32-subnormal :value 0))
+          (rational-can-be-normal-binary32 rational)
            (let* ((numerator (numerator mantissa))
                   (numerator-length (integer-length numerator))
                   (denominator (denominator mantissa))
@@ -67,8 +69,3 @@
                              (round (/ numerator denominator)))))
                (make-instance 'binary32-normal
                  :value value)))))))
-                                    
-             
-                  
-             
-       
