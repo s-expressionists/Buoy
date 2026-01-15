@@ -8,6 +8,13 @@
 (defconstant ratio-must-be-greater-for-normal-binary32
   (- (ash 1 127)))
 
+;;; Return true if and only if the argument can be rounded so that it
+;;; can be represented as a binary32 float.
+(defun rational-can-be-normal-binary32 (rational)
+  (< ratio-must-be-less-for-normal-binary32
+     rational 
+     ratio-must-be-greater-for-normal-binary32))
+
 (defclass binary32 ()
   ())
 
