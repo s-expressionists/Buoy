@@ -1,10 +1,10 @@
 (cl:in-package #:buoy-simulate)
 
-;;; This is not quite true. 
+;;; This is not quite true.
 (defconstant ratio-must-be-less-for-normal-binary32
   (ash 1 127))
 
-;;; This is not quite true. 
+;;; This is not quite true.
 (defconstant ratio-must-be-greater-for-normal-binary32
   (- (ash 1 127)))
 
@@ -12,7 +12,7 @@
 ;;; can be represented as a binary32 float.
 (defun rational-can-be-normal-binary32 (rational)
   (< ratio-must-be-less-for-normal-binary32
-     rational 
+     rational
      ratio-must-be-greater-for-normal-binary32))
 
 (defclass binary32 ()
@@ -37,4 +37,36 @@
   (let ((exponent 0)
         (sign (if (minusp rational) -1 1))
         (mantissa (if (minusp rational) (- rational) rational)))
-    (cond 
+    (cond ((rational-can-be-normal-binary32 rational)
+           (let* ((numerator (numerator mantissa))
+                  (numerator-length (integer-length numerator))
+                  (denominator (denominator mantissa))
+                  (denominator-length (integer-length denominator))
+                  (difference (- numerator-length denominator-length)))
+             (setf numerator (ash numerator difference))
+             (setf exponent difference)
+             ;; At this point either the numerator is less than the
+             ;; denominator so that the quotient is less than 1, or
+             ;; the numerator is greater than or equal to the
+             ;; denominator, so that the quotient is greater than or
+             ;; equal to 1.  In the second case, we have something
+             ;; that can be used as the mantissa of the float but in
+             ;; the first case, we must multiply the denominator by 2.
+             (when (< numerator denominator)
+               (decf exponent)
+               (setf numerator (ash numerator 1)))
+             ;; Now, we shift the numerator by 23 positions to get
+             ;; something that should be an integer in the
+             ;; floating-point representation.
+             (setf numerator (ash numerator 23))
+             (decf exponent 23)
+             (let ((value (* sign
+                             (ash 1 exponent)
+                             (round (/ numerator denominator)))))
+               (make-instance 'binary32-normal
+                 :value value)))))))
+                                    
+             
+                  
+             
+       
