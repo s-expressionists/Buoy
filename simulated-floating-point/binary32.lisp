@@ -82,4 +82,4 @@
                                  (ash 1 exponent))
                              (round (/ numerator denominator)))))
                (make-instance 'binary32-normal
-                 :value value)))))))
+                 :value value))))))
