@@ -22,13 +22,6 @@
 (defconstant most-positive-subnormal-binary32-floatr
   (/ (1- (ash 1 23)) (ash 1 (+ 126 23))))
 
-;;; Return true if and only if the argument can be rounded so that it
-;;; can be represented as a binary32 float.
-(defun rational-can-be-normal-binary32 (rational)
-  (< ratio-must-be-greater-for-normal-binary32
-     (abs rational)
-     ratio-must-be-less-for-normal-binary32))
-
 (defclass binary32 ()
   ())
 
