@@ -6,11 +6,11 @@
 ;;; (stored as 254).  We can get an integer with 24 1s by doing (1-
 ;;; (ash 1 24)) which we must then divide by (ash 1 23) to get a value
 ;;; slightly less than 2.  The result must then be multiplied by (ash
-;;; 1 127) to get the resulting floater.
-(defconstant most-positive-normal-binary32-floater
+;;; 1 127) to get the resulting floatr.
+(defconstant most-positive-normal-binary32-floatr
   (* (1- (ash 1 24)) (ash 1 (- 127 23))))
 
-(defconstant least-positive-normal-binary32-floater
+(defconstant least-positive-normal-binary32-floatr
   (/ (ash 1 126)))
 
 ;;; The most positive submormal binary32 float has a mantissa of 23 1s
@@ -18,8 +18,8 @@
 ;;; and exponent of -126 (stored as 0).  We can get an integer with 23
 ;;; 1s by doing (1- (ash 1 23)) which we must then divide by (ash 1
 ;;; 23) to get a value less than 1.  The result must then be divided
-;;; by (ash 1 126) to get the resulting floater.
-(defconstant most-positive-subnormal-binary32-floater
+;;; by (ash 1 126) to get the resulting floatr.
+(defconstant most-positive-subnormal-binary32-floatr
   (/ (1- (ash 1 23)) (ash 1 (+ 126 23))))
 
 ;;; Return true if and only if the argument can be rounded so that it
