@@ -1,11 +1,15 @@
 (cl:in-package #:buoy-simulate)
 
-;;; This is not quite true.
-(defconstant ratio-must-be-less-for-normal-binary32
-  (ash 1 127))
+;; The most positive normal binary32 float has a mantissa with 24 1s
+;; (of which 23 are physically stored), and an exponent of 127 (stored
+;; as 254).  We can get an integer with 24 1s by doing (1- (ash 1 24)
+;; which we must then divide by (ash 1 23) to get a value slightly
+;; less than 2.  The result must then be multiplied by (ash 1 127) to
+;; get the resulting floater.
+(defconstant most-positive-normal-binary32-floater
+  (* (1- (ash 1 24)) (ash 1 (- 127 23))))
 
-;;; This is not quite true.
-(defconstant ratio-must-be-greater-for-normal-binary32
+(defconstant least-positive-normal-binary32-floater
   (/ (ash 1 126))
 
 ;;; Return true if and only if the argument can be rounded so that it
