@@ -7,3 +7,15 @@
         (* real-mantissa (ash 1 exponent)))))
 
 (defconstant +epsilon+ (/ (ash 1 1000)))
+
+(defun test-normal-odd-even (lower upper)
+  (let* ((average (/ (+ lower upper) 2))
+         (result1 (buoy:binary-32-from-rational average))
+         (result2 (buoy:binary-32-from-rational (+ average +epsilon+)))
+         (result3 (buoy:binary-32-from-rational (- average +epsilon+))))
+    ;; It should round to even
+    (assert (= result1 upper))
+    (assert (= result2 upper))
+    (assert (= result3 lower))))
+    
+  
