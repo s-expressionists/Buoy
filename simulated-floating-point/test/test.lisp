@@ -5,3 +5,5 @@
     (if (minusp exponent)
         (/ real-mantissa (ash 1 (- exponent)))
         (* real-mantissa (ash 1 exponent)))))
+
+(defconstant +epsilon+ (/ (ash 1 1000)))
