@@ -43,3 +43,7 @@
       (if (oddp stored-mantissa)
           (test-normal-odd-even lower upper)
           (test-normal-even-odd lower upper)))))
+
+(defun test-normals-with-exponent (exponent)
+  (loop for stored-mantissa from 0 below (1- (ash 1 23))
+        do (test-normal-with-stored-mantissa exponent stored-mantissa)))
