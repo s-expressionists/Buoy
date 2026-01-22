@@ -14,9 +14,9 @@
          (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
          (result3 (buoy:binary32-from-rational (- average +epsilon+))))
     ;; It should round to even
-    (assert (= result1 upper))
-    (assert (= result2 upper))
-    (assert (= result3 lower))))
+    (assert (= (buoy:value result1) upper))
+    (assert (= (buoy:value result2) upper))
+    (assert (= (buoy:value result3) lower))))
 
 (defun test-normal-even-odd (lower upper)
   (let* ((average (/ (+ lower upper) 2))
@@ -24,9 +24,9 @@
          (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
          (result3 (buoy:binary32-from-rational (- average +epsilon+))))
     ;; It should round to even
-    (assert (= result1 lower))
-    (assert (= result2 upper))
-    (assert (= result3 lower))))
+    (assert (= (buoy:value result1) lower))
+    (assert (= (buoy:value result2) upper))
+    (assert (= (buoy:value result3) lower))))
 
 (defun test-normal-with-stored-mantissa (exponent stored-mantissa)
   (let ((next-stored-mantissa (1+ stored-mantissa)))
