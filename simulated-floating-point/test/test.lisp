@@ -10,9 +10,9 @@
 
 (defun test-normal-odd-even (lower upper)
   (let* ((average (/ (+ lower upper) 2))
-         (result1 (buoy:binary-32-from-rational average))
-         (result2 (buoy:binary-32-from-rational (+ average +epsilon+)))
-         (result3 (buoy:binary-32-from-rational (- average +epsilon+))))
+         (result1 (buoy:binary32-from-rational average))
+         (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
+         (result3 (buoy:binary32-from-rational (- average +epsilon+))))
     ;; It should round to even
     (assert (= result1 upper))
     (assert (= result2 upper))
@@ -20,9 +20,9 @@
 
 (defun test-normal-even-odd (lower upper)
   (let* ((average (/ (+ lower upper) 2))
-         (result1 (buoy:binary-32-from-rational average))
-         (result2 (buoy:binary-32-from-rational (+ average +epsilon+)))
-         (result3 (buoy:binary-32-from-rational (- average +epsilon+))))
+         (result1 (buoy:binary32-from-rational average))
+         (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
+         (result3 (buoy:binary32-from-rational (- average +epsilon+))))
     ;; It should round to even
     (assert (= result1 lower))
     (assert (= result2 upper))
