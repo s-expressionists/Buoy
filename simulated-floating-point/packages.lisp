@@ -17,6 +17,7 @@
          #:least-negative-normalized-double-float))
   (:export
    #:binary32-from-rational
+   #:value
    #:single-float-from-components
    #:single-float-from-rational
    #:rational-from-single-float
