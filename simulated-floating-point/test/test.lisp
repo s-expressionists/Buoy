@@ -49,5 +49,5 @@
         do (test-normal-with-stored-mantissa exponent stored-mantissa)))
 
 (defun test-normals ()
-  (loop for exponent from -127 to 127
+  (loop for exponent from -126 to 128
         do (test-normals-with-exponent exponent)))
