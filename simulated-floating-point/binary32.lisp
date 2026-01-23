@@ -51,14 +51,15 @@
                   (numerator-length (integer-length numerator))
                   (denominator (denominator mantissa))
                   (denominator-length (integer-length denominator))
-                  (difference (- denominator-length numerator-length)))
-             (if (< rational 1)
-                 (progn
-                   (setf numerator (ash numerator difference))
-                   (setf exponent (- difference)))
-                 (progn 
-                   (setf denominator (ash denominator difference))
-                   (setf exponent difference)))
+                  (difference (- numerator-length denominator-length)))
+             (setf exponent difference)
+             (if (minusp difference)
+                 ;; Then we shift the numerator by the negative
+                 ;; difference.
+                 (setf numerator (ash numerator (- difference)))
+                 ;; Otherwise, we shift the denominator by the
+                 ;; difference.
+                 (setf denominator (ash denominator difference)))
              ;; At this point either the numerator is less than the
              ;; denominator so that the quotient is less than 1, or
              ;; the numerator is greater than or equal to the
