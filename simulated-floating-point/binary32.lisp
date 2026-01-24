@@ -84,4 +84,15 @@
                  :value value))))
           ((<= rational most-positive-subnormal-binary32-floatr)
            (/ (round (* rational (ash 1 (+ 23 126))))
-              (ash 1 (+ 23 126)))))))
+              (ash 1 (+ 23 126))))
+          ((< most-positive-subnormal-binary32-floatr
+              rational
+              least-positive-normal-binary32-floatr)
+           (let* ((average (/ (+ least-positive-normal-binary32-floatr
+                                 most-positive-subnormal-binary32-floatr)
+                              2))
+                  (value (if (< rational average)
+                             most-positive-subnormal-binary32-floatr
+                             least-positive-normal-binary32-floatr)))
+             (make-instance 'binary32-subnormal
+               :value value))))))
