@@ -55,3 +55,7 @@
 
 (defun subnormal-stored-mantissa-to-floatr (stored-mantissa)
   (/ stored-mantissa (ash (+ 126 23))))
+
+(defun test-subnormals ()
+  (loop for stored-mantissa from 0 below (1- (ash 1 23))
+        do (test-subnormal-with-stored-mantissa stored-mantissa)))
