@@ -8,7 +8,7 @@
 
 (defconstant +epsilon+ (/ (ash 1 1000)))
 
-(defun test-normal-odd-even (lower upper)
+(defun test-odd-even (lower upper)
   (let* ((average (/ (+ lower upper) 2))
          (result1 (buoy:binary32-from-rational average))
          (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
@@ -18,7 +18,7 @@
     (assert (= (buoy:value result2) upper))
     (assert (= (buoy:value result3) lower))))
 
-(defun test-normal-even-odd (lower upper)
+(defun test-even-odd (lower upper)
   (let* ((average (/ (+ lower upper) 2))
          (result1 (buoy:binary32-from-rational average))
          (result2 (buoy:binary32-from-rational (+ average +epsilon+)))
@@ -41,8 +41,8 @@
                       (/ next-mantissa (ash 1 (- exponent)))
                       (* next-mantissa (ash 1 exponent)))))
       (if (oddp stored-mantissa)
-          (test-normal-odd-even lower upper)
-          (test-normal-even-odd lower upper)))))
+          (test-odd-even lower upper)
+          (test-even-odd lower upper)))))
 
 (defun test-normals-with-exponent (exponent)
   (loop for stored-mantissa from 0 below (1- (ash 1 23))
