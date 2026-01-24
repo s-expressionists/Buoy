@@ -54,7 +54,15 @@
         do (test-normals-with-exponent exponent)))
 
 (defun subnormal-stored-mantissa-to-floatr (stored-mantissa)
-  (/ stored-mantissa (ash (+ 126 23))))
+  (/ stored-mantissa (ash 1 (+ 126 23))))
+
+(defun test-subnormal-with-stored-mantissa (stored-mantissa)
+  (let* ((next-stored-mantissa (1+ stored-mantissa))
+         (lower (subnormal-stored-mantissa-to-floatr stored-mantissa))
+         (upper (subnormal-stored-mantissa-to-floatr next-stored-mantissa)))
+      (if (oddp stored-mantissa)
+          (test-odd-even lower upper)
+          (test-even-odd lower upper))))
 
 (defun test-subnormals ()
   (loop for stored-mantissa from 0 below (1- (ash 1 23))
