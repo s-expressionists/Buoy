@@ -50,4 +50,8 @@
 
 (defun test-normals ()
   (loop for exponent from -126 to 128
+        do (format *trace-output* "Testing exponent ~s~%" exponent)
         do (test-normals-with-exponent exponent)))
+
+(defun subnormal-stored-mantissa-to-floatr (stored-mantissa)
+  (/ stored-mantissa (ash (+ 126 23))))
