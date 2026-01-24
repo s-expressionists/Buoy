@@ -81,4 +81,7 @@
                                  (ash 1 exponent))
                              (round (/ numerator denominator)))))
                (make-instance 'binary32-normal
-                 :value value)))))))
+                 :value value))))
+          ((<= rational most-positive-subnormal-binary32-floatr)
+           (/ (round (* rational (ash 1 (+ 23 126))))
+              (ash 1 (+ 23 126)))))))
