@@ -5,6 +5,5 @@
   :components
   ((:file "packages")
    (:file "binary32")
-   (:file "single-float")
    (:file "double-float")
    (:file "conversion")))
