@@ -6,5 +6,4 @@
   ((:file "packages")
    (:file "binary32")
    (:file "binary64")
-   (:file "double-float")
    (:file "conversion")))
