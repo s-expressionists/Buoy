@@ -21,10 +21,10 @@
    #:single-float-from-components
    #:single-float-from-rational
    #:rational-from-single-float
-   #:single-float-binary-+
-   #:single-float-binary--
-   #:single-float-binary-*
-   #:single-float-binary-/
+   #:binary32-+
+   #:binary32--
+   #:binary32-*
+   #:binary32-/
    #:double-float-from-components
    #:double-float-from-rational
    #:rational-from-double-float
