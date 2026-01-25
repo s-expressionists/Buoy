@@ -97,3 +97,9 @@
                              least-positive-normal-binary32-floatr)))
              (make-instance 'binary32-subnormal
                :value value))))))
+
+(defun binary32-+ (x y)
+  (binary32-from-rational (+ (value x) (value y))))
+
+(defun binary32-- (x y)
+  (binary32-from-rational (- (value x) (value y))))
