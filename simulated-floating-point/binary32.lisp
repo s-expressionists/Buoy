@@ -103,3 +103,9 @@
 
 (defun binary32-- (x y)
   (binary32-from-rational (- (value x) (value y))))
+
+(defun binary32-* (x y)
+  (binary32-from-rational (* (value x) (value y))))
+
+(defun binary32-/ (x y)
+  (binary32-from-rational (/ (value x) (value y))))
