@@ -1,9 +1,7 @@
 (cl:in-package #:buoy-simulate)
 
-(defun double-float-from-single-float (single-float)
-  (double-float-from-rational
-   (rational-from-single-float single-float)))
+(defun binary64-from-binary32 (binary32)
+  (binary64-from-rational (value binary32)))
 
-(defun single-float-from-double-float (double-float)
-  (single-float-from-rational
-   (rational-from-double-float double-float)))
+(defun binary32-from-binary64 (binary64)
+  (binary32-from-rational (value binary32)))
