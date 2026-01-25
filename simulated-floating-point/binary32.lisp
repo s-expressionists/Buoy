@@ -26,7 +26,8 @@
   ())
 
 (defclass binary32-normal-or-subnormal (binary32)
-  ((%value :initarg :value :reader value)))
+  ((%sign :initarg :sign :reader sign)
+   (%value :initarg :value :reader value)))
 
 (defclass binary32-normal (binary32-normal-or-subnormal)
   ())
@@ -81,11 +82,13 @@
                                  (ash 1 exponent))
                              (round (/ numerator denominator)))))
                (make-instance 'binary32-normal
+                 :sign sign
                  :value value))))
           ((<= rational most-positive-subnormal-binary32-floatr)
            (make-instance 'binary32-subnormal
-               :value (/ (round (* rational (ash 1 (+ 23 126))))
-                         (ash 1 (+ 23 126)))))
+             :sign sign
+             :value (/ (round (* rational (ash 1 (+ 23 126))))
+                       (ash 1 (+ 23 126)))))
           ((< most-positive-subnormal-binary32-floatr
               rational
               least-positive-normal-binary32-floatr)
@@ -96,6 +99,7 @@
                              most-positive-subnormal-binary32-floatr
                              least-positive-normal-binary32-floatr)))
              (make-instance 'binary32-subnormal
+               :sign sign
                :value value))))))
 
 (defun binary32-+ (x y)
