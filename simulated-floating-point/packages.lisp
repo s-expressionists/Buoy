@@ -3,6 +3,7 @@
 (defpackage #:buoy-simulate
   (:use #:common-lisp)
   (:export
+   #:floatr-from-rational
    #:binary32-from-rational
    #:value
    #:binary32-+
