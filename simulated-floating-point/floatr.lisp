@@ -97,11 +97,12 @@
                     (/ (ash 1 (- exponent)))
                     (ash 1 exponent))
                 (round (/ numerator denominator)))))
-          (t t))))
+          (t
+           (let* ((exponent
+                    (+ mantissa-width
+                       (1- (most-positive-normal-exponent exponent-width))))
+                  (factor (ash 1 exponent)))
+             (/ (round (* rational factor)) factor))))))
 
-
-           
-        
-    
 
 ; LocalWords:  floatr
