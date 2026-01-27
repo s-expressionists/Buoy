@@ -4,4 +4,4 @@
   (binary64-from-rational (value binary32)))
 
 (defun binary32-from-binary64 (binary64)
-  (binary32-from-rational (value binary32)))
+  (binary32-from-rational (value binary64)))
