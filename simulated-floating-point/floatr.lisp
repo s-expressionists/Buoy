@@ -32,7 +32,7 @@
       (* mantissa (most-positive-normal-exponent exponent-width)))))
 
 (defun least-normal-exponent (exponent-width)
-  (/ (1- (ash 1 (1- exponent-width)))))
+  (- (- (ash 1 (1- exponent-width)) 2)))
 
 ;;; The least positive normal candidate floatr is the smallest
 ;;; rational number that, when rounded, becomes a normal floatr.  It
@@ -52,7 +52,7 @@
     (let ((mantissa (/ ones (ash 1 (1+ mantissa-width)))))
       ;; We must now multiply the mantissa and the least positive
       ;; normal exponent to get the final result.
-      (* mantissa (least-normal-exponent exponent-width)))))
+      (/ mantissa (ash 1 (- (least-normal-exponent exponent-width)))))))
 
 (defun floatr-from-rational (rational exponent-width mantissa-width)
   (let ((sign (if (minusp rational) -1 1))
