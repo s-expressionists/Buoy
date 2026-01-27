@@ -49,7 +49,7 @@
     (let ((mantissa (/ ones (ash 1 (1+ mantissa-width)))))
       ;; We must now multiply the mantissa and the least positive
       ;; normal exponent to get the final result.
-      (* mantissa (least-positive-normal-exponent exponent-width)))))
+      (* mantissa (least-normal-exponent exponent-width)))))
 
 (defun floatr-from-rational (rational exponent-width mantissa-width)
   (let ((sign (if (minusp rational) -1 1))
