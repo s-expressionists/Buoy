@@ -104,5 +104,10 @@
                   (factor (ash 1 exponent)))
              (/ (round (* rational factor)) factor))))))
 
+(defun floatr32-from-rational (rational)
+  (floatr-from-rational rational 8 23))
+
+(defun floatr64-from-rational (rational)
+  (floatr-from-rational rational 11 52))
 
 ; LocalWords:  floatr
