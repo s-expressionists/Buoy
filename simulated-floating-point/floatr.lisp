@@ -31,6 +31,9 @@
       ;; normal exponent to get the final result
       (* mantissa (most-positive-normal-exponent exponent-width)))))
 
+(defun least-normal-exponent (exponent-width)
+  (/ (1- (ash 1 (1- exponent-width)))))
+
 ;;; The least positive normal candidate floatr is the smallest
 ;;; rational number that, when rounded, becomes a normal floatr.  It
 ;;; is the representation of a floating-point value that has the
