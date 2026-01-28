@@ -4,5 +4,4 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "floatr")
-   (:file "conversion")))
+   (:file "floatr")))
