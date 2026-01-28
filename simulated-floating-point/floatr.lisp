@@ -29,7 +29,7 @@
     (let ((mantissa (/ ones (ash 1 (1+ mantissa-width)))))
       ;; We must now multiply the mantissa and the most positive
       ;; normal exponent to get the final result
-      (* mantissa (most-positive-normal-exponent exponent-width)))))
+      (* mantissa (ash 1 (most-positive-normal-exponent exponent-width))))))
 
 (defun least-normal-exponent (exponent-width)
   (- (- (ash 1 (1- exponent-width)) 2)))
