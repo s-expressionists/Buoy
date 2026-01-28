@@ -6,14 +6,4 @@
    #:floatr-from-rational
    #:floatr32-from-rational
    #:floatr64-from-rational
-   #:binary32-from-rational
-   #:value
-   #:binary32-+
-   #:binary32--
-   #:binary32-*
-   #:binary32-/
-   #:binary64-from-rational
-   #:binary64-+
-   #:binary64--
-   #:binary64-*
-   #:binary64-/))
+   #:binary32-from-rational))
