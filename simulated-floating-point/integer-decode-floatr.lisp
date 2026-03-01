@@ -2,15 +2,16 @@
 
 (defun integer-decode-single-floatr (floatr)
   (let* ((numerator (numerator floatr))
+         (denominator (denominator floatr))
          (length (integer-length numerator))
          (diff (- 24 length))
          (shifted (ash numerator diff)))
     (cond ((zerop floatr)
            (values 0 0))
           ((< floatr (/ (ash 1 126)))
-           ;; We have a subnormal floatr.
-           ;; FIXME: do this right.
-           nil)
+           (let* ((length (integer-length denominator))
+                  (diff (- 150 length)))
+             (values (ash numerator diff) -149)))
           ((minusp diff)
            (values shifted
                    (- diff)))
