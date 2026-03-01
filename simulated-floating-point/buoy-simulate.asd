@@ -4,4 +4,5 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "floatr")))
+   (:file "floatr")
+   (:file "integer-decode-floatr")))
