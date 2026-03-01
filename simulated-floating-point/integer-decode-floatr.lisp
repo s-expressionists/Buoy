@@ -35,5 +35,9 @@
                   ;; is greater than or equal to 1.  The exponent
                   ;; represented by the denominator is again (L-1)
                   ;; where L is the INTEGER-LENGTH of the denominator.
+                  ;; Since we shifted the numerator left (i.e., we
+                  ;; made it greater) we need to make the denominator
+                  ;; greater as well, so we return -((L-1) + diff)
+                  ;; which is 1 - L - diff.
                   (values shifted
                           (- 1 (integer-length denominator) diff))))))))
