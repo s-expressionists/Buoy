@@ -16,11 +16,24 @@
             (let* ((length (integer-length denominator))
                    (diff (- 150 length)))
               (values (ash numerator diff) -149))
+            ;; For normal floatrs, we always want to return a first
+            ;; value with an INTEGER-LENGTH of 24, which is the 23
+            ;; bits of the represented mantissa plus the implicit 1.
             (let* ((length (integer-length numerator))
                    (diff (- 24 length))
                    (shifted (ash numerator diff)))
               (if (minusp diff)
+                  ;; When the difference is negative, this means that
+                  ;; the INTEGER-LENGTH of the numerator is greater
+                  ;; than 24, so we have a large integer and the
+                  ;; denominator is then 1.  So we return the shifted
+                  ;; numerator and the negative value of the diff.
                   (values shifted
                           (- diff))
+                  ;; when the difference is non-negative, we have a
+                  ;; floatr with a value that has a denominator that
+                  ;; is greater than or equal to 1.  The exponent
+                  ;; represented by the denominator is again (L-1)
+                  ;; where L is the INTEGER-LENGTH of the denominator.
                   (values shifted
                           (- 1 (integer-length denominator) diff))))))))
