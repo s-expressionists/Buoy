@@ -6,6 +6,9 @@
 (defun least-positive-normal-floatr (exponent-width)
   (/ (ash 1 (- (least-positive-normal-exponent exponent-width)))))
 
+(defun subnormal-exponent-return-value (mantissa-width exponent-width)
+  (- (least-positive-normal-exponent exponent-width) mantissa-width))
+
 (defun integer-decode-single-floatr (floatr)
   (if (zerop floatr)
       (values 0 0)
