@@ -1,5 +1,8 @@
 (cl:in-package #:buoy-simulate)
 
+(defun least-positive-normal-floatr (exponent-width)
+  (/ (ash 1 (- (ash 1 (1- exponent-width)) 2))))
+
 (defun integer-decode-single-floatr (floatr)
   (if (zerop floatr)
       (values 0 0)
