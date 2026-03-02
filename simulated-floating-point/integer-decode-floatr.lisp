@@ -4,7 +4,7 @@
   (- 2 (ash 1 (1- exponent-width))))
 
 (defun least-positive-normal-floatr (exponent-width)
-  (/ (ash 1 (- (ash 1 (1- exponent-width)) 2))))
+  (/ (ash 1 (- (least-positive-normal-exponent exponent-width)))))
 
 (defun integer-decode-single-floatr (floatr)
   (if (zerop floatr)
