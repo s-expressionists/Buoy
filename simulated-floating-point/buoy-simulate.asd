@@ -5,4 +5,5 @@
   :components
   ((:file "packages")
    (:file "floatr")
+   (:file "decode-floatr")
    (:file "integer-decode-floatr")))
