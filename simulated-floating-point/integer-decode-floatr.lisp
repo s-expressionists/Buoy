@@ -1,16 +1,13 @@
 (cl:in-package #:buoy-simulate)
 
-(defun least-positive-normal-exponent (exponent-width)
-  (- 2 (ash 1 (1- exponent-width))))
-
 (defun least-positive-normal-floatr (exponent-width)
-  (/ (ash 1 (- (least-positive-normal-exponent exponent-width)))))
+  (/ (ash 1 (- (least-normal-exponent exponent-width)))))
 
 ;;; For subnormal floatrs, we always want to return the least positive
 ;;; normal exponent minus the mantissa width, since we are going to
 ;;; shift the mantissa by mantissa-width positions.
 (defun subnormal-exponent-return-value (mantissa-width exponent-width)
-  (- (least-positive-normal-exponent exponent-width) mantissa-width))
+  (- (least-normal-exponent exponent-width) mantissa-width))
 
 (defun integer-decode-floatr (floatr mantissa-width exponent-width)
   (if (zerop floatr)
