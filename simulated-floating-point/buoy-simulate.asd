@@ -6,5 +6,6 @@
   ((:file "packages")
    (:file "floatr")
    (:file "floatr-from-rational")
+   (:file "floatr-precision")
    (:file "decode-floatr")
    (:file "integer-decode-floatr")))
