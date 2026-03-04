@@ -7,5 +7,6 @@
    #:floatr32-from-rational
    #:floatr64-from-rational
    #:binary32-from-rational
+   #:floatr-precision
    #:decode-floatr
    #:integer-decode-floatr))
