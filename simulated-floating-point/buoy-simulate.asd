@@ -5,5 +5,6 @@
   :components
   ((:file "packages")
    (:file "floatr")
+   (:file "floatr-from-rational")
    (:file "decode-floatr")
    (:file "integer-decode-floatr")))
