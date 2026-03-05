@@ -17,8 +17,7 @@
          ;; the integer value of the mantissa.  But we don't have to
          ;; do the shifting.  We can take the INTEGER-LENGTH of the
          ;; numerator and just add the difference to it.
-         (let ((d (- mantissa-width (least-normal-exponent exponent-width))))
          (+ (integer-length (numerator floatr))
-            (- d 
+            (- (- mantissa-width (least-normal-exponent exponent-width))
                (integer-length (denominator floatr))
-               -1))))))
+               -1)))))
