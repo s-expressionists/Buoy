@@ -5,4 +5,5 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "test")))
+   (:file "test")
+   (:file "test-floatr-precision")))
