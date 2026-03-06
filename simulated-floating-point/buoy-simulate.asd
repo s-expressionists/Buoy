@@ -28,6 +28,7 @@
 
 (defsystem "buoy-simulate"
   :serial t
+  :description "Simulated floating-point operations"
   :long-description #.*buoy-simulate-documentation*
   :components
   ((:file "packages")
