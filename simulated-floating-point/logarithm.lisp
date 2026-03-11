@@ -11,16 +11,12 @@
 ;;; square root of the argument until it is small enough that
 ;;; convergence is acceptable.
 
-(defun rational-ln-with-small-argument (argument)
-  (loop with epsilon = (1- argument)
-        for x = epsilon then (* x epsilon)
-        for y from 1 to 20
-        do (print (float x 1d0))
-        sum (/ x y)))
+;;; FIXME: Do this better.
+(defparameter *ln-iteration-count* 20)
 
-(defun rational-ln-with-small-argument (argument)
+(defun rational-ln-with-small-argument (argument count)
   (let* ((quotient (/ (1- argument) (1+ argument)))
          (square (* quotient quotient)))
     (* 2 (loop for numerator = quotient then (* numerator square)
-               for denominator from 1 to 20 by 2
+               for denominator from 1 to count by 2
                sum (/ numerator denominator)))))
