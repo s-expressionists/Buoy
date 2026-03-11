@@ -37,4 +37,5 @@
    (:file "floatr-precision")
    (:file "decode-floatr")
    (:file "integer-decode-floatr")
-   (:file "square-root")))
+   (:file "square-root")
+   (:file "logarithm")))
