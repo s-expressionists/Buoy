@@ -36,4 +36,5 @@
    (:file "floatr-from-rational")
    (:file "floatr-precision")
    (:file "decode-floatr")
-   (:file "integer-decode-floatr")))
+   (:file "integer-decode-floatr")
+   (:file "square-root")))
