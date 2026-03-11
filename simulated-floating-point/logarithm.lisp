@@ -20,3 +20,6 @@
     (* 2 (loop for numerator = quotient then (* numerator square)
                for denominator from 1 to count by 2
                sum (/ numerator denominator)))))
+
+(defparameter *ln-2*
+  (* 2 (rational-ln-with-small-argument (rational-square-root 2) 20)))
