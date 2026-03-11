@@ -38,4 +38,5 @@
    (:file "decode-floatr")
    (:file "integer-decode-floatr")
    (:file "square-root")
+   (:file "exponentiation")
    (:file "logarithm")))
