@@ -10,5 +10,13 @@
 ;;; slow.  To fix that, we use the equivalence between (LOG (EXPT X
 ;;; 2)) and (* 2 (LOG X)).  We can then take the square root of the
 ;;; argument until it is small enough that convergence is acceptable.
-;;; So, for instance, if X is less than 1.03 or (1+ (/ (ash 1 5))),
-;;; we gain at least 5 binary digits in each iteration.
+;;; So, for instance, if X is less than 1.03 or (1+ (/ (ash 1 5))), we
+;;; gain at least 5 binary digits in each iteration.  With a desired
+;;; precision of 112 binary digits (as in quadruple-precision
+;;; floating-point, we need 20 or so iterations.
+
+(defun rational-ln-with-small-argument (argument)
+  (loop with epsilon = (1- argument)
+        for x = epsilon then (* x epsilon)
+        for y from 1 to 20
+        sum (/ x y)))
