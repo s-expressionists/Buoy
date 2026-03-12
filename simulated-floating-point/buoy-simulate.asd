@@ -39,4 +39,6 @@
    (:file "integer-decode-floatr")
    (:file "square-root")
    (:file "exponentiation")
-   (:file "logarithm")))
+   (:file "logarithm")
+   (:file "sine-cosine")
+   (:file "arcsine")))
