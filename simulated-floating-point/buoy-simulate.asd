@@ -40,5 +40,6 @@
    (:file "square-root")
    (:file "exponentiation")
    (:file "logarithm")
+   (:file "pi")
    (:file "sine-cosine")
    (:file "arcsine")))
