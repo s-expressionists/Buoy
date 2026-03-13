@@ -58,3 +58,8 @@
 
 (defun rational-sine-positive-argument (argument)
   (rational-sine-argument-less-than-2-pi (mod argument (* 2 *pi*))))
+
+(defun rational-sine (argument)
+  (if (minusp argument)
+      (- (rational-sine-positive-argument (- argument)))
+      (rational-sine-positive-argument argument)))
