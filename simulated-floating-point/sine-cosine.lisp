@@ -44,4 +44,9 @@
 (defun rational-sine-argument-less-than-pi/2 (argument)
   (if (< argument (/ *pi* 4))
       (rational-sine-small-ish-argument argument)
-      (rational-cosine-small-ish-argument (- (/ pi 2) argument))))
+      (rational-cosine-small-ish-argument (- (/ *pi* 2) argument))))
+
+(defun rational-sine-argument-less-than-pi (argument)
+  (if (< argument (/ *pi* 2))
+      (rational-sine-argument-less-than-pi/2 argument)
+      (rational-sine-argument-less-than-pi/2 (- (/ *pi* 2) argument))))
