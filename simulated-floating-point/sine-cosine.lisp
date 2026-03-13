@@ -40,3 +40,8 @@
       (let* ((small-argument (/ argument 2))
              (sine (rational-sine-small-argument small-argument)))
         (- 1 (* sine sine)))))
+
+(defun rational-sine-argument-less-than-pi/2 (argument)
+  (if (< argument (/ *pi* 4))
+      (rational-sine-small-ish-argument argument)
+      (rational-cosine-small-ish-argument (- (/ pi 2) argument))))
