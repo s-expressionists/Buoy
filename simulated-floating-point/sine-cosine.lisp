@@ -63,3 +63,6 @@
   (if (minusp argument)
       (- (rational-sine-positive-argument (- argument)))
       (rational-sine-positive-argument argument)))
+
+(defun rational-cosine (argument)
+  (rational-sine (+ argument (/ *pi* 4))))
