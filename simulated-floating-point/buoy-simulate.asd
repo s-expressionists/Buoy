@@ -42,4 +42,5 @@
    (:file "logarithm")
    (:file "pi")
    (:file "sine-cosine")
+   (:file "tangent")
    (:file "arcsine")))
