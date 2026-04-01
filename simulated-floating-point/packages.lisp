@@ -10,4 +10,11 @@
    #:floatr-precision
    #:decode-floatr
    #:integer-decode-floatr
-   #:rational-ln))
+   #:rational-ln
+   #:*pi*
+   #:rational-sine
+   #:rational-cosine
+   #:rational-tangent
+   #:rational-arcsine
+   #:rational-hyperbolic-sine
+   #:rational-hyperbolic-cosine))
