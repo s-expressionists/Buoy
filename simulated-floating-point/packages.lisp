@@ -9,4 +9,5 @@
    #:binary32-from-rational
    #:floatr-precision
    #:decode-floatr
-   #:integer-decode-floatr))
+   #:integer-decode-floatr
+   #:rational-ln))
