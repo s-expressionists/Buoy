@@ -44,5 +44,6 @@
    (:file "sine-cosine")
    (:file "tangent")
    (:file "arcsine")
+   (:file "arc-cosine")
    (:file "hyperbolic-sine")
    (:file "hyperbolic-cosine")))
