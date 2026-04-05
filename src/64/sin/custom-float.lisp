@@ -31,13 +31,13 @@
        (expt 10 (1- (length e-string))))))
 
 (defparameter *log2-rational*
-  (- 1 (loop for i from 1 to 128
-             for numerator = stuff then (* numerator stuff)
-             sum (/ numerator i))))
+  (let ((stuff (- 1 (/ 2 *e-rational*))))
+    (- 1 (loop for i from 1 to 128
+               for numerator = stuff then (* numerator stuff)
+               sum (/ numerator i)))))
 
 (defparameter *log2*
-  (let* ((stuff (- 1 (/ 2 *e-rational*)))
-         (bits (round (* (expt 2 128) *log2-rational*))))
+  (let* ((bits (round (* (expt 2 128) *log2-rational*))))
     (make-custom-float-64
      :high (ldb (byte 64 64) bits)
      :low (ldb (byte 64 0) bits)
