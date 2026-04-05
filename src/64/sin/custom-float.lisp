@@ -30,6 +30,10 @@
     (/ (read-from-string e-string)
        (expt 10 (1- (length e-string))))))
 
+;;; The Taylor series for (LOG 2) has very slow convergence, so we
+;;; rewrite it as (+ 1 (LOG (/ 2 *e-rational*))) which converges much
+;;; faster.
+
 (defparameter *log2-rational*
   (let ((stuff (- 1 (/ 2 *e-rational*))))
     (- 1 (loop for i from 1 to 128
