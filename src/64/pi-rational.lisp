@@ -1,4 +1,4 @@
-(cl:in-package #:buoy)
+(cl:in-package #:buoy-core-math-64)
 
 ;;; For SIN or COS, we may get arguments that are as large as (EXPT 2
 ;;; 1024).  We need to compute such a large argument modulo (* 2 pi).
