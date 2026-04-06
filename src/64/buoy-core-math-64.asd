@@ -5,4 +5,5 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "pi-rational")))
+   (:file "pi-rational")
+   (:file "custom-float")))
