@@ -1,4 +1,4 @@
-(cl:in-package #:buoy)
+(cl:in-package #:buoy-core-math-64)
 
 ;;; This struct definition is used as a custom float type.  The value
 ;;; represented is (* (/ high (expt 2 64)) (/ low (expt 2 128)) (expt
