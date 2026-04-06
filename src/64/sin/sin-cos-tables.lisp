@@ -1,10 +1,14 @@
 (cl:in-package #:buoy)
 
 (defun very-slow-sin-rational (x)
-  (loop for i from 1 to 200 by 2
+  (loop for i from 1  by 2
         for sign = 1 then (- sign)
         for factorial = 1 then (* factorial (1- i) i)
-        sum (* sign (/ (expt x i) factorial))))
+        for denominator = x then (* denominator x x)
+        for term = (* sign (/ denominator factorial))
+        for result = 0 then (+ result term)
+        until (< (/ term result) #.(/ (ash 1 150)))
+        finally (return result)))
 
 ;;; The core-math library uses a single table with C structs in it,
 ;;; but we want to store 64-bit values without creating bignums, so we
