@@ -75,3 +75,6 @@
         (high destination) (high source)
         (exponent destination) (exponent source)
         (sign destination) (sign source)))
+
+(defun custom-float-64-zerop (custom-float-64)
+  (zerop (high custom-float-64)))
