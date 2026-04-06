@@ -70,6 +70,7 @@
 ;;; memory.  The hope is that the destination will be supplied by the
 ;;; caller, and that it can be considered as having dynamic extent.
 (defun copy-custom-float-64 (destination source)
+  (declare (type custom-float-64 destination source))
   (setf (low destination) (low source)
         (high destination) (high source)
         (exponent destination) (exponent source)
