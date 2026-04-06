@@ -45,19 +45,9 @@
      :exponent diff
      :sign sign)))
 
-(defparameter *1*
-  (make-custom-float-64
-   :high #x8000000000000000
-   :low #x0
-   :exponent 0
-   :sign 0))
+(defparameter *1* (custom-float-64-from-rational 1))
 
-(defparameter *-1*
-  (make-custom-float-64
-   :high #x8000000000000000
-   :low #x0
-   :exponent 0
-   :sign 1))
+(defparameter *-1* (custom-float-64-from-rational -1))
 
 (defparameter *e-rational*
   (let ((e-string "2718281828459045235360287471352662497757247093699959574966"))
@@ -74,11 +64,4 @@
                for numerator = stuff then (* numerator stuff)
                sum (/ numerator i)))))
 
-(defparameter *log2*
-  (let* ((bits (round (* (expt 2 128) *log2-rational*))))
-    (make-custom-float-64
-     :high (ldb (byte 64 64) bits)
-     :low (ldb (byte 64 0) bits)
-     :exponent -1
-     :sign 0)))
-     
+(defparameter *log2* (custom-float-64-from-rational *log2-rational*))
