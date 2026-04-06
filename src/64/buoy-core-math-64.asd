@@ -6,4 +6,5 @@
   :components
   ((:file "packages")
    (:file "pi-rational")
-   (:file "custom-float")))
+   (:file "custom-float")
+   (:file "sin-table")))
