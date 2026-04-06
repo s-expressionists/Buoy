@@ -6,7 +6,7 @@
 ;;; is positive and a sign slot of 1 mean the value represented is
 ;;; negative.
 
-(defstruct (custom-float-64 (:conc-name nil))
+(defstruct (custom-float-64 (:conc-name nil) (:copier nil))
   (high 0 :type (unsigned-byte 64))
   (low 0 :type (unsigned-byte 64))
   (exponent 0 :type (signed-byte 64))
