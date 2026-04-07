@@ -12,7 +12,7 @@
   (exponent 0 :type (signed-byte 64))
   (sign 0 :type (unsigned-byte 64)))
 
-(defun rational-from-custum-float-64 (custom-float-64)
+(defun rational-from-custom-float-64 (custom-float-64)
   (* (if (zerop (sign custom-float-64)) 1 -1)
      (+ (/ (high custom-float-64) (ash 1 64))
         (/ (low custom-float-64) (ash 1 128)))
@@ -78,3 +78,22 @@
 
 (defun custom-float-64-zerop (custom-float-64)
   (zerop (high custom-float-64)))
+
+;;; We define operations on custom floats so that the result is
+;;; obtained by filling the slots of a CUSTOM-FLOAT-64 passes as the
+;;; first argument, again to avoid allocating memory.
+
+;;; I am lazy here so I allocate memory and do a lot of unnecessary
+;;; computations, but this must be improved to obtain good
+;;; performance.
+(defun add-custom-float-64 (destination x y)
+  (let ((sum (custom-float-64-from-rational
+              (+ (rational-from-custom-float-64 x)
+                 (rational-from-custom-float-64 y)))))
+    (copy-custom-float-64 destination sum)))
+
+(defun multiply-custom-float-64 (destination x y)
+  (let ((sum (custom-float-64-from-rational
+              (* (rational-from-custom-float-64 x)
+                 (rational-from-custom-float-64 y)))))
+    (copy-custom-float-64 destination sum)))
