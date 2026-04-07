@@ -8,4 +8,5 @@
    (:file "pi-rational")
    (:file "custom-float")
    (:file "sin-table")
-   (:file "cos-table")))
+   (:file "cos-table")
+   (:file "parse-c-literal")))
