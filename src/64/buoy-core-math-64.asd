@@ -5,6 +5,7 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "utilities")
    (:file "pi-rational")
    (:file "custom-float")
    (:file "sin-table")
