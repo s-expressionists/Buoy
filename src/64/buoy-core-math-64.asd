@@ -10,4 +10,5 @@
    (:file "custom-float")
    (:file "sin-table")
    (:file "cos-table")
-   (:file "parse-c-literal")))
+   (:file "parse-c-literal")
+   (:file "polynomial-sine")))
