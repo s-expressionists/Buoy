@@ -57,3 +57,17 @@
      :high #xf16ab2898eae62f9
      :low #xa7f0339113b8b3c5
      :exponent 4 :sign 1)))) ; 11
+
+(defun eval-polynomial-sine (destination x x-squared)
+  (let ((table *polynomial-sine-table*))
+    (multiply-custom-float-64 destination x-squared (aref table 5))
+    (add-custom-float-64 destination destination (aref table 4))
+    (multiply-custom-float-64 destination destination x-squared)
+    (add-custom-float-64 destination destination (aref table 3))
+    (multiply-custom-float-64 destination destination x-squared)
+    (add-custom-float-64 destination destination (aref table 2))
+    (multiply-custom-float-64 destination destination x-squared)
+    (add-custom-float-64 destination destination (aref table 1))
+    (multiply-custom-float-64 destination destination x-squared)
+    (add-custom-float-64 destination destination (aref table 0))
+    (multiply-custom-float-64 destination destination x)))
