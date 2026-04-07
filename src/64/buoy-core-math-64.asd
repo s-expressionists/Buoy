@@ -7,4 +7,5 @@
   ((:file "packages")
    (:file "pi-rational")
    (:file "custom-float")
-   (:file "sin-table")))
+   (:file "sin-table")
+   (:file "cos-table")))
