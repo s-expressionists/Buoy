@@ -20,7 +20,11 @@
         finally (return result)))
 
 ;;; This table cntains approximations of (sin (/ (* 2 pi i) (expt 2
-;;; 11)) for (<= 0 i 255).
+;;; 11)) for (<= 0 i 255).  For some reason, the core-math library
+;;; does not nterpret the entries of this table the same way as it
+;;; interpret other custom-float-64 numbers.  The difference is a
+;;; factor 2 which is why we multiplie by 2 before converting to a
+;;; custom-float-64.
 (defparameter *sin-table*
   (let ((result (make-array 256)))
     (setf (aref result 0)
