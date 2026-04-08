@@ -33,3 +33,35 @@
           (fast-two-sum (aref table 0) high)
         (incf low (+ (aref table 1) tt))
         (values high low)))))
+
+
+;;; The following is a degree-10 polynomial with even coefficients
+;;; approximating (cos (* 2 pi x)) for x greater than or equal to 0
+;;; and less than (expt 2 -11) with relative error (expt 2 -137.246).
+
+;; static const dint64_t PC[] = {
+(defparameter *polynomial-cosine-table*
+  (make-array
+   6
+   :initial-contents
+   (flet ((m (&rest arguments)
+            (apply #'make-custom-float-64 arguments)))
+     (list 
+      (m :high #x8000000000000000
+         :low #x0
+         :exponent 1 :sign 0)           ; degree 0
+      (m :high #x9de9e64df22ef2d2
+         :low #x56e26cd9808c1949
+         :exponent 5 :sign 1)           ; degree 2
+      (m :high #x81e0f840dad61d9a
+         :low #x9980f00630cb655e
+         :exponent 7 :sign 0)           ; degree 4
+      (m :high #xaae9e3f1e5ffcfe2
+         :low #xa508509534006249
+         :exponent 7 :sign 1)           ; degree 6   
+      (m :high #xf0fa83448dd1e094
+         :low #xe0603ce7044eeba
+         :exponent 6 :sign 0)           ; degree 8
+      (m :high #xd368f6f4207cfe49
+         :low #xec63157807ebffa
+         :exponent 5 :sign 1)))))       ; degree 10
