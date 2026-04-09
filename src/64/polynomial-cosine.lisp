@@ -65,3 +65,21 @@
       (m :high #xd368f6f4207cfe49
          :low #xec63157807ebffa
          :exponent 5 :sign 1)))))       ; degree 10
+
+;;; Compute an approximation of (COS (* 2 PI X) for x greater than or
+;;; equal to 0 and less than (EXPT 2 11).  Put the result in the
+;;; custom float 64 passed as the first argument.  Since cosine is an
+;;; even function, we do not actually need X, so we pass only
+;;; X-SQUARED as an argument.
+(defun eval-polynomial-cosine (result x-squared)
+  (let ((table  *polynomial-cosine-table*))
+    (multiply-custom-float-64 result x-squared (aref table 5)) ; degree 10
+    (add-custom-float-64 result result (aref table 4))         ; degree 8
+    (multiply-custom-float-64 result result x-squared)
+    (add-custom-float-64 result result (aref table 3))         ; degree 6
+    (multiply-custom-float-64 result result x-squared)
+    (add-custom-float-64 result result (aref table 2))         ; degree 4
+    (multiply-custom-float-64 result result x-squared)
+    (add-custom-float-64 result result (aref table 1))         ; degree 2
+    (multiply-custom-float-64 result result x-squared)
+    (add-custom-float-64 result result (aref table 0))))       ; degree 0
