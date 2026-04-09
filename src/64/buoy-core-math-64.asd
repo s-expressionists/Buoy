@@ -12,4 +12,5 @@
    (:file "cos-table")
    (:file "parse-c-literal")
    (:file "polynomial-sine")
-   (:file "polynomial-cosine")))
+   (:file "polynomial-cosine")
+   (:file "sine-cosine-table")")))
