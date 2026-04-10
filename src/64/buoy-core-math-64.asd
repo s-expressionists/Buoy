@@ -13,4 +13,5 @@
    (:file "parse-c-literal")
    (:file "polynomial-sine")
    (:file "polynomial-cosine")
-   (:file "sine-cosine-table")")))
+   (:file "sine-cosine-table")
+   (:file "reduce")")))
