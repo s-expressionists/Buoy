@@ -19,10 +19,22 @@
         (let ((u-low (ldb (byte 64 0) u)))
           (incf (low x) u-low)
           (setf (high x) (+ (ash u -64) (if (< (low x) u-low) 1 0))))
-        ;; Let HI be the value of (high x) and HI-IN the value of
-        ;; (high x) when this function was entered.  Let LO be the
+        ;; Let HI be the current value of (high x) and HI-IN the value
+        ;; of (high x) when this function was entered.  Let LO be the
         ;; value of (low x).  Also, let PI-0 be the (AREF PT 0) and
         ;; PI-1 (AREF pt 1). Then (+ HI (/ lo (expt 2 64)) (/ tiny
         ;; (expt 2 128))) is equal to (* HI-IN (+ (/ PI-0 (expt 2 64))
-        ;; (/ PI-1 (expt 2 128).
-        ))))
+        ;; (/ PI-1 (expt 2 128).  Thus (< (abs (- (+ HI (/ lo (expt 2
+        ;; 64)) (/ tiny (expt 2 128))) (/ HI-IN (* 2 PI)))) (* HI-IN
+        ;; (expt 2 -130.22))).  Since X is normalized at input, (>=
+        ;; HI-IN (expt 2 63)) and since (>= (AREF PT 0) (expt 2 61)),
+        ;; we have (>= HI (expt 2 (- (+ 63 61) 64))) which is (expt 2
+        ;; 60).  Thus the call to NORMALIZE below performs a left
+        ;; shift by at most 3 bits
+        (let ((e (exponent x)))
+          (normalize-custom-float-64 x)
+          (decf e (exponent x))
+          (unless (zerop e)
+            (setf (low x) (logior (low x) (ash tiny (- 64 e)))))
+          (return-from reduce1)
+          )))))
