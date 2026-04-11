@@ -109,7 +109,7 @@
                              (ldb (byte diff length)
                                   (low c))))
                (setf (low c)
-                     (ash (low c) diff))
+                     (ash (ldb (byte length 0)(low c)) diff))
                (decf (exponent c) diff))))
           ((not (zerop (low c)))
            (let* ((length (integer-length (low c)))
