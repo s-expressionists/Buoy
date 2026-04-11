@@ -19,4 +19,10 @@
       (let ((u-low (ldb (byte 64 0) u)))
         (incf (low x) u-low)
         (setf (high x) (+ (ash u -64) (if (< (low x) u-low) 1 0))))
+      ;; Let HI be the value of (high x) and HI-IN the value of (high
+      ;; x) when this function was entered.  Let LO be the value of
+      ;; (low x).  Also, let PI-0 be the (AREF *PI-TABLE* 0) and PI-1
+      ;; (AREF *pi-table* 1). Then (+ HI (/ lo (expt 2 64)) (/ tiny
+      ;; (expt 2 128))) is equal to (* HI-IN (+ (/ PI-0 (expt 2 64))
+      ;; (/ PI-1 (expt 2 128).
       )))
