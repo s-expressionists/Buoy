@@ -37,4 +37,18 @@
           (unless (zerop e)
             (setf (low x) (logior (low x) (ash tiny (- 64 e)))))
           (return-from reduce1)
-          )))))
+          ;; Now (<= 2 e 1024)
+          ;;
+          ;; FIXME: adapt this comment.
+          ;; The upper 64-bit word X->hi corresponds to hi/2^64*2^e,
+          ;; if multiplied by T[i]/2^((i+1)*64) it yields
+          ;; hi*T[i]/2^128 * 2^(e-i*64).  If e-64i <= -128, it
+          ;; contributes to less than 2^-128; if e-64i >= 128, it
+          ;; yields an integer, which is 0 modulo 1.  We thus only
+          ;; consider the values of i such that -127 <= e-64i <= 127,
+          ;; i.e., (-127+e)/64 <= i <= (127+e)/64.  Up to 4
+          ;; consecutive values of T[i] can contribute (only 3 when e
+          ;; is a multiple of 64).
+          (let ((i (if (< e 127) 0 (ceiling (- e 127) 64)))
+                (c (make-array 5 :element-type 'double-float)))
+          ))))))
