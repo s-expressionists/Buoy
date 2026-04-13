@@ -74,13 +74,13 @@
           (cond ((< f 64)
                  (setf (high x)
                        (logior (ldb (byte 64 0) (ash c4 f))
-                               (ash c3 (- 64 f))))
+                               (ldb (byte 64 0) (ash c3 (- f 64)))))
                  (setf (low x)
                        (logior (ldb (byte 64 0) (ash c3 f))
-                               (ash c2 (- 64 f))))
+                               (ldb (byte 64 0) (ash c2 (- f 64)))))
                  (setf tiny 
                        (logior (ldb (byte 64 0) (ash c2 f))
-                               (ash c1 (- 64 f)))))
+                               (ldb (byte 64 0) (ash c1 (- f 64))))))
                 ((= f 64)
                  (setf (high x) c3)
                  (setf (low x) c2)
@@ -103,12 +103,15 @@
                                      (zerop c2)
                                      (zerop c3))
                                 1 0))
-                   (setf (high x) (logior (ldb (byte 64 0) (ash c3 g))
-                                          (ash c2 (- 64 g))))
-                   (setf (low x) (logior (ldb (byte 64 0) (ash c2 g))
-                                         (ash c1 (- 64 g))))
-                   (setf tiny (logior (ldb (byte 64 0) (ash c1 g))
-                                      (ash c0 (- 64 g)))))))
+                   (setf (high x)
+                         (logior (ldb (byte 64 0) (ash c3 g))
+                                 (ldb (byte 64 0) (ash c2 (- 64 g)))))
+                   (setf (low x)
+                         (logior (ldb (byte 64 0) (ash c2 g))
+                                 (ldb (byte 64 0) (ash c1 (- 64 g)))))
+                   (setf tiny
+                         (logior (ldb (byte 64 0) (ash c1 g))
+                                 (ldb (byte 64 0) (ash c0 (- 64 g))))))))
           ;; the ignored part was less than 1 in c[0],
           ;; thus less than 1/2 in tiny
           ;; 
