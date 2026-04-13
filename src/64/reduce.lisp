@@ -135,3 +135,17 @@
 ;;; bounded by 2^-191/2^-62 = 2^-129.  There is an additional
 ;;; truncation error (for tiny) of at most 1 ulp of X->lo, thus at
 ;;; most 2^-127.  The relative error is thus bounded by 2^-126.67. */
+
+;;; Given Xin:=X with 0 <= Xin < 1, return i and modify X such that
+;;; Xin = i/2^11 + Xout, with 0 <= Xout < 2^-11.  This operation is
+;;; exact.
+(defun reduce2 (x)
+  (if (<= (exponent x) -11)
+      0
+      (let* ((sh  (- 64 11 (exponent x)))
+             (i (ash (high x) (- sh))))
+        (setf (high x) (logand (high x)
+                               (ldb (byte 64 0)
+                                    (1- (ash 1 sh)))))
+        (normalize-custom-float-64 x)
+        i)))
