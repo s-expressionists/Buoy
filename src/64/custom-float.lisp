@@ -2,7 +2,7 @@
 
 ;;; This struct definition is used as a custom float type.  The value
 ;;; represented is (* (/ high (expt 2 64)) (/ low (expt 2 128)) (expt
-;;; 2 (1+ exponent))).  A sign slot of 0 means the value represented
+;;; 2 exponent)).  A sign slot of 0 means the value represented
 ;;; is positive and a sign slot of 1 mean the value represented is
 ;;; negative.
 
@@ -16,7 +16,7 @@
   (* (if (zerop (sign custom-float-64)) 1 -1)
      (+ (/ (high custom-float-64) (ash 1 64))
         (/ (low custom-float-64) (ash 1 128)))
-     (expt 2 (1+ (exponent custom-float-64)))))
+     (expt 2 (exponent custom-float-64))))
 
 (defun custom-float-64-from-rational (rational)
   (let* ((sign (if (minusp rational) 1 0))
@@ -36,9 +36,10 @@
     ;; than 1/2 but less than 1.  Otherwise, the quotient is greater
     ;; than 1 but less than 2.
     (if (< numerator denominator)
-        (progn (setf bits (round (/ (ash numerator 128) denominator)))
-               (decf diff))
-        (setf bits (round (/ (ash numerator 127) denominator))))
+        (setf bits (round (/ (ash numerator 128) denominator)))
+        (progn 
+          (setf bits (round (/ (ash numerator 127) denominator)))
+          (incf diff)))
     (make-custom-float-64
      :high (ldb (byte 64 64) bits)
      :low (ldb (byte 64 0) bits)
