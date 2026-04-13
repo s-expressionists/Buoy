@@ -1,7 +1,7 @@
 (cl:in-package #:asdf-user)
 
 (defsystem "buoy-core-math-64"
-  :depends-on ()
+  :depends-on ("quaviver")
   :serial t
   :components
   ((:file "packages")
