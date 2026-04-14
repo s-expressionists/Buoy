@@ -251,3 +251,41 @@
 ;;;
 ;;; Put in err1 a bound for the absolute error:
 ;;; | i/2^11 + h + l - frac(x/(2pi)) |.
+(defun reduce-fast (x)
+  (declare (type double-float x err1))
+  (let ((err1 1d0))
+    (declare (type double-float err1))
+    (if (<= x #.(parse-c-literal "0x1.921fb54442d17p+2"))
+        ;; then (< x (* 2 pi)) which is expected here.
+        (let ((ch #.(parse-c-literal "0x1.45f306dc9c883p-3"))
+              (cl #.(parse-c-literal "-0x1.6b01ec5417056p-57")))
+          (declare (type double-float ch cl))
+          ;; | CH+CL - 1/(2pi) | < 2^-110.523 */
+          (multiple-value-bind (h l)
+              (a-multiply ch x) ; exact
+            (setf l (fma cl x l))
+            ;; The error in the above fma() is at most ulp(l), where
+            ;; |l| <= CL*|x|+|l_in|.  Assume 2^(e-1) <= x < 2^e.  Then
+            ;; |h| < 2^(e-2) and |l_in| <= 1/2 ulp(2^(e-2)) =
+            ;; 2^(e-55), where l_in is the value of l after a_mul.
+            ;; Then |l| <= CL*x + 2^(e-55) <= 2^e*(CL+2-55) < 2^e *
+            ;; 2^-55.6.  The rounding error of the fma() is bounded by
+            ;; ulp(l) <= 2^e * ulp(2^-55.6) = 2^(e-108).  The error
+            ;; due to the approximation of 1/(2pi) is bounded by
+            ;; 2^-110.523*x <= 2^(e-110.523).  Adding both errors
+            ;; yields: |h + l - x/(2pi)| < 2^e * (2^-108 + 2^-110.523)
+            ;; < 2^e * 2^-107.768.  Since |x/(2pi)| > 2^(e-1)/(2pi),
+            ;; the relative error is bounded by: 2^e * 2^-107.768 /
+            ;; (2^(e-1)/(2pi)) = 4pi * 2^-107.768 < 2^-104.116.
+            ;;
+            ;; Bound on l: since |h| < 1, we have after |l| <= ulp(h)
+            ;; <= 2^-53 after a_mul(), and then |l| <=
+            ;; |CL|*0x1.921fb54442d17p+2 + 2^-53 < 2^-52.36.
+            ;;
+            ;; Bound on l relative to h: after a_mul() we have |l| <=
+            ;; ulp(h) <= 2^-52*h. After fma() we have |l| <= CL*x +
+            ;; 2^-52*h <= 2^-53.84*CH*x + 2^-52*h <=
+            ;; (2^-53.84+2^-52)*h < 2^-51.64*h.
+            ;; error < 2^-104.116 * h
+            (setf err1 (* #.(parse-c-literal "0x1.d9p-105") h))))
+        )))
