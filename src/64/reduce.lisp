@@ -149,3 +149,65 @@
                                     (1- (ash 1 sh)))))
         (normalize-custom-float-64 x)
         i)))
+
+;;; This function should probably be called set-double-double.
+;;; h+l <- c1/2^64 + c0/2^128
+(defun set-dd (c1 c0)
+  (let ((h 0d0)
+        (l 0d0)
+        (length 0)
+        (e 0)
+        (f 0)
+        (g 0))
+    (cond ((not (zerop c1))
+           (setf length (integer-length c1))
+           (setf e (- 64 length))
+           (unless (zerop e)
+             (setf c1 (logior (ldb (byte 64 0) (ash c1 e))
+                              (ash c0 (- length))))
+             (setf c0 (ldb (byte 64 0) (ash c0 e))))
+           (setf f (- #x3fe e))
+           (let ((bits (logior (ldb (byte 64 0) (ash f 52))
+                               ;; There has got to be a better way to
+                               ;; do this in Common Lisp.
+                               (ash (ldb (byte 64 0) (ash c1 1)) -12))))
+             (setf h #.(quaviver:bits-float-form 'bits))
+             (setf c0 (logior (ldb (byte 64 0) (ash c1 53))
+                              (ash c0 -11)))
+             (if (zerop c0)
+                 (setf l 0)
+                 (progn (setf g (- 64 (iinteger-length c0)))
+                        (unless (zerop g)
+                          (setf c0 (ash c0 g)))
+                        (let ((bits (logior (ldb (byte 64 0)
+                                                 (ash (- f 53 g) 52))
+                                            (ash (ldb (byte 64 0)
+                                                      (ash c0 1))
+                                                 -12))))
+                          (setf l #.(quaviver:bits-float-form 'bits)))))))
+          ((not (zerop c0))
+           (setf length (integer-length c0))
+           (setf e (- 64 length))
+           (setf f (- #x3fe 64 length))
+           ;; Shift out most significant bit.
+           (setf c0 (ldb (byte 64 0) (ash c0 (1+ e))))
+           ;; Put the upper 52 bits of c0 into h
+           (let ((bits (logior (ldb (byte 64 0) (ash f 52))
+                               (ash c0 -12))))
+             (setf h #.(quaviver:bits-float-form 'bits)))
+           ;; Put the lower 12 bits of c0 into l
+           (if (zerop c0)
+               (setf l 0)
+               (progn (setf g (- 64 (integer-length c0)))
+                      (setf c0 (ldb (byte 64 0) (ash c0 (1+ g))))
+                      (let ((bits (logior (ldb (byte 64 0)
+                                               (ash (- f 64 g) 52))
+                                          (ash c0 -12))))
+                        #.(quaviver:bits-float-form 'bits)))))
+          (t
+           (setf h 0 l 0)))
+    ;; Since we truncate from two 64-bit words to a double-double, we
+    ;; have another truncation error of less than 2^-106, thus the
+    ;; absolute error is bounded as follows: | h + l - frac(x/(2pi)) |
+    ;; < 2^-75.999 + 2^-106 < 2^-75.998 */
+    (values h l))
