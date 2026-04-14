@@ -150,8 +150,11 @@
         (normalize-custom-float-64 x)
         i)))
 
-;;; This function should probably be called set-double-double.
-;;; h+l <- c1/2^64 + c0/2^128
+;;; This function should probably be called set-double-double.  It
+;;; should probably be inlined, so as to avoid memory allocation for
+;;; the arguments and for the return values.
+
+;;;  h+l <- c1/2^64 + c0/2^128
 (defun set-dd (c1 c0)
   (let ((h 0d0)
         (l 0d0)
@@ -232,4 +235,19 @@
     ;; have another truncation error of less than 2^-106, thus the
     ;; absolute error is bounded as follows: | h + l - frac(x/(2pi)) |
     ;; < 2^-75.999 + 2^-106 < 2^-75.998 */
-    (values h l))
+    (values h l)))
+
+;;; Assuming 0x1.7137449123ef6p-26 < x < +Inf,
+;;; return i and set h,l such that i/2^11+h+l approximates frac(x/(2pi)).
+;;; If x <= 0x1.921fb54442d18p+2:
+;;; | i/2^11 + h + l - frac(x/(2pi)) | < 2^-104.116 * |i/2^11 + h + l|
+;;; with |h| < 2^-11 and |l| < 2^-52.36.
+;;;
+;;; Otherwise only the absolute error is bounded:
+;;; | i/2^11 + h + l - frac(x/(2pi)) | < 2^-75.998
+;;; with 0 <= h < 2^-11 and |l| < 2^-53.
+;;;
+;;; In both cases we have |l| < 2^-51.64*|i/2^11 + h|.
+;;;
+;;; Put in err1 a bound for the absolute error:
+;;; | i/2^11 + h + l - frac(x/(2pi)) |.
