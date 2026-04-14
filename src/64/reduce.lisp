@@ -163,15 +163,30 @@
            (setf length (integer-length c1))
            (setf e (- 64 length))
            (unless (zerop e)
+             ;; Shift c1 and c0 so that the combined bits are as far
+             ;; left as possible.  It is a kind of normalization.
              (setf c1 (logior (ldb (byte 64 0) (ash c1 e))
                               (ash c0 (- length))))
              (setf c0 (ldb (byte 64 0) (ash c0 e))))
+           ;; #x3fe is 1022.  So this form adjusts the ultimate
+           ;; #exponent according to how much c1 and c0 were shifted. 
            (setf f (- #x3fe e))
+           ;; Shifting f 52 positions puts it in the place of the
+           ;; exponent in a double-precision floating-point word.
+           ;; Shifting c1 one position to the left eliminates the most
+           ;; significant bit which is not explicitly represented in
+           ;; IEEE floating-point numbers.  Then shifting the result
+           ;; 12 positions to the right puts it in the position of the
+           ;; mantissa in the resulting floating-point word.
            (let ((bits (logior (ldb (byte 64 0) (ash f 52))
                                ;; There has got to be a better way to
                                ;; do this in Common Lisp.
                                (ash (ldb (byte 64 0) (ash c1 1)) -12))))
              (setf h #.(quaviver:bits-float-form 'bits))
+             ;; Shifting c1 left by 53 positions eliminates the bits
+             ;; that we just put into the mantissa of H so that only
+             ;; 11 bits remain.  Shifting c0 right by 11 positions
+             ;; will provided the remaining 53 bits.
              (setf c0 (logior (ldb (byte 64 0) (ash c1 53))
                               (ash c0 -11)))
              (if (zerop c0)
@@ -179,6 +194,13 @@
                  (progn (setf g (- 64 (iinteger-length c0)))
                         (unless (zerop g)
                           (setf c0 (ash c0 g)))
+                        ;; The exponent of L is adjusted so that the
+                        ;; sum of H and L is correct.  The mantissa is
+                        ;; treated just like the one for H was
+                        ;; treated, i.e., shift one position left in
+                        ;; order to eliminate the most significant bit
+                        ;; and then shift right by 12 positions to put
+                        ;; the mantissa in the right place.
                         (let ((bits (logior (ldb (byte 64 0)
                                                  (ash (- f 53 g) 52))
                                             (ash (ldb (byte 64 0)
