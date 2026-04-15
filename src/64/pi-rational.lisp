@@ -15,8 +15,9 @@
        (expt 10 (1- (length pi-string))))))
 
 ;;; We now compute a table of 20 64-bit unsigned values that together
-;;; represent an approximation of (/ (* 2 pi)) multiplied by (EXPT 2
-;;; 1280)
+;;; represent an approximation of (/ (* 2 pi)) such that (/ (* 2 pi))
+;;; is (+ (/ (aref table 0) (expt 2 64)) (/ (aref table 1) (expt 2
+;;; 128)) ...)
 
 (defparameter *pi-table*
   (let* ((1/2pi (/ (* 2 +pi-rational+)))
