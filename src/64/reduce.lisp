@@ -288,4 +288,44 @@
             ;; (2^-53.84+2^-52)*h < 2^-51.64*h.
             ;; error < 2^-104.116 * h
             (setf err1 (* #.(parse-c-literal "0x1.d9p-105") h))))
+        ;; else x > 0x1.921fb54442d17p+2
+        (multiple-value-bind (significand exponent sign)
+            (integer-decode-float x)
+          ;; (<= -50 EXPONENT 971)
+          ;;
+          ;; We have (>= x (expt 2 (- exponent -54)) and
+          ;; (< x (expt 2 (- exponent -53)))
+          ;; 
+          ;; We have 2^(e-1023) <= x < 2^(e-1022), thus ulp(x) is a
+          ;; multiple of 2^(e-1075), for example if x is just above
+          ;; 2*pi, e=1025, 2^2 <= x < 2^e, and ulp(x) is a multiple of
+          ;; 2^-50.  On the other side 1/(2pi) ~ T[0]/2^64 +
+          ;; T[1]/2^128 + T[2]/2^192 + ...  Let i be the smallest
+          ;; integer such that 2^(e-1075)/2^(64*(i+1)) is not an
+          ;; integer, i.e., e - 1139 - 64i < 0, i.e., i >=
+          ;; (e-1138)/64. */
+          (let ((c0 0) (c1 0) (c2 0) (u 0))
+            (cond ((<= e -1)
+                   ;; (>= x 4) and (< x (expt 2 52))
+                   ;; 
+                   ;; In that case the contribution of x*T[2]/2^192 is
+                   ;; less than 2^(52+64-192) <= 2^-76. */
+                   (setf u (* m (aref *sine-table* 1)))
+                   (setf c0 (ldb (byte 64 0) u))
+                   (setf c1 (ldb (byte 64 64) u))
+                   (setf u (* m (aref *sine-table* 0)))
+                   (incf c1 (ldb (byte 64 0) u))
+                   (setf c2 (+ (ldb (byte 64 64) u)
+                               (if (< c1 (ldb (byte 64 0) u)) 1 0)))
+                   ;; | c[2]*2^128+c[1]*2^64+c[0] - m/(2pi)*2^128 | <
+                   ;; m*T[2]/2^64 < 2^53 thus: |
+                   ;; (c[2]*2^128+c[1]*2^64+c[0])*2^(e-1203) - x/(2pi)
+                   ;; | < 2^(e-1150) The low 1075-e bits of c[2]
+                   ;; contribute to frac(x/(2pi)).
+                   (setf e (- e))
+                   ; e is the number of low bits of C[2] contributing
+                   ; to frac(x/(2pi))
+                   )
+                  (
+
         )))
