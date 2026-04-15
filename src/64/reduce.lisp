@@ -41,6 +41,13 @@
       (return-from reduce1))
     ;; Now (<= 2 e 1024)
     ;;
+    ;; Let's say H is (HIGH X) and E is (EXPONENT X).  And let's say T
+    ;; is the *PI-TABLE*.  H represents a value (* (/ H (EXPT 2 64))
+    ;; (EXPT 2 E)).  If this value is multiplied by the I:th entry of
+    ;; *PI-TABLE*, we get (* (* (/ H (EXPT 2 64)) (expt 2 e)) (/ (aref
+    ;; T I) (expt 2 (* (1+ i) 64)))) which is (* H (expt 2 -64) (expt
+    ;; 2 e) (aref t i) (expt 2 (- (* (1+ i) 64)))).
+    ;;
     ;; FIXME: adapt this comment.  The upper 64-bit word X->hi
     ;; corresponds to hi/2^64*2^e, if multiplied by T[i]/2^((i+1)*64)
     ;; it yields hi*T[i]/2^128 * 2^(e-i*64).  If e-64i <= -128, it
