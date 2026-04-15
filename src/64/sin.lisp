@@ -6,7 +6,8 @@
   (declare (type double-float high low x))
   (let ((negative (minusp x))
         (is-sin  1)
-        (absolute-x (abs x)))
+        (absolute-x (abs x))
+        (table *sine-cosine-table*))
     ;; now x > 0x1.7137449123ef6p-26
     (multiple-value-bind (i err1 high low)
         (reduce-fast absolute-x)
@@ -58,7 +59,7 @@
         ;; (k*2^7 + m)*2^-62 with 2^51 - 2^38 < k*2^7 + m < 2^51 +
         ;; 2^38, thus h-SC[i][0] is exact.  Now |h| < 2^-11 +
         ;; 2^-24. */
-        (decf high (aref *sine-cosine-table* i 0))
+        (decf high (aref table i 0))
         ;; now -2^-24 < h < 2^-11+2^-24
         ;; from reduce_fast() we have |l| < 2^-52.36
         (multiple-value-bind (uh ul)
@@ -69,11 +70,48 @@
               (eval-fast-polynomial-sine high low uh ul)
             ;; the absolute error of evalPSfast() is less than
             ;; 2^-77.09 from routine evalPSfast() in sin.sage: | sh +
-            ;; sh - sin2pi(h+l) | < 2^-77.09 */
+            ;; sh - sin2pi(h+l) | < 2^-77.09
             (multiple-value-bind (ch cl)
                 (eval-fast-polynomial-cosine uh ul)
               ;; the relative error of evalPCfast() is less than
               ;; 2^-69.96 from routine evalPCfast(rel=true) in
               ;; sin.sage: | ch + cl - cos2pi(h+l) | < 2^-69.96 * |ch
-              ;; + cl| */
-  
+              ;; + cl| 
+              (let ((err 0d0)
+                    (sgn0 1d0)
+                    (sgn1 -1d0))
+                (if (not (zerop is-sin))
+                    (multiple-value-bind (sh sl)
+                        (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                                       (aref table i 2) sh sl))
+                      (multiple-value-bind (ch cl)
+                          (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                                         (aref table i 1) ch cl))
+                        (multiple-value-bind (h l)
+                            (fast-two-sum ch sh)
+                          (incf low (+ sl cl))
+                          ;; absolute error bounded by 2^-68.588 from
+                          ;; global_error(is_sin=true,rel=false) in
+                          ;; sin.sage: | h + l - sin2pi (R) | <
+                          ;; 2^-68.588 thus: | h + l - sin |x| | <
+                          ;; 2^-68.588 + | sin2pi (R) - sin |x| |
+                          ;; < 2^-68.588 + err1 */
+                          (setf err #.(parse-c-literal "0x1.81p-69")))))
+                    (multiple-value-bind (ch cl)
+                        (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                                       (aref table i 2) ch cl))
+                      (multiple-value-bind (sh sl)
+                          (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                                         (aref table i 1) sh sl))
+                        (multiple-value-bind (h l)
+                            (fast-two-sum ch (- sh))
+                          (incf low (- cl sl))
+                          ;; absolute error bounded by 2^-68.414 from
+                          ;; global_error(is_sin=false,rel=false) in
+                          ;; sin.sage: | h + l - cos2pi (R) | <
+                          ;; 2^-68.414 thus: | h + l - sin |x| | <
+                          ;; 2^-68.414 + | cos2pi (R) - sin |x| | <
+                          ;; 2^-68.414 + err1 */
+                          (setf err
+                                #.(parse-c-literal "0x1.81p-69")))))))))))
+      (values (+ err err1) high low))))
