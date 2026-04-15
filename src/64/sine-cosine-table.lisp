@@ -18,13 +18,12 @@
 ;;; putting of the Common Lisp version for now.
 ;;;
 ;;; I don't (yet) know how this table will be used, but I can guess.
-;;; Suppose you want to compute (SIN X).  You look up the entry for X
-;;; in the table.  There you find values for E, (SIN (+ X E)), and
-;;; (COS (+ X E)).  To compute (SIN X), you can apply the formula that
-;;; (SIN (- (+ X E) E) = (- (* (SIN (+ X E)) (COS E)) (* (COS (+ X E))
-;;; (SIN E))).  In addition, if E is small like here, then (COS E) is
-;;; rougly 1 and (SIN E) is roughly E, so you get (- (SIN (+ X E)) (* (COS
-;;; (+ X E)) E)).
+;;; Suppose you want to compute (SIN (+ X A)) where X has an entry in
+;;; the table.  You look up the entry for X in the table.  There you
+;;; find values for E, (SIN (+ X E)), and (COS (+ X E)).  To compute
+;;; (SIN (+ X A)), you can apply the formula that (SIN (+ (+ X E) (- A
+;;; E))) = (- (* (SIN (+ X E)) (COS (- A E))) (* (COS (+ X E)) (SIN (-
+;;; A E)))).
 
 (defparameter  *sine-cosine-table*
   (flet ((p (x) (parse-c-literal x)))
