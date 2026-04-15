@@ -253,7 +253,9 @@
 ;;; | i/2^11 + h + l - frac(x/(2pi)) |.
 (defun reduce-fast (x)
   (declare (type double-float x err1))
-  (let ((err1 1d0))
+  (let ((err1 1d0)
+        (high 0d0)
+        (low 0d0))
     (declare (type double-float err1))
     (if (<= x #.(parse-c-literal "0x1.921fb54442d17p+2"))
         ;; then (< x (* 2 pi)) which is expected here.
@@ -263,7 +265,7 @@
           ;; | CH+CL - 1/(2pi) | < 2^-110.523 */
           (multiple-value-bind (h l)
               (a-multiply ch x) ; exact
-            (setf l (fma cl x l))
+            (setf low (fma cl x l))
             ;; The error in the above fma() is at most ulp(l), where
             ;; |l| <= CL*|x|+|l_in|.  Assume 2^(e-1) <= x < 2^e.  Then
             ;; |h| < 2^(e-2) and |l_in| <= 1/2 ulp(2^(e-2)) =
@@ -292,22 +294,19 @@
         (multiple-value-bind (significand exponent sign)
             (integer-decode-float x)
           ;; (<= -50 EXPONENT 971)
-          ;;
-          ;; We have (>= x (expt 2 (- exponent -54)) and
-          ;; (< x (expt 2 (- exponent -53)))
-          ;; 
-          ;; We have 2^(e-1023) <= x < 2^(e-1022), thus ulp(x) is a
-          ;; multiple of 2^(e-1075), for example if x is just above
-          ;; 2*pi, e=1025, 2^2 <= x < 2^e, and ulp(x) is a multiple of
-          ;; 2^-50.  On the other side 1/(2pi) ~ T[0]/2^64 +
-          ;; T[1]/2^128 + T[2]/2^192 + ...  Let i be the smallest
-          ;; integer such that 2^(e-1075)/2^(64*(i+1)) is not an
-          ;; integer, i.e., e - 1139 - 64i < 0, i.e., i >=
-          ;; (e-1138)/64. */
+          (let ((e (+ exponent 1022 53))) ; to correspond to the c code.
+            ;; 1025 <= e <= 2046 
+            ;; 
+            ;; We have 2^(e-1023) <= x < 2^(e-1022), thus ulp(x) is a
+            ;; multiple of 2^(e-1075), for example if x is just above
+            ;; 2*pi, e=1025, 2^2 <= x < 2^e, and ulp(x) is a multiple
+            ;; of 2^-50.  On the other side 1/(2pi) ~ T[0]/2^64 +
+            ;; T[1]/2^128 + T[2]/2^192 + ...  Let i be the smallest
+            ;; integer such that 2^(e-1075)/2^(64*(i+1)) is not an
+            ;; integer, i.e., e - 1139 - 64i < 0, i.e., i >=
+            ;; (e-1138)/64./
           (let ((c0 0) (c1 0) (c2 0) (u 0))
-            (cond ((<= e -1)
-                   ;; (>= x 4) and (< x (expt 2 52))
-                   ;; 
+            (cond ((<= e 1074)
                    ;; In that case the contribution of x*T[2]/2^192 is
                    ;; less than 2^(52+64-192) <= 2^-76. */
                    (setf u (* m (aref *sine-table* 1)))
@@ -322,10 +321,50 @@
                    ;; (c[2]*2^128+c[1]*2^64+c[0])*2^(e-1203) - x/(2pi)
                    ;; | < 2^(e-1150) The low 1075-e bits of c[2]
                    ;; contribute to frac(x/(2pi)).
-                   (setf e (- e))
-                   ; e is the number of low bits of C[2] contributing
-                   ; to frac(x/(2pi))
+                   (setf (- 1075 e))
+                   ;; e is the number of low bits of C[2] contributing
+                   ;; to frac(x/(2pi))
                    )
-                  (
-
-        )))
+                  (t ; 1075 <= e <= 2046, 2^52 <= x < 2^1024
+                   (let ((i (ceiling (- e 1138) 64))) ;  0 <= i <= 15
+                     ;;  m*T[i] contributes to f = 1139 + 64*i - e
+                     ;; bits to frac(x/(2pi)) with 1 <= f <= 64
+                     ;; m*T[i+1] contributes a multiple of 2^(-f-64),
+                     ;; and at most to 2^(53-f) m*T[i+2] contributes a
+                     ;; multiple of 2^(-f-128), and at most to
+                     ;; 2^(-11-f) m*T[i+3] contributes a multiple of
+                     ;; 2^(-f-192), and at most to 2^(-75-f) <= 2^-76
+                     (setf u (* m (aref *sine-table* (+ i 2))))
+                     (setf c0 (ldb (byte 64 0) u))
+                     (setf c1 (ldb (byte 64 64) u))
+                     (setf u (* m (aref *sine-table* (+ i 1))))
+                     (incf c1 (ldb (byte 64 0) u))
+                     (setf c2 (+ (ldb (byte 64 64) u)
+                                 (if (< c1 (ldb (byte 64 0) u) 1 0))))
+                     (setf u (* m (aref *sine-table* i)))
+                     (incf c2 (ldb (byte 64 0) u))
+                     (decf e (+ 1139 (ash i 6))) ; 1 <= e <= 64
+                     ;;  e is the number of low bits of C[2]
+                     ;;  contributing to frac(x/(2pi)
+                     
+                     )))
+            (if (= e 64)
+                (setf c0 c1
+                      c1 c2)
+                (setf c0 (logior (ldb (byte 64 0) (ash c1 (- 64 e)))
+                                 (ash c0 (- e)))
+                      c1 (logior (ldb (byte 64 0) (ash c2 (- 64 e)))
+                                 (ash c1 (- e)))))
+            ;;  In all cases the ignored contribution from x*T[2] or
+            ;; x*T[i+3] is less than 2^-76, and the truncated part
+            ;; from the above shift is less than 2^-128 thus: |
+            ;; c[1]/2^64 + c[0]/2^128 - frac(x/(2pi)) | < 2^-76+2^-128
+            ;; < 2^-75.999
+            (multiple-value-bind (h l)
+                (set-dd c1 c0)
+              (setf high h low l)
+              ;; set_dd() ensures |h| < 1 and |l| < ulp(h) <= 2^-53 
+              (setf err1 #.(parse-c-literal "0x1.01p-76")))))))
+    (let ((i (floor (* high #.(parse-c-literal "0x1p11")))))
+      (setf high (fma i #.(parse-c-literal "-0x1p-11") high))
+      (values i high low))))
