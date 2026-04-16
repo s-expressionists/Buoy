@@ -192,7 +192,7 @@
                                ;; There has got to be a better way to
                                ;; do this in Common Lisp.
                                (ash (ldb (byte 64 0) (ash c1 1)) -12))))
-             (setf h #.(quaviver:bits-float-form 'bits))
+             (setf h #.(quaviver:bits-float-form 'double-float 'bits))
              ;; Shifting c1 left by 53 positions eliminates the bits
              ;; that we just put into the mantissa of H so that only
              ;; 11 bits remain.  Shifting c0 right by 11 positions
@@ -201,7 +201,7 @@
                               (ash c0 -11)))
              (if (zerop c0)
                  (setf l 0)
-                 (progn (setf g (- 64 (iinteger-length c0)))
+                 (progn (setf g (- 64 (integer-length c0)))
                         (unless (zerop g)
                           (setf c0 (ash c0 g)))
                         ;; The exponent of L is adjusted so that the
@@ -216,7 +216,8 @@
                                             (ash (ldb (byte 64 0)
                                                       (ash c0 1))
                                                  -12))))
-                          (setf l #.(quaviver:bits-float-form 'bits)))))))
+                          (setf l #.(quaviver:bits-float-form
+                                     'double-float 'bits)))))))
           ((not (zerop c0))
            (setf length (integer-length c0))
            (setf e (- 64 length))
@@ -226,7 +227,7 @@
            ;; Put the upper 52 bits of c0 into h
            (let ((bits (logior (ldb (byte 64 0) (ash f 52))
                                (ash c0 -12))))
-             (setf h #.(quaviver:bits-float-form 'bits)))
+             (setf h #.(quaviver:bits-float-form 'double-float 'bits)))
            ;; Put the lower 12 bits of c0 into l
            (if (zerop c0)
                (setf l 0)
@@ -235,7 +236,7 @@
                       (let ((bits (logior (ldb (byte 64 0)
                                                (ash (- f 64 g) 52))
                                           (ash c0 -12))))
-                        #.(quaviver:bits-float-form 'bits)))))
+                        #.(quaviver:bits-float-form 'double-float 'bits)))))
           (t
            (setf h 0 l 0)))
     ;; Since we truncate from two 64-bit words to a double-double, we
@@ -259,7 +260,7 @@
 ;;; Put in err1 a bound for the absolute error:
 ;;; | i/2^11 + h + l - frac(x/(2pi)) |.
 (defun reduce-fast (x)
-  (declare (type double-float x err1))
+  (declare (type double-float x))
   (let ((err1 1d0)
         (high 0d0)
         (low 0d0))
@@ -298,7 +299,7 @@
             ;; error < 2^-104.116 * h
             (setf err1 (* #.(parse-c-literal "0x1.d9p-105") h))))
         ;; else x > 0x1.921fb54442d17p+2
-        (multiple-value-bind (significand exponent sign)
+        (multiple-value-bind (m exponent)
             (integer-decode-float x)
           ;; (<= -50 EXPONENT 971)
           (let ((e (+ exponent 1022 53))) ; to correspond to the c code.
@@ -316,10 +317,10 @@
             (cond ((<= e 1074)
                    ;; In that case the contribution of x*T[2]/2^192 is
                    ;; less than 2^(52+64-192) <= 2^-76. */
-                   (setf u (* m (aref *sine-table* 1)))
+                   (setf u (* m (aref *pi-table* 1)))
                    (setf c0 (ldb (byte 64 0) u))
                    (setf c1 (ldb (byte 64 64) u))
-                   (setf u (* m (aref *sine-table* 0)))
+                   (setf u (* m (aref *pi-table* 0)))
                    (incf c1 (ldb (byte 64 0) u))
                    (setf c2 (+ (ldb (byte 64 64) u)
                                (if (< c1 (ldb (byte 64 0) u)) 1 0)))
@@ -328,7 +329,7 @@
                    ;; (c[2]*2^128+c[1]*2^64+c[0])*2^(e-1203) - x/(2pi)
                    ;; | < 2^(e-1150) The low 1075-e bits of c[2]
                    ;; contribute to frac(x/(2pi)).
-                   (setf (- 1075 e))
+                   (setf e (- 1075 e))
                    ;; e is the number of low bits of C[2] contributing
                    ;; to frac(x/(2pi))
                    )
@@ -341,14 +342,14 @@
                      ;; multiple of 2^(-f-128), and at most to
                      ;; 2^(-11-f) m*T[i+3] contributes a multiple of
                      ;; 2^(-f-192), and at most to 2^(-75-f) <= 2^-76
-                     (setf u (* m (aref *sine-table* (+ i 2))))
+                     (setf u (* m (aref *pi-table* (+ i 2))))
                      (setf c0 (ldb (byte 64 0) u))
                      (setf c1 (ldb (byte 64 64) u))
-                     (setf u (* m (aref *sine-table* (+ i 1))))
+                     (setf u (* m (aref *pi-table* (+ i 1))))
                      (incf c1 (ldb (byte 64 0) u))
                      (setf c2 (+ (ldb (byte 64 64) u)
-                                 (if (< c1 (ldb (byte 64 0) u) 1 0))))
-                     (setf u (* m (aref *sine-table* i)))
+                                 (if (< c1 (ldb (byte 64 0) u)) 1 0)))
+                     (setf u (* m (aref *pi-table* i)))
                      (incf c2 (ldb (byte 64 0) u))
                      (decf e (+ 1139 (ash i 6))) ; 1 <= e <= 64
                      ;;  e is the number of low bits of C[2]
@@ -372,6 +373,6 @@
               (setf high h low l)
               ;; set_dd() ensures |h| < 1 and |l| < ulp(h) <= 2^-53 
               (setf err1 #.(parse-c-literal "0x1.01p-76")))))))
-    (let ((i (floor (* high #.(parse-c-literal "0x1p11")))))
-      (setf high (fma i #.(parse-c-literal "-0x1p-11") high))
+    (let ((i (floor (* high #.(parse-c-literal "0x1.0p11")))))
+      (setf high (fma i #.(parse-c-literal "-0x1.0p-11") high))
       (values i high low))))
