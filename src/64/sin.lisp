@@ -3,8 +3,8 @@
 ;;; Return three values, the error, the high double-float and the low
 ;;; double-float.
 (defun sin-fast (x)
-  (declare (type double-float high low x))
-  (let ((negative (minusp x))
+  (declare (type double-float x))
+  (let ((negative (if (minusp x) 1 0))
         (is-sin  1)
         (absolute-x (abs x))
         (table *sine-cosine-table*))
@@ -25,7 +25,7 @@
       ;; we use sin(pi/2-x) = cos(x)
       (unless (zerop (logand i #x100))
         ;; case pi/4 <= x_red <= pi/2
-        (setf is-sin (if (zerop if-sin) 1 0))
+        (setf is-sin (if (zerop is-sin) 1 0))
         (setf i (- #x1ff i))
         ;; 0x1p-11 - h is exact below: indeed, reduce_fast first
         ;; computes a first value of h (say h0, with 0 <= h0 < 1),
@@ -40,16 +40,13 @@
         ;; 0x1p-53 afterwards. But this does not hurt since we bound
         ;; the absolute error and not the relative error at the
         ;; end. */
-        (setf high (- #.(parse-c-literal "0x1p-11") h))
+        (setf high (- #.(parse-c-literal "0x1.0p-11") high))
         (setf low (- low)))
       ;; Now 0 <= i < 256 and 0 <= h+l < 2^-11 with | i/2^11 + h + l -
       ;; frac(x/(2pi)) | cmod 1/4 < err1 If is_sin=1, sin |x| = sin2pi
       ;; (R + err1); if is_sin=0, sin |x| = cos2pi (R + err1).  In
       ;; both cases R = i/2^11 + h + l, 0 <= R < 1/4.
-      (let ((sh 0d0)
-            (sl 0d0)
-            (ch 0d0)
-            (cl 0d0))
+      (let ()
         ;; since the SC[] table evaluates at i/2^11 + SC[i][0] and not
         ;; at i/2^11, we must subtract SC[i][0] from h+l
         ;; 
@@ -82,10 +79,10 @@
                     (sgn1 -1d0))
                 (if (not (zerop is-sin))
                     (multiple-value-bind (sh sl)
-                        (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                        (s-multiply (* (if (zerop negative) sgn0 sgn1)
                                        (aref table i 2) sh sl))
                       (multiple-value-bind (ch cl)
-                          (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                          (s-multiply (* (if (zerop negative) sgn0 sgn1)
                                          (aref table i 1) ch cl))
                         (multiple-value-bind (h l)
                             (fast-two-sum ch sh)
@@ -98,10 +95,10 @@
                           ;; < 2^-68.588 + err1 */
                           (setf err #.(parse-c-literal "0x1.81p-69")))))
                     (multiple-value-bind (ch cl)
-                        (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                        (s-multiply (* (if (zerop negative) sgn0 sgn1)
                                        (aref table i 2) ch cl))
                       (multiple-value-bind (sh sl)
-                          (s-multiply (* (if (zerop neg) sgn0 sgn1)
+                          (s-multiply (* (if (zerop negative) sgn0 sgn1)
                                          (aref table i 1) sh sl))
                         (multiple-value-bind (h l)
                             (fast-two-sum ch (- sh))
