@@ -5,9 +5,10 @@
 (defun sin-fast (x)
   (declare (type double-float x))
   (let ((negative (if (minusp x) 1 0))
-        (is-sin  1)
+        (is-sin 1)
         (absolute-x (abs x))
-        (table *sine-cosine-table*))
+        (table *sine-cosine-table*)
+        (err 1d0))
     ;; now x > 0x1.7137449123ef6p-26
     (multiple-value-bind (i err1 high low)
         (reduce-fast absolute-x)
@@ -74,18 +75,20 @@
               ;; 2^-69.96 from routine evalPCfast(rel=true) in
               ;; sin.sage: | ch + cl - cos2pi(h+l) | < 2^-69.96 * |ch
               ;; + cl| 
-              (let ((err 0d0)
-                    (sgn0 1d0)
+              (let ((sgn0 1d0)
                     (sgn1 -1d0))
                 (if (not (zerop is-sin))
                     (multiple-value-bind (sh sl)
                         (s-multiply (* (if (zerop negative) sgn0 sgn1)
-                                       (aref table i 2) sh sl))
+                                       (aref table i 2))
+                                    sh sl)
                       (multiple-value-bind (ch cl)
                           (s-multiply (* (if (zerop negative) sgn0 sgn1)
-                                         (aref table i 1) ch cl))
+                                         (aref table i 1))
+                                      ch cl)
                         (multiple-value-bind (h l)
                             (fast-two-sum ch sh)
+                          (setf high h low l)
                           (incf low (+ sl cl))
                           ;; absolute error bounded by 2^-68.588 from
                           ;; global_error(is_sin=true,rel=false) in
@@ -96,12 +99,15 @@
                           (setf err #.(parse-c-literal "0x1.81p-69")))))
                     (multiple-value-bind (ch cl)
                         (s-multiply (* (if (zerop negative) sgn0 sgn1)
-                                       (aref table i 2) ch cl))
+                                       (aref table i 2))
+                                    ch cl)
                       (multiple-value-bind (sh sl)
                           (s-multiply (* (if (zerop negative) sgn0 sgn1)
-                                         (aref table i 1) sh sl))
+                                         (aref table i 1))
+                                      sh sl)
                         (multiple-value-bind (h l)
                             (fast-two-sum ch (- sh))
+                          (setf high h low l)
                           (incf low (- cl sl))
                           ;; absolute error bounded by 2^-68.414 from
                           ;; global_error(is_sin=false,rel=false) in
