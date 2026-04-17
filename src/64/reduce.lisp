@@ -63,13 +63,14 @@
       (setf c0 (ldb (byte 64 0) u))
       (setf c1 (ash u -64))
       (setf u (* (high x) (aref pt (+ i 2))))
-      (incf c1 (ldb (byte 64 0) u))
+      (setf c1 (ldb (byte 0 64) (+ c1 u)))
+
       (setf c2 (+ (ash u -64) (if (< c1 (ldb (byte 64 0) u)) 1 0)))
       (setf u (* (high x) (aref pt (+ i 1))))
-      (incf c2 (ldb (byte 64 0) u))
+      (setf c2 (ldb (byte 64 0) (+ c2 u)))
       (setf c3 (+ (ash u -64) (if (< c2 (ldb (byte 64 0) u)) 1 0)))
       (setf u (* (high x) (aref pt i)))
-      (incf c3 (ldb (byte 64 0) u))
+      (setf c3 (ldb (byte 64 0) (+ c3 u)))
       (setf c4 (+ (ash u -64) (if (< c3 (ldb (byte 64 0) u)) 1 0)))
       ;; up to here, the ignored part hi*(T[i+4]+T[i+5]+...)  can
       ;; contribute by less than 2^64 in c[0], thus less than 1 in
@@ -101,7 +102,7 @@
                    ;; we compute an extra term
                    (setf u (* (high x) (aref pt (+ i 4))))
                    (setf u (ash u -64))
-                   (incf c0 u)
+                   (setf c0 (ldb (byte 64 0) (+ c0 u)))
                    (incf c1 (if (< c0 u) 1 0))
                    (incf c2 (if (and (< c0 u) (zerop c1)) 1 0))
                    (incf c3 (if (and (< c0 u) (zerop c1) (zerop c2)) 1 0))
