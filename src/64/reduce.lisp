@@ -273,6 +273,7 @@
           ;; | CH+CL - 1/(2pi) | < 2^-110.523 */
           (multiple-value-bind (h l)
               (a-multiply ch x) ; exact
+            (setf high h)
             (setf low (fma cl x l))
             ;; The error in the above fma() is at most ulp(l), where
             ;; |l| <= CL*|x|+|l_in|.  Assume 2^(e-1) <= x < 2^e.  Then
