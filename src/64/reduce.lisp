@@ -61,24 +61,16 @@
       (declare (type (unsigned-byte 64) c0 c1 c2 c3 c4))
       (setf u (* (high x) (aref pt (+ i 3))))
       (setf c0 (ldb (byte 64 0) u))
-      (break)
       (setf c1 (ash u -64))
-      (break)
       (setf u (* (high x) (aref pt (+ i 2))))
       (setf c1 (ldb (byte 64 0) (+ c1 u)))
-      (break)
       (setf c2 (+ (ash u -64) (if (< c1 (ldb (byte 64 0) u)) 1 0)))
-      (break)
       (setf u (* (high x) (aref pt (+ i 1))))
       (setf c2 (ldb (byte 64 0) (+ c2 u)))
-      (break)
       (setf c3 (+ (ash u -64) (if (< c2 (ldb (byte 64 0) u)) 1 0)))
-      (break)
       (setf u (* (high x) (aref pt i)))
       (setf c3 (ldb (byte 64 0) (+ c3 u)))
-      (break)
       (setf c4 (+ (ash u -64) (if (< c3 (ldb (byte 64 0) u)) 1 0)))
-      (break)
       ;; up to here, the ignored part hi*(T[i+4]+T[i+5]+...)  can
       ;; contribute by less than 2^64 in c[0], thus less than 1 in
       ;; c[1] */
@@ -120,13 +112,13 @@
                                 1 0))
                    (setf (high x)
                          (logior (ldb (byte 64 0) (ash c3 g))
-                                 (ldb (byte 64 0) (ash c2 (- 64 g)))))
+                                 (ldb (byte 64 0) (ash c2 (- g 64)))))
                    (setf (low x)
                          (logior (ldb (byte 64 0) (ash c2 g))
-                                 (ldb (byte 64 0) (ash c1 (- 64 g)))))
+                                 (ldb (byte 64 0) (ash c1 (- g 64)))))
                    (setf tiny
                          (logior (ldb (byte 64 0) (ash c1 g))
-                                 (ldb (byte 64 0) (ash c0 (- 64 g))))))))
+                                 (ldb (byte 64 0) (ash c0 (- g 64))))))))
           ;; the ignored part was less than 1 in c[0],
           ;; thus less than 1/2 in tiny
           ;; 
