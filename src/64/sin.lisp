@@ -237,4 +237,8 @@
                (hi0 (- (high u) (if (> lo0 (low u) 1 0))))
                (lo1 (+ (low u) err))
                (hi1 (+ (hi u) (if (< lo1 (low u)) 1 0))))
-          
+          (unless (= (ash hi0 -10) (ash hi1 -10))
+            (error "handle this case ultimately"))
+          (unless (zerop neg)
+            (setf (sign u) (- 1 (sign u))))
+          (double-float-from-custom-float-64 u))))))
