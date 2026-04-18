@@ -118,3 +118,40 @@
                           (setf err
                                 #.(parse-c-literal "0x1.81p-69")))))))))))
       (values (+ err err1) high low))))
+
+(defparameter *magit*
+  (custom-float-64-from-rational (expt 2 -11)))
+
+(defun sin-accurate (x)
+  (let* ((absx (abs x))
+         (custom-float (custom-float-64-from-double-float absx))
+         (neg (minusp x))
+         (is-sin t))
+    (reduce custom-float)
+    ;; now |X - x/(2pi) mod 1| < 2^-126.67*X, with 0 <= X < 1.
+    ;; Write X = i/2^11 + r with 0 <= r < 2^11.
+    (let ((i (reduce2 custom-float))) ; exact
+      (unless (zerop (logand i #x400))
+        ;; pi <= x < 2*pi: sin(x) = -sin(x-pi)
+        (setf neg (not neg))
+        (setf i (logand i #x3ff)))
+      ;; now i < 2^10
+      (unless (zerop (logand i #x200))
+        ;; pi/2 <= x < pi: sin(x) = cos(x-pi/2)
+        (setf is-sin nil)
+        (setf i (logand i #x1ff)))
+      ;; now 0 <= i < 2^9
+      (unless (zerop (logand i #x100))
+        (setf is-sin (not is-sin))
+        (setf (sign custom-float) 1) ; negate custom-float
+        (add-custom-float-64 custom-float *magic* custom-float)
+        ;; here: 256 <= i <= 511
+        (setf i (- #x1ff i))) ; now 0 <= i < 256
+      ;; now 0 <= i < 256 and 0 <= X < 2^-11
+      ;;
+      ;; If is_sin=1, sin |x| = sin2pi (R * (1 + eps))
+      ;; (cases 0 <= x < pi/4 and 3pi/4 <= x < pi)
+      ;; if is_sin=0, sin |x| = cos2pi (R * (1 + eps))
+      ;; (case pi/4 <= x < 3pi/4)
+      ;; In both cases R = i/2^11 + X, 0 <= R < 1/4, and |eps| < 2^-126.67.
+      
