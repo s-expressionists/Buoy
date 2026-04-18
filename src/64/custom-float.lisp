@@ -46,6 +46,10 @@
      :exponent diff
      :sign sign)))
 
+;;; FIXME: do this better
+(defun custom-float-64-from-double-float (double-float)
+  (custom-float-64-from-rational (rational double-float)))
+
 (defparameter *1* (custom-float-64-from-rational 1))
 
 (defparameter *-1* (custom-float-64-from-rational -1))
