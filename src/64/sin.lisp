@@ -122,15 +122,15 @@
 (defparameter *magit*
   (custom-float-64-from-rational (expt 2 -11)))
 
-(defun sin-accurate (x)
-  (let* ((absx (abs x))
-         (custom-float (custom-float-64-from-double-float absx))
-         (neg (minusp x))
+(defun sin-accurate (xx)
+  (let* ((absx (abs xx))
+         (x (custom-float-64-from-double-float absxx))
+         (neg (minusp xx))
          (is-sin t))
-    (reduce custom-float)
+    (reduce x)
     ;; now |X - x/(2pi) mod 1| < 2^-126.67*X, with 0 <= X < 1.
     ;; Write X = i/2^11 + r with 0 <= r < 2^11.
-    (let ((i (reduce2 custom-float))) ; exact
+    (let ((i (reduce2 x))) ; exact
       (unless (zerop (logand i #x400))
         ;; pi <= x < 2*pi: sin(x) = -sin(x-pi)
         (setf neg (not neg))
@@ -143,8 +143,8 @@
       ;; now 0 <= i < 2^9
       (unless (zerop (logand i #x100))
         (setf is-sin (not is-sin))
-        (setf (sign custom-float) 1) ; negate custom-float
-        (add-custom-float-64 custom-float *magic* custom-float)
+        (setf (sign x) 1) ; negate x
+        (add-custom-float-64 x *magic* x)
         ;; here: 256 <= i <= 511
         (setf i (- #x1ff i))) ; now 0 <= i < 256
       ;; now 0 <= i < 256 and 0 <= X < 2^-11
@@ -154,4 +154,87 @@
       ;; if is_sin=0, sin |x| = cos2pi (R * (1 + eps))
       ;; (case pi/4 <= x < 3pi/4)
       ;; In both cases R = i/2^11 + X, 0 <= R < 1/4, and |eps| < 2^-126.67.
-      
+      (let ((u (make-custom-float-64 :high 0 :low 0 :exponent 0 :sign 0))
+            (v (make-custom-float-64 :high 0 :low 0 :exponent 0 :sign 0))
+            (x2 (make-custom-float-64 :high 0 :low 0 :exponent 0 :sign 0)))
+        (declare (dynamic-extent u v x2))
+        ;; x2 approximates x squared
+        (multiply-custom-float-64 x2 x x)
+        ;; compute (cos (* 2 pi x))
+        (eval-polynomial-cosine u x2) 
+        ;; since 0 <= X < 2^-11, we have 0.999 < U <= 1
+        (eval-polynomial-sine v x x2)
+        ;; since 0 <= X < 2^-11, we have 0 <= V < 0.0005
+        (if is-sin
+            (progn
+              ;; sin2pi(R) ~ sin2pi(i/2^11)
+              ;; *cos2pi(X)+cos2pi(i/2^11)*sin2pi(X) 
+              (multiply-custom-float-64 u (aref *sin-table* i) u)
+              ;; since 0 <= S[i] < 0.705 and 0.999 < Uin <= 1, we have
+              ;; 0 <= U < 0.705
+              (multiply-custom-float-64 v (aref *cosin-table* i) v)
+              ;; For the error analysis, we distinguish the case i=0.
+              ;; For i=0, we have S[i]=0 and C[1]=1, thus V is the
+              ;; value computed by evalPS() above, with relative error
+              ;; < 2^-124.648.
+              ;;
+              ;; For 1 <= i < 256, analyze_sin_case1(rel=true) from
+              ;; sin.sage gives a relative error bound of -122.797
+              ;; (obtained for i=1).  In all cases, the relative error
+              ;; for the computation of
+              ;; sin2pi(i/2^11)*cos2pi(X)+cos2pi(i/2^11)*sin2pi(X) is
+              ;; bounded by -122.797 not taking into account the
+              ;; approximation error in R: |U - sin2pi(R)| < |U| *
+              ;; 2^-122.797, with U the value computed after add_dint
+              ;; (U, U, V) below.
+              ;; 
+              ;; For the approximation error in R, we have: sin |x| =
+              ;; sin2pi (R * (1 + eps)) R = i/2^11 + X, 0 <= R < 1/4,
+              ;; and |eps| < 2^-126.67.  Thus sin|x| = sin2pi(R+R*eps)
+              ;; = sin2pi(R)+R*eps*2*pi*cos2pi(theta), theta in
+              ;; [R,R+R*eps] Since 2*pi*R/sin(2*pi*R) < pi/2 for R <
+              ;; 1/4, it follows: | sin|x| - sin2pi(R) | <
+              ;; pi/2*R*|sin(2*pi*R)| | sin|x| - sin2pi(R) | <
+              ;; 2^-126.018 * |sin2pi(R)|.
+              ;;
+              ;; Adding both errors we get:
+              ;; | sin|x| - U | < |U| * 2^-122.797 + 2^-126.018 * |sin2pi(R)|
+              ;; < |U| * 2^-122.797 + 2^-126.018 * |U| * (1 + 2^-122.797)
+              ;; < |U| * 2^-122.650.
+              )
+            (progn
+              ;; cos2pi(R) ~ cos2pi(i/2^11)*cos2pi(X)-sin2pi(i/2^11)
+              ;; *sin2pi(X)
+              (multiply-custom-float-64 u (aref *cosine-table i) u)
+              (multiply-custom-float-64 v (aref *sine-table i) v)
+              (setf (sign v) (- 1 (sign v))) ; negate v
+              ;; For 0 <= i < 256, analyze_sin_case2(rel=true) from
+              ;; sin.sage gives a relative error bound of -123.540
+              ;; (obtained for i=0): |U - cos2pi(R)| < |U| *
+              ;; 2^-123.540, with U the value computed after add_dint
+              ;; (U, U, V) below.
+              ;;
+              ;; For the approximation error in R, we have: sin |x| =
+              ;; cos2pi (R * (1 + eps)) R = i/2^11 + X, 0 <= R < 1/4,
+              ;; and |eps| < 2^-126.67.  Thus sin|x| = cos2pi(R+R*eps)
+              ;; = cos2pi(R)-R*eps*2*pi*sin2pi(theta), theta in
+              ;; [R,R+R*eps] Since we have R < 1/4, we have cos2pi(R)
+              ;; >= sqrt(2)/2, and it follows: | sin|x|/cos2pi(R) - 1
+              ;; | < 2*pi*R*eps/(sqrt(2)/2) < pi/2*eps/sqrt(2) [since
+              ;; R < 1/4] < 2^-126.518.  Adding both errors we get: |
+              ;; sin|x| - U | < |U| * 2^-123.540 + 2^-126.518 *
+              ;; |cos2pi(R)| < |U| * 2^-123.540 + 2^-126.518 * |U| *
+              ;; (1 + 2^-123.540) < |U| * 2^-123.367.
+              ))
+        (add-custom-float-64 u u v)
+        ;; If is_sin=1: | sin|x| - U | < |U| * 2^-122.650 If is_sin=0:
+        ;; | cos|x| - U | < |U| * 2^-123.367.  In all cases the total
+        ;; error is bounded by |U| * 2^-122.650.  The term |U| *
+        ;; 2^-122.650 contributes to at most 2^(128-122.650) < 41 ulps
+        ;; relatively to U->lo.
+        (let* ((err 41)
+               (lo0 (- (low u) err))
+               (hi0 (- (high u) (if (> lo0 (low u) 1 0))))
+               (lo1 (+ (low u) err))
+               (hi1 (+ (hi u) (if (< lo1 (low u)) 1 0))))
+          
