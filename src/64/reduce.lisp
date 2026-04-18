@@ -376,4 +376,4 @@
               (setf err1 #.(parse-c-literal "0x1.01p-76")))))))
     (let ((i (float (floor (* high #.(parse-c-literal "0x1.0p11"))) 1d0)))
       (setf high (fma i #.(parse-c-literal "-0x1.0p-11") high))
-      (values i high low))))
+      (values err1 high low))))
