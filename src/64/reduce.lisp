@@ -19,7 +19,7 @@
       (setf (low x) (ash u -64))
       (setf u (* (high x) (aref pt 0)))
       (let ((u-low (ldb (byte 64 0) u)))
-        (incf (low x) u-low)
+        (setf (low x) (ldb (byte 64 0) (+ (low x) u-low)))
         (setf (high x) (+ (ash u -64) (if (< (low x) u-low) 1 0))))
       ;; Let HI be the current value of (high x) and HI-IN the value
       ;; of (high x) when this function was entered.  Let LO be the
@@ -37,7 +37,7 @@
       (normalize-custom-float-64 x)
       (decf e (exponent x))
       (unless (zerop e)
-        (setf (low x) (logior (low x) (ash tiny (- 64 e)))))
+        (setf (low x) (ldb (byte 64 0) (logior (low x) (ash tiny (- 64 e))))))
       (return-from reduce1))
     ;; Now (<= 2 e 1024)
     ;;
