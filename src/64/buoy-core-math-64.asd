@@ -14,4 +14,5 @@
    (:file "polynomial-sine")
    (:file "polynomial-cosine")
    (:file "sine-cosine-table")
-   (:file "reduce")")))
+   (:file "reduce")
+   (:file "sin")))
