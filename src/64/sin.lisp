@@ -245,3 +245,42 @@
           (unless (null neg)
             (setf (sign u) (- 1 (sign u))))
           (double-float-from-custom-float-64 u))))))
+
+(defun cr-sin (x)
+  ;; For |x| <= 0x1.7137449123ef6p-26, sin(x) rounds to x (to
+  ;; nearest): we can assume x >= 0 without loss of generality since
+  ;; sin(-x) = -sin(x), we have x - x^3/6 < sin(x) < x for say 0 < x
+  ;; <= 1 thus |sin(x) - x| < x^3/6.  Write x = c*2^e with 1/2 <= c <
+  ;; 1.  Then ulp(x)/2 = 2^(e-54), and x^3/6 = c^3/6*2^(3e), thus
+  ;; x^3/6 < ulp(x)/2 rewrites as c^3/6*2^(3e) < 2^(e-54), or
+  ;; c^3*2^(2e+53) < 3 (1).  For e <= -26, since c^3 < 1, we have
+  ;; c^3*2^(2e+53) < 2 < 3.  For e=-25, (1) rewrites 8*c^3 < 3 which
+  ;; yields c <= 0x1.7137449123ef6p-1
+  (multiple-value-bind (significand exponent)
+      (integer-decode-float x)
+    (let ((ux (logior (ldb (byte 52 0) significand)
+                      (ash (+ exponent 1022 53) 52))))
+      ;; 0x3e57137449123ef6 = 0x1.7137449123ef6p-26
+      (when (<= ux #x3e57137449123ef6)
+        (if (zerop x)
+            x
+            (progn 
+              ;; Taylor expansion of sin(x) is x - x^3/6 around zero
+              ;; for x=-0, fma (x, -0x1p-54, x) returns +0
+              ;; 
+              ;; We have underflow when 0 < |x| < 2^-1022 or when
+              ;; |x| = 2^-1022 and rounding towards zero.
+              (let ((result (fma x #.(parse-c-literal "-0x1.0p-54") x)))
+                (if (or (< x #.(parse-c-literal "0x1.0p-1022"))
+                        (< result #.(parse-c-literal "0x1.0p-1022")))
+                    (error 'floating-point-underflow )
+                    (return-from cr-sin result))))))))
+  (multiple-value-bind (error high low)
+      (sin-fast x)
+    (let ((left (+ high (- low error)))
+          (right (* high (+ low error))))
+      ;; we get 1100 failures out of 50000000
+      ;; random tests, i.e., about 0.002%.
+      (if (= left right)
+          left
+          (sin-accurate x)))))
