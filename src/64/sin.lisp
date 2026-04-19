@@ -119,15 +119,15 @@
                                 #.(parse-c-literal "0x1.81p-69")))))))))))
       (values (+ err err1) high low))))
 
-(defparameter *magit*
+(defparameter *magic*
   (custom-float-64-from-rational (expt 2 -11)))
 
 (defun sin-accurate (xx)
-  (let* ((absx (abs xx))
+  (let* ((absxx (abs xx))
          (x (custom-float-64-from-double-float absxx))
          (neg (minusp xx))
          (is-sin t))
-    (reduce x)
+    (reduce1 x)
     ;; now |X - x/(2pi) mod 1| < 2^-126.67*X, with 0 <= X < 1.
     ;; Write X = i/2^11 + r with 0 <= r < 2^11.
     (let ((i (reduce2 x))) ; exact
@@ -172,7 +172,8 @@
               (multiply-custom-float-64 u (aref *sin-table* i) u)
               ;; since 0 <= S[i] < 0.705 and 0.999 < Uin <= 1, we have
               ;; 0 <= U < 0.705
-              (multiply-custom-float-64 v (aref *cosin-table* i) v)
+              (multiply-custom-float-64
+               v (aref *polynomial-cosine-table* i) v)
               ;; For the error analysis, we distinguish the case i=0.
               ;; For i=0, we have S[i]=0 and C[1]=1, thus V is the
               ;; value computed by evalPS() above, with relative error
@@ -205,8 +206,10 @@
             (progn
               ;; cos2pi(R) ~ cos2pi(i/2^11)*cos2pi(X)-sin2pi(i/2^11)
               ;; *sin2pi(X)
-              (multiply-custom-float-64 u (aref *cosine-table i) u)
-              (multiply-custom-float-64 v (aref *sine-table i) v)
+              (multiply-custom-float-64
+               u (aref *polynomial-cosine-table* i) u)
+              (multiply-custom-float-64
+               v (aref *polynomial-sine-table* i) v)
               (setf (sign v) (- 1 (sign v))) ; negate v
               ;; For 0 <= i < 256, analyze_sin_case2(rel=true) from
               ;; sin.sage gives a relative error bound of -123.540
@@ -234,11 +237,11 @@
         ;; relatively to U->lo.
         (let* ((err 41)
                (lo0 (- (low u) err))
-               (hi0 (- (high u) (if (> lo0 (low u) 1 0))))
+               (hi0 (- (high u) (if (> lo0 (low u)) 1 0)))
                (lo1 (+ (low u) err))
-               (hi1 (+ (hi u) (if (< lo1 (low u)) 1 0))))
+               (hi1 (+ (high u) (if (< lo1 (low u)) 1 0))))
           (unless (= (ash hi0 -10) (ash hi1 -10))
             (error "handle this case ultimately"))
-          (unless (zerop neg)
+          (unless (null neg)
             (setf (sign u) (- 1 (sign u))))
           (double-float-from-custom-float-64 u))))))
