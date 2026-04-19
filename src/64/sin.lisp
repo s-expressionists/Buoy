@@ -173,7 +173,7 @@
               ;; since 0 <= S[i] < 0.705 and 0.999 < Uin <= 1, we have
               ;; 0 <= U < 0.705
               (multiply-custom-float-64
-               v (aref *polynomial-cosine-table* i) v)
+               v (aref *cos-table* i) v)
               ;; For the error analysis, we distinguish the case i=0.
               ;; For i=0, we have S[i]=0 and C[1]=1, thus V is the
               ;; value computed by evalPS() above, with relative error
@@ -207,9 +207,9 @@
               ;; cos2pi(R) ~ cos2pi(i/2^11)*cos2pi(X)-sin2pi(i/2^11)
               ;; *sin2pi(X)
               (multiply-custom-float-64
-               u (aref *polynomial-cosine-table* i) u)
+               u (aref *cosin-table* i) u)
               (multiply-custom-float-64
-               v (aref *polynomial-sine-table* i) v)
+               v (aref *sin-table* i) v)
               (setf (sign v) (- 1 (sign v))) ; negate v
               ;; For 0 <= i < 256, analyze_sin_case2(rel=true) from
               ;; sin.sage gives a relative error bound of -123.540
