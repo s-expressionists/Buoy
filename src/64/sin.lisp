@@ -207,7 +207,7 @@
               ;; cos2pi(R) ~ cos2pi(i/2^11)*cos2pi(X)-sin2pi(i/2^11)
               ;; *sin2pi(X)
               (multiply-custom-float-64
-               u (aref *cosin-table* i) u)
+               u (aref *cos-table* i) u)
               (multiply-custom-float-64
                v (aref *sin-table* i) v)
               (setf (sign v) (- 1 (sign v))) ; negate v
