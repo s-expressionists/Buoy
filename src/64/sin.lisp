@@ -62,7 +62,7 @@
         ;; from reduce_fast() we have |l| < 2^-52.36
         (multiple-value-bind (uh ul)
             (a-multiply high high)
-          (setf ul (fma (* high high) low ul))
+          (setf ul (fma (+ high high) low ul))
           ;; uh+ul approximates (h+l)^2
           (multiple-value-bind (sh sl)
               (eval-fast-polynomial-sine high low uh ul)
