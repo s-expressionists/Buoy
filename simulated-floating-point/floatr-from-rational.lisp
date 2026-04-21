@@ -4,12 +4,12 @@
   (let ((sign (if (minusp rational) -1 1))
         (mantissa (if (minusp rational) (- rational) rational))
         exponent)
-    (cond ((>= rational
+    (cond ((>= mantissa
                (least-positive-infinite-candidate-floatr
                 exponent-width mantissa-width))
            ;; We return NIL to indicate infinity
            nil)
-          ((>= rational
+          ((>= mantissa
                (least-positive-normal-candidate-floatr
                 exponent-width mantissa-width))
            ;; We have a normal floatr.
