@@ -1,5 +1,44 @@
 (cl:in-package #:buoy-core-math-64)
 
+;;; The Common Lisp implementation may not have an accurate FLOAT
+;;; function.  So we defiine our own:
+(defun dfloat (rational)
+  (let ((sign (if (minusp rational) 1 0))
+        (absolute (abs rational))
+        exponent)
+    (let* ((numerator (numerator absolute))
+           (numerator-length (integer-length numerator))
+           (denominator (denominator absolute))
+           (denominator-length (integer-length denominator))
+           (difference (- numerator-length denominator-length)))
+      (setf exponent difference)
+      (if (minusp difference)
+          ;; Then we shift the numerator by the negative
+          ;; difference.
+          (setf numerator (ash numerator (- difference)))
+          ;; Otherwise, we shift the denominator by the
+          ;; difference.
+          (setf denominator (ash denominator difference)))
+      ;; At this point either the numerator is less than the
+      ;; denominator so that the quotient is less than 1, or
+      ;; the numerator is greater than or equal to the
+      ;; denominator, so that the quotient is greater than or
+      ;; equal to 1.  In the second case, we have something
+      ;; that can be used as the absolute of the float but in
+      ;; the first case, we must multiply the denominator by 2.
+      (when (< numerator denominator)
+        (decf exponent)
+        (setf numerator (ash numerator 1)))
+      ;; Now, we shift the numerator by 52 positions to get something
+      ;; that should be an integer in the floating-point
+      ;; representation.
+      (setf numerator (ash numerator 52))
+      (let ((mantissa (round (/ numerator denominator))))
+        (quaviver:bits-float 'double-float
+                             (logior (ldb (byte 52 0) mantissa)
+                                     (ash (+ 1022 (- 53 exponent)) 52)
+                                     (ash sign 63)))))))
+
 ;;; The exact sum of HIGH and LOW is the exact sum of A and B.
 (defun fast-two-sum (a b)
   (declare (type double-float a b))
