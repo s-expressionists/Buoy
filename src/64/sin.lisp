@@ -96,7 +96,7 @@
                           ;; 2^-68.588 thus: | h + l - sin |x| | <
                           ;; 2^-68.588 + | sin2pi (R) - sin |x| |
                           ;; < 2^-68.588 + err1 */
-                          (setf err #.(parse-c-literal "0x1.81p-69")))))
+                          (setf err #.(parse-c-literal "0x1.55p-69")))))
                     (multiple-value-bind (ch cl)
                         (s-multiply (* (if (zerop negative) sgn0 sgn1)
                                        (aref table i 2))
