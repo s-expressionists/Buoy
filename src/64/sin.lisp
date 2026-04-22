@@ -278,7 +278,7 @@
   (multiple-value-bind (error high low)
       (sin-fast x)
     (let ((left (+ high (- low error)))
-          (right (* high (+ low error))))
+          (right (+ high (+ low error))))
       ;; we get 1100 failures out of 50000000
       ;; random tests, i.e., about 0.002%.
       (if (= left right)
