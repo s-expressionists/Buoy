@@ -75,9 +75,8 @@
 ;;; instruction that does that.
 (defun fma (x y z)
   (declare (type double-float x y z))
-  (float (+ (* (rational x) (rational y))
-            (rational z))
-         1d0))
+  (dfloat (+ (* (rational x) (rational y))
+             (rational z))))
 
 ;;; Multiply exactly A and B such that the sum of HIGH and LOW is the
 ;;; exact product of A and B.  The core-math library call this
