@@ -36,7 +36,7 @@
       (let ((mantissa (round (/ numerator denominator))))
         (quaviver:bits-float 'double-float
                              (logior (ldb (byte 52 0) mantissa)
-                                     (ash (+ 1022 (- 53 exponent)) 52)
+                                     (ash (+ 1023 exponent) 52)
                                      (ash sign 63)))))))
 
 ;;; The exact sum of HIGH and LOW is the exact sum of A and B.
