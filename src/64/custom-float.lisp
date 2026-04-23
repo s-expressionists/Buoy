@@ -102,10 +102,10 @@
     (copy-custom-float-64 destination sum)))
 
 (defun multiply-custom-float-64 (destination x y)
-  (let ((sum (custom-float-64-from-rational
-              (* (rational-from-custom-float-64 x)
-                 (rational-from-custom-float-64 y)))))
-    (copy-custom-float-64 destination sum)))
+  (let ((product (custom-float-64-from-rational
+                  (* (rational-from-custom-float-64 x)
+                     (rational-from-custom-float-64 y)))))
+    (copy-custom-float-64 destination product)))
 
 (defun normalize-custom-float-64 (custom-float-64)
   (let ((c custom-float-64))
