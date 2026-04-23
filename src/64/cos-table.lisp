@@ -22,5 +22,5 @@
           for i from 0 below 256
           for cos-rational = (very-slow-cos-rational (* multplier i))
           do (setf (aref result i)
-                   (custom-float-64-from-rational (* 2 cos-rational)))
+                   (custom-float-64-from-rational cos-rational))
           finally (return result))))
