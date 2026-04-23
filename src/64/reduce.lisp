@@ -37,7 +37,7 @@
       (normalize-custom-float-64 x)
       (decf e (exponent x))
       (unless (zerop e)
-        (setf (low x) (ldb (byte 64 0) (logior (low x) (ash tiny (- 64 e))))))
+        (setf (low x) (ldb (byte 64 0) (logior (low x) (ash tiny (- e 64))))))
       (return-from reduce1))
     ;; Now (<= 2 e 1024)
     ;;
