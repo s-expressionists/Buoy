@@ -38,13 +38,14 @@
   (if (< argument 4/10)
       (rational-cosine-small-argument argument)
       (let* ((small-argument (/ argument 2))
-             (sine (rational-sine-small-argument small-argument)))
-        (- 1 (* sine sine)))))
+             (sine (rational-sine-small-argument small-argument))
+             (cosine (rational-cosine-small-argument small-argument)))
+        (- (* cosine cosine) (* sine sine)))))
 
 (defun rational-sine-argument-less-than-pi/2 (argument)
   (if (< argument (/ *pi* 4))
       (rational-sine-small-ish-argument argument)
-      (rational-cosine-small-ish-argument (- (/ *pi* 2) argument))))
+      (rational-cosine-small-ish-argument (- (/ *pi* 2d0) argument))))
 
 (defun rational-sine-argument-less-than-pi (argument)
   (if (< argument (/ *pi* 2))
