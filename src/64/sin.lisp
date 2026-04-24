@@ -17,6 +17,13 @@
       ;;
       ;; if i >= 2^10: 1/2 <= frac(x/(2pi)) < 1 thus pi <= x <= 2pi we
       ;; use sin(pi+x) = -sin(x)
+      (setf negative (logxor (ash i -10)))
+      (setf i (logand i #x3ff))
+      ;; | i/2^11 + h + l - frac(x/(2pi)) | mod 1/2 < err1
+      ;;
+      ;; now i < 2^10
+      ;; if i >= 2^9: 1/4 <= frac(x/(2pi)) < 1/2 thus pi/2 <= x <= pi
+      ;; we use sin(pi/2+x) = cos(x)
       (setf is-sin (logxor is-sin (ash i -9)))
       (setf i (logand i #x1ff))
       ;; | i/2^11 + h + l - frac(x/(2pi)) | mod 1/4 < err1
