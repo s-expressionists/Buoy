@@ -33,6 +33,6 @@
           for i from 1 below 256
           for sin-rational = (very-slow-sin-rational (* multplier i))
           do (setf (aref result i)
-                   (custom-float-64-from-rational (* 2 sin-rational)))
+                   (custom-float-64-from-rational sin-rational))
           finally (return result))))
 
