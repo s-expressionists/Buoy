@@ -136,7 +136,8 @@
           ;; -61, attained for |x| = 0x1.6ac5b262ca1ffp+851
           (when (minusp (exponent x))
             ;;  put the upper -ex bits of tiny into low bits of lo
-            (setf (low x) (logior (ash tiny (- -64 (exponent x)))))))))))
+            (setf (low x) (logior (low x)
+                                  (ash tiny (- -64 (exponent x)))))))))))
 ;;; Since X->ex >= -61, it means X >= 2^-62 before the normalization,
 ;;; thus the maximal absolute error of 2^-191 yields a relative error
 ;;; bounded by 2^-191/2^-62 = 2^-129.  There is an additional
