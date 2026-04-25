@@ -314,49 +314,48 @@
             ;; integer such that 2^(e-1075)/2^(64*(i+1)) is not an
             ;; integer, i.e., e - 1139 - 64i < 0, i.e., i >=
             ;; (e-1138)/64./
-          (let ((c0 0) (c1 0) (c2 0) (u 0))
-            (cond ((<= e 1074)
-                   ;; In that case the contribution of x*T[2]/2^192 is
-                   ;; less than 2^(52+64-192) <= 2^-76. */
-                   (setf u (* m (aref *pi-table* 1)))
-                   (setf c0 (ldb (byte 64 0) u))
-                   (setf c1 (ldb (byte 64 64) u))
-                   (setf u (* m (aref *pi-table* 0)))
-                   (incf c1 (ldb (byte 64 0) u))
-                   (setf c2 (+ (ldb (byte 64 64) u)
-                               (if (< c1 (ldb (byte 64 0) u)) 1 0)))
-                   ;; | c[2]*2^128+c[1]*2^64+c[0] - m/(2pi)*2^128 | <
-                   ;; m*T[2]/2^64 < 2^53 thus: |
-                   ;; (c[2]*2^128+c[1]*2^64+c[0])*2^(e-1203) - x/(2pi)
-                   ;; | < 2^(e-1150) The low 1075-e bits of c[2]
-                   ;; contribute to frac(x/(2pi)).
-                   (setf e (- 1075 e))
-                   ;; e is the number of low bits of C[2] contributing
-                   ;; to frac(x/(2pi))
-                   )
-                  (t ; 1075 <= e <= 2046, 2^52 <= x < 2^1024
-                   (let ((i (ceiling (- e 1138) 64))) ;  0 <= i <= 15
-                     ;;  m*T[i] contributes to f = 1139 + 64*i - e
-                     ;; bits to frac(x/(2pi)) with 1 <= f <= 64
-                     ;; m*T[i+1] contributes a multiple of 2^(-f-64),
-                     ;; and at most to 2^(53-f) m*T[i+2] contributes a
-                     ;; multiple of 2^(-f-128), and at most to
-                     ;; 2^(-11-f) m*T[i+3] contributes a multiple of
-                     ;; 2^(-f-192), and at most to 2^(-75-f) <= 2^-76
-                     (setf u (* m (aref *pi-table* (+ i 2))))
+            (let ((c0 0) (c1 0) (c2 0) (u 0))
+              (cond ((<= e 1074)
+                     ;; In that case the contribution of x*T[2]/2^192 is
+                     ;; less than 2^(52+64-192) <= 2^-76. */
+                     (setf u (* m (aref *pi-table* 1)))
                      (setf c0 (ldb (byte 64 0) u))
                      (setf c1 (ldb (byte 64 64) u))
-                     (setf u (* m (aref *pi-table* (+ i 1))))
+                     (setf u (* m (aref *pi-table* 0)))
                      (incf c1 (ldb (byte 64 0) u))
                      (setf c2 (+ (ldb (byte 64 64) u)
                                  (if (< c1 (ldb (byte 64 0) u)) 1 0)))
-                     (setf u (* m (aref *pi-table* i)))
-                     (incf c2 (ldb (byte 64 0) u))
-                     (decf e (+ 1139 (ash i 6))) ; 1 <= e <= 64
-                     ;;  e is the number of low bits of C[2]
-                     ;;  contributing to frac(x/(2pi)
-                     
-                     )))
+                     ;; | c[2]*2^128+c[1]*2^64+c[0] - m/(2pi)*2^128 | <
+                     ;; m*T[2]/2^64 < 2^53 thus: |
+                     ;; (c[2]*2^128+c[1]*2^64+c[0])*2^(e-1203) - x/(2pi)
+                     ;; | < 2^(e-1150) The low 1075-e bits of c[2]
+                     ;; contribute to frac(x/(2pi)).
+                     (setf e (- 1075 e))
+                     ;; e is the number of low bits of C[2] contributing
+                     ;; to frac(x/(2pi))
+                     )
+                    (t ; 1075 <= e <= 2046, 2^52 <= x < 2^1024
+                     (let ((i (ceiling (- e 1138) 64))) ;  0 <= i <= 15
+                       ;;  m*T[i] contributes to f = 1139 + 64*i - e
+                       ;; bits to frac(x/(2pi)) with 1 <= f <= 64
+                       ;; m*T[i+1] contributes a multiple of 2^(-f-64),
+                       ;; and at most to 2^(53-f) m*T[i+2] contributes a
+                       ;; multiple of 2^(-f-128), and at most to
+                       ;; 2^(-11-f) m*T[i+3] contributes a multiple of
+                       ;; 2^(-f-192), and at most to 2^(-75-f) <= 2^-76
+                       (setf u (* m (aref *pi-table* (+ i 2))))
+                       (setf c0 (ldb (byte 64 0) u))
+                       (setf c1 (ldb (byte 64 64) u))
+                       (setf u (* m (aref *pi-table* (+ i 1))))
+                       (incf c1 (ldb (byte 64 0) u))
+                       (setf c2 (+ (ldb (byte 64 64) u)
+                                   (if (< c1 (ldb (byte 64 0) u)) 1 0)))
+                       (setf u (* m (aref *pi-table* i)))
+                       (incf c2 (ldb (byte 64 0) u))
+                       (setf e (+ 1139 (ash i 6) (- e))) ; 1 <= e <= 64
+                       ;;  e is the number of low bits of C[2]
+                       ;;  contributing to frac(x/(2pi)
+                       )))
             (if (= e 64)
                 (setf c0 c1
                       c1 c2)
