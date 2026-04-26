@@ -375,5 +375,5 @@
               ;; set_dd() ensures |h| < 1 and |l| < ulp(h) <= 2^-53 
               (setf err1 #.(parse-c-literal "0x1.01p-76")))))))
     (let ((i (floor (* high #.(parse-c-literal "0x1.0p11")))))
-      (setf high (fma (float i 1d0) #.(parse-c-literal "-0x1.0p-11") high))
+      (setf high (fma (dfloat i) #.(parse-c-literal "-0x1.0p-11") high))
       (values i err1 high low))))

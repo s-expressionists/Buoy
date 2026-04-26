@@ -9,9 +9,8 @@
            (fraction (subseq literal (1+ dot-position) p-position))
            (exponent (subseq literal (1+ p-position)))
            (digits (concatenate 'string integer fraction)))
-      (float (* sign
-                (let ((*read-base* 16))
-                  (read-from-string digits))
-                (expt 2 (- (read-from-string exponent)
-                           (* 4 (length fraction)))))
-             1d0))))
+      (dfloat (* sign
+                 (let ((*read-base* 16))
+                   (read-from-string digits))
+                 (expt 2 (- (read-from-string exponent)
+                            (* 4 (length fraction)))))))))
