@@ -323,7 +323,7 @@
                      (setf c0 (ldb (byte 64 0) u))
                      (setf c1 (ldb (byte 64 64) u))
                      (setf u (* m (aref *pi-table* 0)))
-                     (incf c1 (ldb (byte 64 0) u))
+                     (setf c1 (ldb (byte 64 0) (+ u c1)))
                      (setf c2 (+ (ldb (byte 64 64) u)
                                  (if (< c1 (ldb (byte 64 0) u)) 1 0)))
                      ;; | c[2]*2^128+c[1]*2^64+c[0] - m/(2pi)*2^128 | <
