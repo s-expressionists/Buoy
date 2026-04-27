@@ -15,4 +15,5 @@
    (:file "polynomial-cosine")
    (:file "sine-cosine-table")
    (:file "reduce")
-   (:file "sin")))
+   (:file "sin")
+   (:file "cos")))
