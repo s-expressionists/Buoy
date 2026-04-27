@@ -64,6 +64,7 @@
   (let* ((high (+ a b))
          (err (- high a)) ; exact
          (low (- b err))) ; exact
+    (declare (type double-float high low err))
     (values high low)))
 
 ;;; The core-math library uses a C99 function called `fma'.  It takes
@@ -75,7 +76,8 @@
 ;;; instruction that does that.
 (defun fma (x y z)
   (declare (type double-float x y z))
-  (dfloat (+ (* (rational x) (rational y))
+  (sb-simd-fma:f64-fmadd x y z)
+  #+(or)(dfloat (+ (* (rational x) (rational y))
              (rational z))))
 
 ;;; Multiply exactly A and B such that the sum of HIGH and LOW is the
@@ -85,6 +87,7 @@
   (declare (type double-float a b))
   (let* ((high (* a b))
          (low (fma a b (- high))))
+    (declare (type double-float high low))
     (values high low)))
 
 ;;; Multiply a by the sum of b-high and b-low.
@@ -104,4 +107,5 @@
   (multiple-value-bind (high s) (a-multiply a-high b-high)
     (let* ((tt (fma a-low b-high s))
            (low (fma a-high b-low tt)))
+      (declare (type double-float tt low))
       (values high low))))
