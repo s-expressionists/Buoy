@@ -115,22 +115,22 @@
                           ;; 2^-68.414 + err1 */
                           (setf err
                                 #.(parse-c-literal "0x1.81p-69")))))))))))
+      (unless (zerop negative)
+        (setf high (* high -1d0))
+        (setf low (* low -1d0)))
       (values (+ err err1) high low))))
 
-(defparameter *magic*
-  (custom-float-64-from-rational (expt 2 -11)))
-
-(defun sin-accurate (xx)
-  (let* ((absxx (abs xx))
-         (x (custom-float-64-from-double-float absxx))
-         (neg (minusp xx))
-         (is-sin t))
+;; Assume x is a regular number and x > 0x1.6a09e667f3bccp-27.
+(defun cos-accurate (xx)
+  (let* ((x (custom-float-64-from-double-float xx))
+         (neg 0)
+         (is-cos t))
     (reduce1 x)
     ;; now |X - x/(2pi) mod 1| < 2^-126.67*X, with 0 <= X < 1.
     ;; Write X = i/2^11 + r with 0 <= r < 2^11.
     (let ((i (reduce2 x))) ; exact
       (unless (zerop (logand i #x400))
-        ;; pi <= x < 2*pi: sin(x) = -sin(x-pi)
+        ;; pi <= x < 2*pi: cos(x) = -cos(x-pi)
         (setf neg (not neg))
         (setf i (logand i #x3ff)))
       ;; now i < 2^10
