@@ -129,6 +129,7 @@
 (defparameter *magic*
   (custom-float-64-from-rational (expt 2 -11)))
 
+;;;  Assume x is a regular number, and |x| > 0x1.7137449123ef6p-26.
 (defun sin-accurate (xx)
   (let* ((absxx (abs xx))
          (x (custom-float-64-from-double-float absxx))
