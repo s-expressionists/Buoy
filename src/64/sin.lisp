@@ -150,6 +150,7 @@
         (setf i (logand i #x1ff)))
       ;; now 0 <= i < 2^9
       (unless (zerop (logand i #x100))
+        ;; pi/4 <= x < pi/2: sin(x) = cos(pi/2-x), cos(x) = sin(pi/2-x)
         (setf is-sin (not is-sin))
         (setf (sign x) 1) ; negate x
         (add-custom-float-64 x *magic* x)
