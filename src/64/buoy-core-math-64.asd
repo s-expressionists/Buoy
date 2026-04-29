@@ -1,7 +1,8 @@
 (cl:in-package #:asdf-user)
 
 (defsystem "buoy-core-math-64"
-  :depends-on ("quaviver")
+  :depends-on ("quaviver"
+               "buoy-simulate")
   :serial t
   :components
   ((:file "packages")
@@ -16,4 +17,5 @@
    (:file "sine-cosine-table")
    (:file "reduce")
    (:file "sin")
-   (:file "cos")))
+   (:file "cos")
+   (:file "log")))
