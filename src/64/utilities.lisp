@@ -65,6 +65,17 @@
          (err (- high a)) ; exact
          (low (- b err))) ; exact
     (declare (type double-float high low err))
+    ;; Now hi + lo = a + b exactly for rounding to nearest.  For
+    ;; directed rounding modes, this is not always true.  Take for
+    ;; example a = 1, b = 2^-200, and rounding up, then hi = 1 +
+    ;; 2^-52, e = 2^-52 (it can be proven that e is always exact), and
+    ;; lo = -2^52 + 2^-105, thus hi + lo = 1 + 2^-105 <> a + b = 1 +
+    ;; 2^-200.  A bound on the error is given in "Note on FastTwoSum
+    ;; with Directed Roundings" by Paul Zimmermann,
+    ;; https://hal.inria.fr/hal-03798376, 2022.  Theorem 1 says that
+    ;; the difference between a+b and hi+lo is bounded by 2u^2|a+b|
+    ;; and also by 2u^2|hi|. Here u=2^-53, thus we get:
+    ;; |(a+b)-(hi+lo)| <= 2^-105 min(|a+b|,|hi|)
     (values high low)))
 
 ;;; The core-math library uses a C99 function called `fma'.  It takes
