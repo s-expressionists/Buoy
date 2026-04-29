@@ -278,7 +278,7 @@
                 (if (or (< x #.(parse-c-literal "0x1.0p-1022"))
                         (< result #.(parse-c-literal "0x1.0p-1022")))
                     (error 'floating-point-underflow )
-                    (return-from cr-sin result))))))))
+                    (return-from cr-cos result))))))))
   (multiple-value-bind (error high low)
       (sin-fast x)
     (let ((left (+ high (- low error)))
