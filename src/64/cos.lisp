@@ -136,20 +136,22 @@
       ;; now i < 2^10
       (unless (zerop (logand i #x200))
         ;; pi/2 <= x < pi: sin(x) = cos(x-pi/2)
-        (setf is-sin nil)
+        (setf neg (not neg))
+        (setf is-cos nil)
         (setf i (logand i #x1ff)))
       ;; now 0 <= i < 2^9
       (unless (zerop (logand i #x100))
-        (setf is-sin (not is-sin))
+        ;; pi/4 <= x < pi/2: cos(x) = sin(pi/2-x), sin(x) = cos(pi/2-x)
+        (setf is-cos (not is-cos))
         (setf (sign x) 1) ; negate x
         (add-custom-float-64 x *magic* x)
         ;; here: 256 <= i <= 511
         (setf i (- #x1ff i))) ; now 0 <= i < 256
       ;; now 0 <= i < 256 and 0 <= X < 2^-11
       ;;
-      ;; If is_sin=1, sin |x| = sin2pi (R * (1 + eps))
+      ;; If is_cos=1, sin |x| = cos2pi (R * (1 + eps))
       ;; (cases 0 <= x < pi/4 and 3pi/4 <= x < pi)
-      ;; if is_sin=0, sin |x| = cos2pi (R * (1 + eps))
+      ;; if is_cos=0, sin |x| = sin2pi (R * (1 + eps))
       ;; (case pi/4 <= x < 3pi/4)
       ;; In both cases R = i/2^11 + X, 0 <= R < 1/4, and |eps| < 2^-126.67.
       (let ((u (make-custom-float-64 :high 0 :low 0 :exponent 0 :sign 0))
@@ -163,7 +165,7 @@
         ;; since 0 <= X < 2^-11, we have 0.999 < U <= 1
         (eval-polynomial-sine v x x2)
         ;; since 0 <= X < 2^-11, we have 0 <= V < 0.0005
-        (if is-sin
+        (if is-cos
             (progn
               ;; sin2pi(R) ~ sin2pi(i/2^11)
               ;; *cos2pi(X)+cos2pi(i/2^11)*sin2pi(X) 
@@ -187,17 +189,17 @@
               ;; 2^-122.797, with U the value computed after add_dint
               ;; (U, U, V) below.
               ;; 
-              ;; For the approximation error in R, we have: sin |x| =
+              ;; For the approximation error in R, we have: cos(x) =
               ;; sin2pi (R * (1 + eps)) R = i/2^11 + X, 0 <= R < 1/4,
-              ;; and |eps| < 2^-126.67.  Thus sin|x| = sin2pi(R+R*eps)
+              ;; and |eps| < 2^-126.67.  Thus cos(x) = sin2pi(R+R*eps)
               ;; = sin2pi(R)+R*eps*2*pi*cos2pi(theta), theta in
               ;; [R,R+R*eps] Since 2*pi*R/sin(2*pi*R) < pi/2 for R <
-              ;; 1/4, it follows: | sin|x| - sin2pi(R) | <
-              ;; pi/2*R*|sin(2*pi*R)| | sin|x| - sin2pi(R) | <
+              ;; 1/4, it follows: | cos|x| - sin2pi(R) | <
+              ;; pi/2*R*|sin(2*pi*R)| | cos(x) - sin2pi(R) | <
               ;; 2^-126.018 * |sin2pi(R)|.
               ;;
               ;; Adding both errors we get:
-              ;; | sin|x| - U | < |U| * 2^-122.797 + 2^-126.018 * |sin2pi(R)|
+              ;; | cos(|x) - U | < |U| * 2^-122.797 + 2^-126.018 * |sin2pi(R)|
               ;; < |U| * 2^-122.797 + 2^-126.018 * |U| * (1 + 2^-122.797)
               ;; < |U| * 2^-122.650.
               )
@@ -215,20 +217,20 @@
               ;; 2^-123.540, with U the value computed after add_dint
               ;; (U, U, V) below.
               ;;
-              ;; For the approximation error in R, we have: sin |x| =
+              ;; For the approximation error in R, we have: cos(x) =
               ;; cos2pi (R * (1 + eps)) R = i/2^11 + X, 0 <= R < 1/4,
-              ;; and |eps| < 2^-126.67.  Thus sin|x| = cos2pi(R+R*eps)
+              ;; and |eps| < 2^-126.67.  Thus cos(x) = cos2pi(R+R*eps)
               ;; = cos2pi(R)-R*eps*2*pi*sin2pi(theta), theta in
               ;; [R,R+R*eps] Since we have R < 1/4, we have cos2pi(R)
-              ;; >= sqrt(2)/2, and it follows: | sin|x|/cos2pi(R) - 1
+              ;; >= sqrt(2)/2, and it follows: | cos(x)/cos2pi(R) - 1
               ;; | < 2*pi*R*eps/(sqrt(2)/2) < pi/2*eps/sqrt(2) [since
               ;; R < 1/4] < 2^-126.518.  Adding both errors we get: |
-              ;; sin|x| - U | < |U| * 2^-123.540 + 2^-126.518 *
+              ;; cos(x) - U | < |U| * 2^-123.540 + 2^-126.518 *
               ;; |cos2pi(R)| < |U| * 2^-123.540 + 2^-126.518 * |U| *
               ;; (1 + 2^-123.540) < |U| * 2^-123.367.
               ))
         (add-custom-float-64 u u v)
-        ;; If is_sin=1: | sin|x| - U | < |U| * 2^-122.650 If is_sin=0:
+        ;; If is_cos=0: | cos(x) - U | < |U| * 2^-122.650 If is_cos=1:
         ;; | cos|x| - U | < |U| * 2^-123.367.  In all cases the total
         ;; error is bounded by |U| * 2^-122.650.  The term |U| *
         ;; 2^-122.650 contributes to at most 2^(128-122.650) < 41 ulps
@@ -244,16 +246,20 @@
             (setf (sign u) (- 1 (sign u))))
           (double-float-from-custom-float-64 u))))))
 
-(defun cr-sin (x)
-  ;; For |x| <= 0x1.7137449123ef6p-26, sin(x) rounds to x (to
+(defun cr-cos (x)
+  ;; For |x| <= 0x1.6a09e667f3bccp-27, cos(x) rounds to x (to
   ;; nearest): we can assume x >= 0 without loss of generality since
-  ;; sin(-x) = -sin(x), we have x - x^3/6 < sin(x) < x for say 0 < x
-  ;; <= 1 thus |sin(x) - x| < x^3/6.  Write x = c*2^e with 1/2 <= c <
-  ;; 1.  Then ulp(x)/2 = 2^(e-54), and x^3/6 = c^3/6*2^(3e), thus
-  ;; x^3/6 < ulp(x)/2 rewrites as c^3/6*2^(3e) < 2^(e-54), or
-  ;; c^3*2^(2e+53) < 3 (1).  For e <= -26, since c^3 < 1, we have
-  ;; c^3*2^(2e+53) < 2 < 3.  For e=-25, (1) rewrites 8*c^3 < 3 which
-  ;; yields c <= 0x1.7137449123ef6p-1
+  ;; cos(-x) = cos(x), we have 1 - x^2/2 < cos(x) < 1 for say 0 < x <=
+  ;; 1 thus |cos(x) - 1| < x^2/2.  Assume 0 < x < 1, and write x =
+  ;; c*2^e with 1/2 <= c < 1.  For 0 < x < 1, 1/2 < cos(x) < 1, thus
+  ;; ulp(cos(x)) = 2^-53, and x^2/2 = c^2/2*2^(2e), thus x^2/2 <
+  ;; ulp(cos(x))/2 rewrites as c^2/2*2^(2e) < 2^-54, or c^2*2^(2e+53)
+  ;; < 1 (1).  For e <= -27, since c^2 < 1, we have c^2*2^(2e+53) <
+  ;; 1/2 < 1.  For e=-26, (1) rewrites c^2*2 < 1 which yields c <=
+  ;; 0x1.6a09e667f3bccp-1.
+  ;;
+  ;; I suspect the above comment has a mistake.  surely, for small
+  ;; values of x, cos(x) rounds to 1 and not to x.
   (multiple-value-bind (significand exponent)
       (integer-decode-float x)
     (let ((ux (logior (ldb (byte 52 0) significand)
