@@ -12,7 +12,7 @@
 ;;; convergence is acceptable.
 
 ;;; FIXME: Do this better.
-(defparameter *ln-iteration-count* 20)
+(defparameter *ln-iteration-count* 100)
 
 ;;; This function is called when the argument is (1+ X) where X is a
 ;;; positive value less than or equal to 1/2.
