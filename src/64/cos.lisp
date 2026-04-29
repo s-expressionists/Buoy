@@ -116,8 +116,8 @@
                           (setf err
                                 #.(parse-c-literal "0x1.81p-69")))))))))))
       (unless (zerop negative)
-        (setf high (* high -1d0))
-        (setf low (* low -1d0)))
+        (setf high (- high))
+        (setf low (- low)))
       (values (+ err err1) high low))))
 
 ;; Assume x is a regular number and x > 0x1.6a09e667f3bccp-27.
