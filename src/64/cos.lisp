@@ -24,7 +24,7 @@
       ;; if i >= 2^9: 1/4 <= frac(x/(2pi)) < 1/2 thus pi/2 <= x <= pi
       ;; we use cos(pi/2+x) = -sin(x)
       (setf is-cos (logxor is-cos (ash i -9)))
-      (setf negatire (logxor negative (ash i -9)))
+      (setf negative (logxor negative (ash i -9)))
       (setf i (logand i #x1ff))
       ;; | i/2^11 + h + l - frac(x/(2pi)) | mod 1/4 < err1
       ;;
