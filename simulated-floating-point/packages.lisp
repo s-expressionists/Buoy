@@ -12,6 +12,7 @@
    #:integer-decode-floatr
    #:rational-ln
    #:*pi*
+   #:rational-square-root
    #:rational-sine
    #:rational-cosine
    #:rational-tangent
