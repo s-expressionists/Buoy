@@ -81,5 +81,164 @@
 ;;; approximation of log(2^e*x), with absolute error bounded by
 ;;; 2^-68.22 (details below).
 (defun cr-log-fast (e x)
-  (multiple-value-bind (significant exponent sign)
-      (integer-decode-float x)))
+  (multiple-value-bind (significand)
+      (integer-decode-float x)
+    ;; x = m/2^52
+    ;; if x > sqrt(2), we divide it by 2 to avoid cancellation 
+    (let ((c (>= significand #x16a09e667f3bcd)))
+      (incf e (if c 1 0)) ; now -1074 <= e <= 1024
+      (let ((cy0 1d0)
+            (cy1 0.5d0)
+            (cm0 43)
+            (cm1 44))
+        (declare (type double-float cy0 cy1))
+        (declare (type (unsigned-byte 64) cm0 cm1))
+        (let* ((i (ash significand (- (if c cm1 cm0))))
+               (y (* x (if c cy1 cy0)))
+               (offset 362)
+               (r (aref *inverse-table* (- i offset)))
+               (l1 (aref *log-inverse-table* (- i offset) 0))
+               (l2 (aref *log-inverse-table* (- i offset) 1))
+               (z (fma r y -1d0)) ; exact
+               ;; evaluate P(z), for |z| < 0.00212097167968735
+               (ph 0d0) ; will hold the value of P(z)-z
+               ;; |z2| < 4.5e-6 thus the rounding error on z2 is
+               ;; |bounded by ulp(4.5e-6) = 2^-70.
+               (z2 (* z z)) 
+               (p45 (fma (aref *log-polynomial-table* 5)
+                         z
+                         (aref *log-polynomial-table* 4)))
+               ;; |P[5]| < 0.167, |z| < 0.0022, |P[4]| < 0.21 thus
+               ;; |p45| < 0.22: the rounding (and total) error on p45
+               ;; is bounded by ulp(0.22) = 2^-55
+               (p23 (fma (aref *log-polynomial-table* 3)
+                         z
+                         (aref *log-polynomial-table* 2)))
+               ;; |P[3]| < 0.26, |z| < 0.0022, |P[2]| < 0.34 thus
+               ;; |p23| < 0.35: the rounding (and total) error on p23
+               ;; is bounded by ulp(0.35) = 2^-54 */
+               )
+          (setf ph (fma p45 z2 p23))
+          ;; |p45| < 0.22, |z2| < 4.5e-6, |p23| < 0.35 thus |ph| <
+          ;; |0.36: the rounding error on ph is bounded by ulp(0.36) =
+          ;; |2^-54. Adding the error on p45 multiplied by z2, that on
+          ;; |z2 multiplied by p45, and that on p23 (ignoring low
+          ;; |order errors), we get for the total error on ph the
+          ;; |following bound: 2^-54 + err(p45)*4.5e-6 + 0.22*err(z2)
+          ;; |+ err(p23) < 2^-54 + 2^-55*4.5e-6 + 0.22*2^-70 + 2^-54 <
+          ;; |2^-52.99
+          (setf ph (fma ph z (aref *log-polynomial-table* 1)))
+          ;; let ph0 be the value at input, and ph1 the value at
+          ;; output: |ph0| < 0.36, |z| < 0.0022, |P[1]| < 0.5 thus
+          ;; |ph1| < 0.501: the rounding error on ph1 is bounded by
+          ;; ulp(0.501) = 2^-53. Adding the error on ph0 multiplied by
+          ;; z, we get for the total error on ph1 the following bound:
+          ;; 2^-53 + err(ph0)*0.0022 < 2^-53 + 2^-52.99*0.0022 <
+          ;; 2^-52.99
+          (setf ph (* ph z2))
+          ;; let ph2 be the value at output of the above instruction:
+          ;; |ph2| < |z2| * |ph1| < 4.5e-6 * 0.501 < 2.26e-6 thus the
+          ;; rounding error on ph2 is bounded by ulp(2.26e-6) =
+          ;; 2^-71. Adding the error on ph1 multiplied by z2, and the
+          ;; error on z2 multiplied by ph1, we get for the total error
+          ;; on ph2 the following bound: 2^-71 + err(ph1)*z2 +
+          ;; ph1*err(z2) < 2^-71 + 2^-52.99*4.5e-6 + 0.501*2^-70 <
+          ;; 2^-69.32.
+          ;;
+          ;; Add e*log(2) to (h,l), where -1074 <= e <= 1023, thus e
+          ;; has at most 11 bits. log2_h is an integer multiple of
+          ;; 2^-42, so that e*log2_h is exact.
+          (let ((log2-h #.(parse-c-literal "0x1.62e42fefa38p-1"))
+                (log2-l #.(parse-c-literal "0x1.ef35793c7673p-45")))
+            ;; |log(2) - (h+l)| < 2^-102.01
+            ;;
+            ;; let hh = e * log2_h: hh is an integer multiple of
+            ;; 2^-42, with |hh| <= 1074*log2_h =
+            ;; 3274082061039582*2^-42. l1 is also an integer multiple
+            ;; of 2^-42, with |l1| <= 1524716581803*2^-42. Thus hh+l1
+            ;; is an integer multiple of 2^-42, with 2^42*|hh+l1| <=
+            ;; 3275606777621385 < 2^52, thus hh+l1 is exactly
+            ;; representable.
+            (let ((ee e))
+              (multiple-value-bind (h l)
+                  (fast-two-sum (fma ee log2-h l1) z)
+                ;; here |hh+l1|+|z| <= 3275606777621385*2^-42 + 0.0022
+                ;; < 745 thus |h| < 745, and the additional error from
+                ;; the fast_two_sum() call is bounded by 2^-105*745 <
+                ;; 2^-95.4.
+                ;;
+                ;; add ph + l2 to l
+                (setf l (+ ph l l2))
+                ;; here |ph| < 2.26e-6, |l| < ulp(h) = 2^-43, and |l2|
+                ;; < 2^-43, thus |*l + l2| < 2^-42, and the rounding
+                ;; error on *l + l2 is bounded by ulp(2^-43) = 2^-95
+                ;; (*l + l2 cannot be >= 2^-42). Now |ph + (*l + l2)|
+                ;; < 2.26e-6 + 2^-42 < 2^-18.7, thus the rounding
+                ;; error on ph + ... is bounded by ulp(2^-18.7) =
+                ;; 2^-71, which yields a cumulated error bound of
+                ;; 2^-71 + 2^-95 < 2^-70.99.
+                (setf l (fma ee log2-l l))
+                ;; let l_in be the input value of *l, and l_out the
+                ;; output value. We have |l_in| < 2^-18.7 (from above)
+                ;; and |e*log2_l| <= 1074*0x1.ef35793c7673p-45 thus
+                ;; |l_out| < 2^-18.69 and err(l_out) <= ulp(2^-18.69)
+                ;; = 2^-71
+                ;;
+                ;; The absolute error on h + l is bounded by:
+                ;; 2^-70.278 from the error in the Sollya polynomial
+                ;; 2^-91.94 for the maximal difference
+                ;; |e*(log(2)-(log2_h + log2_l))| (|e| <= 1074 and
+                ;; |log(2)-(log2_h + log2_l)| < 2^-102.01) 2^-97 for
+                ;; the maximal difference |l1 + l2 - (-log(r))|
+                ;; 2^-69.32 from the rounding errors in the polynomial
+                ;; evaluation 2^-95.4 from the fast_two_sum call
+                ;; 2^-70.99 from the *l = ph + (*l + l2) instruction
+                ;; 2^-71 from the last __builtin_fma call. This gives
+                ;; an absolute error bounded by < 2^-68.22.
+                ;;
+                ;; Absolute error bounded by 2^-68.22 <
+                ;; 0x1.b8p-69. Using the Gappa tool
+                ;; (https://gappa.gitlabpages.inria.fr/) we can
+                ;; improve the bound to 2.89253666698316e-21 <
+                ;; 0x1.b6p-69 (see file gappa.sage).
+                ;;
+                ;; What we proved with gappa (see file
+                ;; log1_template.g): for each interval i, 362 <= i <=
+                ;; 724: if y is a binary64 number in the range i*2^-9
+                ;; <= y < (i+1)*2^-9, if -1074 <= e <= 1024, assuming
+                ;; the absolute error from the Sollya polynomial is
+                ;; bounded by 2^-70.278, the difference between log(2)
+                ;; and log2_h + log2_l is bounded by 1.95853e-31, and
+                ;; the maximal difference between -log(r) and l1+l2 is
+                ;; bounded by 2^-96, then (a) z is exact (b) we have
+                ;; the following bounds: -2.4696201316824195e-21 <= h
+                ;; + l - log(2^e*y) <= 2.89253666698316e-21 with the
+                ;; largest bounds obtained for i=369, RNDD (left
+                ;; bound) and RNDZ (right bound).
+                (values h l)))))))))
+
+(defun cr-log (x)
+  (multiple-value-bind (significand exponent)
+      (integer-decode-float x)
+    (let ((e (+ exponent 52)))
+      (unless (plusp x)
+        (error 'type-error :expected-type '(double-float (0d0)) :datum x))
+      ;; normalize v in [1,2)
+      (let ((bits (logior (ash #x3ff 52) significand)))
+        (when (and (= bits #x3ff0000000000000)
+                   (zerop e))
+          (return-from cr-log 0d0))
+        (setf x #.(quaviver:bits-float-form 'double-float 'bits))
+        (multiple-value-bind (high low)
+            (cr-log-fast e x)
+          (let ((err #.(parse-c-literal "0x1.b6p-69")))
+            ;; err is maximal absolute error from cr_log_fast
+            ;;
+            ;; Note: the error analysis is quite tight since if we
+            ;; replace the 0x1.b6p-69 bound by 0x1.3fp-69, it fails
+            ;; for x=0x1.71f7c59ede8ep+125 (rndz)
+            (let ((left (+ (- low err)))
+                  (right (+ high (+ low err))))
+              (if (= left right)
+                  left
+                  (cr-log-accurate x)))))))))
