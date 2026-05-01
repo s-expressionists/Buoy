@@ -217,6 +217,19 @@
                 ;; bound) and RNDZ (right bound).
                 (values h l)))))))))
 
+;;; This application has a different interpretation of the value of a
+;;; custom float 64 structure.  In other applications, the most
+;;; significant bit in the HIGH slot means 1/2, whereas in this
+;;; applications, it means 1.  So to create a custom float 64 from
+;;; some rational value x for this application, you need to pass the
+;;; value (/ x 2) to CUSTOM-FLOAT-64-FROM-RATIONAL.  Similarly, given
+;;; a custom float 64, if you want to turn it into a rational value,
+;;; you first call RATIONAL-FROM-CUSTOM-FLOAT-64, and then multiply by
+;;; 2.
+
+;;; So it looks like this function creates the custom float 64 equal
+;;; to 1 for entry number 0, but in fact, the first entry has the
+;;; value 2.
 (defun generate-inverse-table-2-entry (i)
   (flet ((foo (exponent)
            (ceiling (* (expt 2 exponent) (/ 128 (+ 128 i))))))
