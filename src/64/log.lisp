@@ -227,6 +227,10 @@
 ;;; you first call RATIONAL-FROM-CUSTOM-FLOAT-64, and then multiply by
 ;;; 2.
 
+;;; It would be better to adapt the code to use the same
+;;; interpretation as other applications do, but I am not going to do
+;;; that right now.
+
 ;;; So it looks like this function creates the custom float 64 equal
 ;;; to 1 for entry number 0, but in fact, the first entry has the
 ;;; value 2.  I created this table by inferring a formula from the
@@ -267,6 +271,13 @@
          (rational-value (* 2 (rational-from-custom-float-64 entry)))
          (rational-log (buoy-simulate:rational-ln rational-value)))
     (custom-float-64-from-rational (/ rational-log 2))))
+
+(defparameter *log-inverse-table-2*
+  (make-array
+   240
+   :initial-contents
+   (loop for i from 0 below 240
+         collect (generate-log-inverse-table-2-entry i))))
 
 (defun cr-log (x)
   (multiple-value-bind (significand exponent)
