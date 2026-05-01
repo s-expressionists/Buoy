@@ -159,7 +159,7 @@
             ;; is an integer multiple of 2^-42, with 2^42*|hh+l1| <=
             ;; 3275606777621385 < 2^52, thus hh+l1 is exactly
             ;; representable.
-            (let ((ee e))
+            (let ((ee (dfloat e)))
               (multiple-value-bind (h l)
                   (fast-two-sum (fma ee log2-h l1) z)
                 ;; here |hh+l1|+|z| <= 3275606777621385*2^-42 + 0.0022
@@ -237,7 +237,7 @@
             ;; Note: the error analysis is quite tight since if we
             ;; replace the 0x1.b6p-69 bound by 0x1.3fp-69, it fails
             ;; for x=0x1.71f7c59ede8ep+125 (rndz)
-            (let ((left (+ (- low err)))
+            (let ((left (+ high (- low err)))
                   (right (+ high (+ low err))))
               (if (= left right)
                   left
