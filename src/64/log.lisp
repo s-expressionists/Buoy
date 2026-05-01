@@ -217,6 +217,25 @@
                 ;; bound) and RNDZ (right bound).
                 (values h l)))))))))
 
+(defun generate-inverse-table-2-entry (i)
+  (flet ((foo (exponent)
+           (ceiling (* (expt 2 exponent) (/ 128 (+ 128 i))))))
+    (let* ((high1 (foo 65))
+           (length (integer-length high1))
+           (high2 (foo 64))
+           (high (if (= length 64) high1 high2))
+           (exponent (if (= length 64) -1 0)))
+      (make-custom-float-64
+       :high high :low 0 :exponent exponent :sign 0))))
+
+(defparameter *inverse-table-2*
+  (make-array
+   240
+   :initial-contents
+   (cons (make-custom-float-64 :high #x8000000000000000 :low 1 :exponent 1 :sign 0)
+         (loop for i from 1 below 240
+               collect (generate-inverse-table-2-entry i)))))
+
 (defun cr-log (x)
   (multiple-value-bind (significand exponent)
       (integer-decode-float x)
