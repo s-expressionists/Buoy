@@ -265,7 +265,7 @@
   (let* ((entry (aref *inverse-table-2* i))
          (rational-value (* 2 (rational-from-custom-float-64 entry)))
          (rational-log (buoy-simulate:rational-ln rational-value)))
-    (custom-float-64-from-rational (/ rational-log 2))))
+    (custom-float-64-from-rational rational-log)))
 
 (defparameter *log-inverse-table-2*
   (make-array
