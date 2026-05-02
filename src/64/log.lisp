@@ -279,6 +279,17 @@
    (loop for i from 0 below 240
          collect (generate-log-inverse-table-2-entry i))))
 
+;;; the following code was copied from Tom Hubrecht's implementation
+;;; of correctly rounded pow for CORE-MATH.
+
+;;; Approximation for the second iteration
+(defun p-2 (r z)
+  (copy-custom-float-64 r (aref *log-polynomial-table* 0))
+  (loop for i from 1 to 12
+        do (multiply-custom-float-64 r z r)
+           (add-custom-float-64 r (aref *log-polynomial-table* i) r))
+  (multiply-custom-float-64 r z r))
+
 (defun log-2 (r x)
   (let ((e (exponent x))
         (i (ash (high x) -55)))
