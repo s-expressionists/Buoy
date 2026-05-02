@@ -279,6 +279,22 @@
    (loop for i from 0 below 240
          collect (generate-log-inverse-table-2-entry i))))
 
+(defun log-2 (r x)
+  (let ((e (exponent x))
+        (i (ash (high x) -55)))
+    (when (> (high x) #xb504f333f9de6484)
+      (incf e)
+      (setf i (ash i -1)))
+    (decf (exponent x) e)
+    (let ((z (make-custom-float-64)))
+      (multiply-custom-float-64 z x (aref *inverse-table-2* (- i 128)))
+      (add-custom-float-64 z *m-one* z)
+      (multiply-custom-float-64 r e *log-2*)
+      (let ((p (make-custom-float-64)))
+        (p_2 p z)
+        (add-custom-float-64 p (aref *log-inverse-table-2* (- i 128)) p)
+        (add-custom-float-64 r p r)))))
+
 (defun cr-log (x)
   (multiple-value-bind (significand exponent)
       (integer-decode-float x)
