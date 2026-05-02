@@ -285,6 +285,16 @@
            (add-custom-float-64 r (aref *log-polynomial-table* i) r))
   (multiply-custom-float-64 r z r))
 
+(defparameter *one*
+  (custom-float-64-from-rational 1))
+
+(defparameter *minus-one*
+  (custom-float-64-from-rational -1))
+
+(defparameter *log-2*
+  (let ((rational-log-2 (buoy-simulate:rational-ln 2)))
+    (custom-float-64-from-rational rational-log-2)))
+
 (defun log-2 (r x)
   (let ((e (exponent x))
         (i (ash (high x) -55)))
@@ -294,7 +304,7 @@
     (decf (exponent x) e)
     (let ((z (make-custom-float-64)))
       (multiply-custom-float-64 z x (aref *inverse-table-2* (- i 128)))
-      (add-custom-float-64 z *m-one* z)
+      (add-custom-float-64 z *minus-one* z)
       (multiply-custom-float-64 r e *log-2*)
       (let ((p (make-custom-float-64)))
         (p_2 p z)
