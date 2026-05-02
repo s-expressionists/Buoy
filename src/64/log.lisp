@@ -311,6 +311,15 @@
         (add-custom-float-64 p (aref *log-inverse-table-2* (- i 128)) p)
         (add-custom-float-64 r p r)))))
 
+(defun cr-log-accurate (x)
+  (if (= x 1d0)
+      0d0
+      (let ((xx (custom-float-64-from-double-float x))
+            (yy (make-custom-float-64)))
+        ;; x = (-1)^sgn*2^ex*(hi/2^63+lo/2^127)
+        (log-2 yy xx)
+        (double-float-from-custom-float-64 yy))))
+
 (defun cr-log (x)
   (multiple-value-bind (significand exponent)
       (integer-decode-float x)
