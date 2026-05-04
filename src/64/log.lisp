@@ -232,6 +232,15 @@
 ;;; analogous table in the core-math library.  Some entries generated
 ;;; by this code differ in the last digit from the analogous entry in
 ;;; the core-math library, and I am not sure why.
+;;;
+;;; After receiving an answer from the core-math team, I got the
+;;; following comment for the table:
+;;;
+;;; _INVERSE_2[128+i] is an approximation of 1/(1+i/2^8), where an
+;;; entry (hi,lo,ex,sgn) represents (-1)^sgn*(hi+lo/2^64)*2^(ex-63)
+;;;
+;;; which is a bit confusing since the sign and the low field are both
+;;; always zero.  But it comes out to the same as the following code.
 (defun generate-inverse-table-2-entry (i)
   (flet ((foo (exponent)
            (ceiling (* (expt 2 exponent) (/ 256 (+ 128 i))))))
@@ -251,21 +260,25 @@
          (loop for i from 1 below 240
                collect (generate-inverse-table-2-entry i)))))
 
-;;; Entry N in The *LOG-INVERSE-TABLE-2* contains a custom float 64
-;;; value of the natural logarithm of entry N in the *INVERSE-TABLE-2*
-;;; table, but, unless I am doing something wrong, the analogous table
-;;; in log/dint.h contains fairly bad approximations of those values.
-;;; So I am not sure that I am doing the right thing here.
-;;; Furthermore, I don't know whether it is important to compute the
-;;; logarithm of the entry in *INVERSE-TABLE-2*, or whether it is
-;;; better to compute the logarithm of the exact value used to compute
-;;; the entry in *INVERSE-TABLE-2*.  I am going for the first
-;;; solution until I know better.
+;;; _LOG_INV_2[128+i] is an approximation of -log(1/(1+i/2^8)), where
+;;; an entry (hi,lo,ex,sgn) represents (-1)^sgn*(hi+lo/2^64)*2^(ex-63)
+;;;
+;;; The above comment, adjusted for the use of the standard
+;;; interpretation of custom floats, means that an entry N in the
+;;; *LOG-INVERSE-TABLE-2* contains a custom float 64 value of the
+;;; natural logarithm of entry N in the *INVERSE-TABLE-2* table, but,
+;;; unless I am doing something wrong, the analogous table in
+;;; log/dint.h contains fairly bad approximations of those values.  So
+;;; I am not sure that I am doing the right thing here.  Furthermore,
+;;; I don't know whether it is important to compute the logarithm of
+;;; the entry in *INVERSE-TABLE-2*, or whether it is better to compute
+;;; the logarithm of the exact value used to compute the entry in
+;;; *INVERSE-TABLE-2*.  I am going for the first solution until I know
+;;; better.
 (defun generate-log-inverse-table-2-entry (i)
-  (let* ((entry (aref *inverse-table-2* i))
-         (rational-value (* 2 (rational-from-custom-float-64 entry)))
+  (let* ((rational-value (/ 256 (+ 128 i)))
          (rational-log (buoy-simulate:rational-ln rational-value)))
-    (custom-float-64-from-rational rational-log)))
+    (custom-float-64-from-rational (- rational-log))))
 
 (defparameter *log-inverse-table-2*
   (make-array
