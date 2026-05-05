@@ -120,3 +120,16 @@
            (low (fma a-high b-low tt)))
       (declare (type double-float tt low))
       (values high low))))
+
+;;; I don't know what the name stands for.
+(defun multiply-dd (xh xl ch cl)
+  (declare (type double-float xh xl ch cl))
+  (let* ((h (* xh ch))
+         (l (+ (fma xh ch (- h)) (*  xh cl) (* xl ch))))
+    (values h l)))
+
+(defun multiply-ddd (xh xl ch)
+  (declare (type double-float xh xl ch))
+  (let* ((h (* xh ch))
+         (l (+ (fma xh ch (- h)) (* xl ch))))
+    (values h l)))
