@@ -11,6 +11,7 @@
    #:decode-floatr
    #:integer-decode-floatr
    #:rational-ln
+   #:rational-exp
    #:*pi*
    #:rational-square-root
    #:rational-sine
