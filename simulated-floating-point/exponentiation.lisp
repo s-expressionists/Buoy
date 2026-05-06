@@ -1,5 +1,19 @@
 (cl:in-package #:buoy-simulate)
 
+;;; This code is reasonably fast.  Calling RATIONAL-EXP with an
+;;; argument of 700 (which is close to the max for a double float)
+;;; takes 0.05 seconds.  It gives a precision of at least 60 bits.  We
+;;; could improve the precision by dividing by something more than (1+
+;;; diff).  And we can speed it up by limiting the precision to (say)
+;;; 256 bits in each iteration.
+;;;
+;;; We could also pre-compute 1/n! and turn each value into a floatr,
+;;; as well as turning the argument into a floatr.  That way, each
+;;; term in the Taylor series would be a multiplication of floatrs,
+;;; which is a multiplication of the nominators and an additon of the
+;;; denominators.  And after adding a new term, we could turn the
+;;; result into a floatr.
+
 (defun power (x integer)
   (cond ((zerop integer) 1)
         ((evenp integer)
