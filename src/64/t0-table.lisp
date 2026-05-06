@@ -14,7 +14,7 @@
 ;;;
 ;;; Oh, and in the table in core-math the first element is the low
 ;;; value and the second element is the high value.
-(defun make-t0-table-element (rational-base i)
+(defun make-t-table-element (rational-base i)
   (loop repeat (1+ i)
         for result = 1
           then (buoy-simulate:floatr-from-rational
@@ -39,7 +39,5 @@
                      finally (return result))))
      (loop for i from 0 below 64
            collect (multiple-value-bind (high low)
-                       (make-t0-table-element base i)
+                       (make-t-table-element base i)
                      (list high low))))))
-     
-              
