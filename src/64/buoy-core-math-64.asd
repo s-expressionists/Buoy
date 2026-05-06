@@ -16,6 +16,7 @@
    (:file "polynomial-cosine")
    (:file "sine-cosine-table")
    (:file "t0-table")
+   (:file "t1-table")
    (:file "reduce")
    (:file "sin")
    (:file "cos")
