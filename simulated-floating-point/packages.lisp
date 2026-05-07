@@ -10,6 +10,7 @@
    #:floatr-precision
    #:decode-floatr
    #:integer-decode-floatr
+   #:dfloat
    #:rational-ln
    #:rational-exp
    #:*pi*
