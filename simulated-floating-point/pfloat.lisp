@@ -57,6 +57,18 @@
                     (< (pfloat-mantissa pfloat1)
                        (pfloat-mantissa pfloat2)))))))
 
+(defun pfloat-add (pfloat1 pfloat2)
+  (when (< (pfloat-exponent pfloat1)
+           (pfloat-exponent pfloat2))
+    (rotatef pfloat1 pfloat2)
+    (let* ((mantissa1 (pfloat-mantissa pfloat1))
+           (exponent1 (pfloat-exponent pfloat1))
+           (mantissa2 (pfloat-mantissa pfloat2))
+           (exponent2 (pfloat-exponent pfloat2))
+           (diff (- exponent1 exponent2)))
+      (make-pfloat (+ mantissa1 (ash mantissa2 (- diff)))
+                   exponent1))))
+
 (defun rational-from-pfloat (pfloat)
   (* (pfloat-mantissa pfloat)
      (expt 2 (pfloat-exponent pfloat))))
