@@ -12,9 +12,9 @@
          (floatr (sim:floatr-from-rational average 10 9))
          (y-low (* i (expt 2 -9)))
          (y-high (* (1+ i) (expt 2 -9))))
-    (assert (<= (dfloat (abs (1- (* floatr y-low)))) 0.00212097167968735d0))
-    (assert (<= (dfloat (abs (1- (* floatr y-high)))) 0.00212097167968735d0))
-    (dfloat floatr)))
+    (assert (<= (sim:dfloat (abs (1- (* floatr y-low)))) 0.00212097167968735d0))
+    (assert (<= (sim:dfloat (abs (1- (* floatr y-high)))) 0.00212097167968735d0))
+    (sim:dfloat floatr)))
          
 ;;; The following is the comment in log.c, but it doesn't make sense
 ;;; as parsed.
@@ -39,9 +39,9 @@
          (rational-entry (rational inverse-table-entry))
          (rational-value (- (sim:rational-ln rational-entry)))
          (high (/ (round (* rational-value (expt 2 42))) (expt 2 42)))
-         (float-high (dfloat high))
+         (float-high (sim:dfloat high))
          (low (- rational-value (rational float-high))))
-    (values float-high (dfloat low))))
+    (values float-high (sim:dfloat low))))
 
 ;;; For 362 <= i <= 724, (h,l) = _LOG_INV[i-362] is a double-double
 ;;; approximation of -log(r) with r=INVERSE[i-362]), with h an integer
@@ -159,7 +159,7 @@
             ;; is an integer multiple of 2^-42, with 2^42*|hh+l1| <=
             ;; 3275606777621385 < 2^52, thus hh+l1 is exactly
             ;; representable.
-            (let ((ee (dfloat e)))
+            (let ((ee (sim:dfloat e)))
               (multiple-value-bind (h l)
                   (fast-two-sum (fma ee log2-h l1) z)
                 ;; here |hh+l1|+|z| <= 3275606777621385*2^-42 + 0.0022

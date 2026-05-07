@@ -20,9 +20,9 @@
           then (sim:floatr-from-rational
                 (* result rational-base)
                 10 256)
-        finally (let* ((high (dfloat result))
+        finally (let* ((high (sim:dfloat result))
                        (remaining (- result (rational high)))
-                       (low (dfloat remaining)))
+                       (low (sim:dfloat remaining)))
                   (return (values low high)))))
 
 (defparameter *t0-table*

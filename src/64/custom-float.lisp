@@ -52,7 +52,7 @@
 
 ;;; FIXME: do this better
 (defun double-float-from-custom-float-64 (custom-float-64)
-  (dfloat (rational-from-custom-float-64 custom-float-64)))
+  (sim:dfloat (rational-from-custom-float-64 custom-float-64)))
 
 (defparameter *1* (custom-float-64-from-rational 1))
 

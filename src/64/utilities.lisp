@@ -88,8 +88,8 @@
 (defun fma (x y z)
   (declare (type double-float x y z))
   (sb-simd-fma:f64-fmadd x y z)
-  #+(or)(dfloat (+ (* (rational x) (rational y))
-             (rational z))))
+  #+(or)(sim:dfloat (+ (* (rational x) (rational y))
+                       (rational z))))
 
 ;;; Multiply exactly A and B such that the sum of HIGH and LOW is the
 ;;; exact product of A and B.  The core-math library call this
