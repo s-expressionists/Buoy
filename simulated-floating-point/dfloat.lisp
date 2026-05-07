@@ -40,6 +40,9 @@
                  ;; representation.
                  (setf numerator (ash numerator 52))
                  (let ((mantissa (round (/ numerator denominator))))
+                   (when (= (integer-length mantissa) 54)
+                     (ash mantissa -1)
+                     (incf exponent))
                    #.(quaviver:bits-float-form
                       'double-float
                       '(logior (ldb (byte 52 0) mantissa)
