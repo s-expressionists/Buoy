@@ -27,7 +27,7 @@
          (length (integer-length mantissa))
          (diff (- *pfloat-precision* length)))
     (setf (pfloat-mantissa pfloat) (ash mantissa diff))
-    (incf (pfloat-exponent pfloat) diff))
+    (decf (pfloat-exponent pfloat) diff))
   pfloat)
 
 (defun make-pfloat (mantissa exponent)
@@ -46,3 +46,8 @@
 
 (defun double-float-from-pfloat (pfloat)
   (dfloat (rational-from-pfloat pfloat)))
+
+(defun pfloat-from-rational (rational)
+  (let ((floatr (floatr-from-rational rational 12 200)))
+    (make-pfloat (numerator floatr)
+                 (- (1- (integer-length (denominator floatr)))))))
