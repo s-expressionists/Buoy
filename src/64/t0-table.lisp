@@ -17,7 +17,7 @@
 (defun make-t-table-element (rational-base i)
   (loop repeat (1+ i)
         for result = 1
-          then (buoy-simulate:floatr-from-rational
+          then (sim:floatr-from-rational
                 (* result rational-base)
                 10 256)
         finally (let* ((high (dfloat result))
@@ -33,8 +33,8 @@
    ;; Start by getting a ratioinal approximation of (expt 2 (/ 64))
    (let ((base (loop repeat 7
                      for result = 2
-                       then (buoy-simulate:floatr-from-rational
-                             (buoy-simulate:rational-square-root result)
+                       then (sim:floatr-from-rational
+                             (sim:rational-square-root result)
                              10 256)
                      finally (return result))))
      (loop for i from 0 below 64
