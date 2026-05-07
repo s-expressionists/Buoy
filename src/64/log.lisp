@@ -8,8 +8,8 @@
          (high (* (1+ i) (expt 2 -9)))
          (low-inverse (/ high))
          (high-inverse (/ low))
-         (average (buoy-simulate:rational-square-root (* low-inverse high-inverse)))
-         (floatr (buoy-simulate:floatr-from-rational average 10 9))
+         (average (sim:rational-square-root (* low-inverse high-inverse)))
+         (floatr (sim:floatr-from-rational average 10 9))
          (y-low (* i (expt 2 -9)))
          (y-high (* (1+ i) (expt 2 -9))))
     (assert (<= (dfloat (abs (1- (* floatr y-low)))) 0.00212097167968735d0))
@@ -37,7 +37,7 @@
 (defun generate-log-inverse-table-entry (i)
   (let* ((inverse-table-entry (aref *inverse-table* (- i 362)))
          (rational-entry (rational inverse-table-entry))
-         (rational-value (- (buoy-simulate:rational-ln rational-entry)))
+         (rational-value (- (sim:rational-ln rational-entry)))
          (high (/ (round (* rational-value (expt 2 42))) (expt 2 42)))
          (float-high (dfloat high))
          (low (- rational-value (rational float-high))))
@@ -252,7 +252,8 @@
       (make-custom-float-64
        :high high :low 0 :exponent exponent :sign 0))))
 
-(defparameter *inverse-table-2*
+;;; FIXME: there is something wrong with generate-inverse-table-2-entry
+#+(or)(defparameter *inverse-table-2*
   (make-array
    240
    :initial-contents
@@ -277,7 +278,7 @@
 ;;; better.
 (defun generate-log-inverse-table-2-entry (i)
   (let* ((rational-value (/ 256 (+ 128 i)))
-         (rational-log (buoy-simulate:rational-ln rational-value)))
+         (rational-log (sim:rational-ln rational-value)))
     (custom-float-64-from-rational (- rational-log))))
 
 (defparameter *log-inverse-table-2*
@@ -305,7 +306,7 @@
   (custom-float-64-from-rational -1))
 
 (defparameter *log-2*
-  (let ((rational-log-2 (buoy-simulate:rational-ln 2)))
+  (let ((rational-log-2 (sim:rational-ln 2)))
     (custom-float-64-from-rational rational-log-2)))
 
 (defun log-2 (r x)
