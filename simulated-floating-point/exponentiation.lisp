@@ -38,3 +38,29 @@
                 (/ numerator (ash denominator (1+ diff))))
                (ash 1 (1+ diff))))
       (rational-exp-with-small-argument argument)))
+
+(defparameter *inverses*
+  (loop for i from 1 to 100 collect (pfloat-from-rational (/ i))))
+
+(defparameter *one*
+  (pfloat-from-rational 1))
+
+(defparameter *pfloat-exp-limit*
+  (pfloat-from-rational (expt 2 -200)))
+
+(defun pfloat-exp-with-small-positive-argument (rational)
+  (loop with pfloat-argument = (pfloat-from-rational rational)
+        for term = *one* then (multiply-pfloat (multiply-pfloat term pfloat-argument) inv)
+        for sum = *one* then (pfloat-add sum term)
+        for inv in *inverses*
+        do (when (pfloat-less-p term *pfloat-exp-limit*)
+             (loop-finish))
+        finally (return sum)))
+
+(defun pw (pfloat power-of-two)
+  (loop with result = pfloat
+        until (= power-of-two 1)
+        do (setf result (multiply-pfloat result result))
+           (setf power-of-two (ash power-of-two -1))
+        finally (return result)))
+  
