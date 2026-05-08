@@ -33,12 +33,20 @@
 (defun make-pfloat (mantissa exponent)
   (normalize-pfloat (cons mantissa exponent)))
   
-(defun multiply-pfloat (pfloat1 pfloat2)
+(defun pfloat-multiply (pfloat1 pfloat2)
   (let ((mantissa (* (pfloat-mantissa pfloat1)
                      (pfloat-mantissa pfloat2)))
         (exponent (+ (pfloat-exponent pfloat1)
                      (pfloat-exponent pfloat2))))
     (normalize-pfloat (make-pfloat mantissa exponent))))
+
+(defun pfloat-divide (pfloat1 pfloat2)
+  (let ((mantissa (round (/ (ash (pfloat-mantissa pfloat1) *pfloat-precision*)
+                            (pfloat-mantissa pfloat2))))
+        (exponent (- (pfloat-exponent pfloat1)
+                     (pfloat-exponent pfloat2)
+                     *pfloat-precision*)))
+    (make-pfloat mantissa exponent)))
 
 (defun pfloat-less-p (pfloat1 pfloat2)
   (if (minusp (pfloat-mantissa pfloat1))
