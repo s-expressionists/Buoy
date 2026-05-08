@@ -65,6 +65,13 @@
                     (< (pfloat-mantissa pfloat1)
                        (pfloat-mantissa pfloat2)))))))
 
+(defun pfloat-minusp (pfloat)
+  (minusp (pfloat-mantissa pfloat)))
+
+(defun pfloat-negate (pfloat)
+  (make-pfloat (- (pfloat-mantissa pfloat))
+               (pfloat-exponent pfloat)))
+
 (defun pfloat-add (pfloat1 pfloat2)
   (when (< (pfloat-exponent pfloat1)
            (pfloat-exponent pfloat2))
