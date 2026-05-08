@@ -50,7 +50,7 @@
 
 (defun pfloat-exp-with-small-positive-argument (rational)
   (loop with pfloat-argument = (pfloat-from-rational rational)
-        for term = *one* then (multiply-pfloat (multiply-pfloat term pfloat-argument) inv)
+        for term = *one* then (pfloat-multiply (pfloat-multiply term pfloat-argument) inv)
         for sum = *one* then (pfloat-add sum term)
         for inv in *inverses*
         do (when (pfloat-less-p term *pfloat-exp-limit*)
@@ -60,7 +60,7 @@
 (defun pw (pfloat power-of-two)
   (loop with result = pfloat
         until (= power-of-two 1)
-        do (setf result (multiply-pfloat result result))
+        do (setf result (pfloat-multiply result result))
            (setf power-of-two (ash power-of-two -1))
         finally (return result)))
   
