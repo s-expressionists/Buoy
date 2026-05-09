@@ -2,8 +2,12 @@
 
 (defpackage #:buoy-pfloat
   (:use #:common-lisp)
-  (:shadow . #1=(#:+ #:- #:* #:/ #:< #:=))
-  (:export #:make-pfloat . #1#))
+  (:shadow . #1=(#:+ #:- #:* #:/ #:< #:= #:minusp))
+  (:export #:make-pfloat
+           #:pfloat-from-rational
+           #:rational-from-pfloat
+           #:double-float-from-pfloat
+           . #1#))
 
 (defpackage #:buoy-simulate
   (:use #:common-lisp)
