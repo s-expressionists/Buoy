@@ -1,7 +1,13 @@
 (cl:in-package #:common-lisp-user)
 
+(defpackage #:buoy-pfloat
+  (:use #:common-lisp)
+  (:shadow . #1=(#:+ #:- #:* #:/ #:< #:=))
+  (:export #:make-pfloat . #1#))
+
 (defpackage #:buoy-simulate
   (:use #:common-lisp)
+  (:local-nicknames (#:pf #:buoy-pfloat))
   (:export
    #:floatr-from-rational
    #:floatr32-from-rational
