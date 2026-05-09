@@ -112,18 +112,16 @@
       ;; denominator so that the quotient is less than 1, or
       ;; the numerator is greater than or equal to the
       ;; denominator, so that the quotient is greater than or
-      ;; equal to 1.  In the second case, we have something
-      ;; that can be used as the mantissa of the float but in
-      ;; the first case, we must multiply the denominator by 2.
-      (when (cl:< numerator denominator)
-        (decf exponent)
-        (setf numerator (ash numerator 1)))
+      ;; equal to 1.  We want the first case.
+      (unless (cl:< numerator denominator)
+        (incf exponent)
+        (setf denominator (ash denominator 1)))
       ;; Now, we shift the numerator by *PRECISION* positions to get
       ;; something that should be an integer in the PFLOAT
       ;; representation.
       (setf numerator (ash numerator *precision*))
       (decf exponent *precision*)
-      (make-pfloat (cl:* sign mantissa) exponent))))
+      (make-pfloat (cl:* sign (round (cl:/ numerator denominator))) exponent))))
 
 (defun pfloat-from-rational (rational)
   (let ((floatr (floatr-from-rational rational 12 200)))
