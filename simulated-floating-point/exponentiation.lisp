@@ -64,3 +64,16 @@
            (setf power-of-two (ash power-of-two -1))
         finally (return result)))
   
+(defun pfloat-exp-with-positive-argument (pfloat)
+  (let ((magnitude (+ (pf:exponent pfloat) pf:*precision*))
+        (copy (pf:make-pfloat (pf:mantissa pfloat)
+                              (pf:exponent pflaot)))
+        (power 1))
+    ;; When the magnitute is positive, the argument is larger than
+    ;; what we would like, and in fact, we want it to be a bit smaller
+    ;; than required to make the magnitude negative. 
+    (when (> magnitude -2)
+      (setf power (ash 1 (1+ (integer-length (- magnitude 2)))))
+      (decf (pf:exponent copy) magnitude))
+    (let ((exp (pfloat-exp-with-small-positive-argument copy)))
+      (pw exp power))))
