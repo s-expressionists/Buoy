@@ -7,6 +7,7 @@
            #:pfloat-from-rational
            #:rational-from-pfloat
            #:double-float-from-pfloat
+           #:*precison*
            . #1#))
 
 (defpackage #:buoy-simulate
