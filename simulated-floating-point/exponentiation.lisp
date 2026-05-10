@@ -77,3 +77,8 @@
       (decf (pf:exponent copy) magnitude))
     (let ((exp (pfloat-exp-with-small-positive-argument copy)))
       (pw exp power))))
+
+(defun pfloat-exp (pfloat)
+  (if (pf:minusp pfloat)
+      (pf:/ *one* (pfloat-exp-with-positive-argument (pf:negate pfloat)))
+      (pfloat-exp-with-positive-argument pfloat)))
