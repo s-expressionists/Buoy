@@ -7,6 +7,7 @@
            #:pfloat-from-rational
            #:rational-from-pfloat
            #:double-float-from-pfloat
+           #:negate
            #:*precison*
            . #1#))
 
