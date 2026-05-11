@@ -57,7 +57,9 @@
              (loop-finish))
         finally (return sum)))
 
-(defun pw (pfloat power-of-two)
+;;; Compute PFLOAT to the power of the second argument.  The second
+;;; argument is an integer that is alwo a power of 2.
+(defun power (pfloat power-of-two)
   (loop with result = pfloat
         until (= power-of-two 1)
         do (setf result (pf:* result result))
@@ -76,7 +78,7 @@
       (setf power (ash 1 (1+ (integer-length (- magnitude 2)))))
       (decf (pf:exponent copy) magnitude))
     (let ((exp (pfloat-exp-with-small-positive-argument copy)))
-      (pw exp power))))
+      (power exp power))))
 
 (defun pfloat-exp (pfloat)
   (if (pf:minusp pfloat)
