@@ -127,3 +127,6 @@
   (let ((floatr (floatr-from-rational rational 12 200)))
     (make-pfloat (numerator floatr)
                  (cl:- (1- (integer-length (denominator floatr)))))))
+
+(defparameter *one*
+  (pfloat-from-rational 1))
