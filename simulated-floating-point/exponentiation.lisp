@@ -81,3 +81,8 @@
   (if (pf:minusp pfloat)
       (pf:/ pf:*one* (pfloat-exp-with-positive-argument (pf:negate pfloat)))
       (pfloat-exp-with-positive-argument pfloat)))
+
+(defun double-float-exp (double-float)
+  (let* ((pfloat (pf:pfloat-from-rational (rational double-float)))
+         (pfloat-exp (pfloat-exp pfloat)))
+    (pf:double-float-from-pfloat pfloat-exp)))
