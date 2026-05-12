@@ -42,16 +42,13 @@
 (defparameter *inverses*
   (loop for i from 1 to 100 collect (pf:pfloat-from-rational (/ i))))
 
-(defparameter *one*
-  (pf:pfloat-from-rational 1))
-
 (defparameter *pfloat-exp-limit*
   (pf:pfloat-from-rational (expt 2 -200)))
 
 (defun pfloat-exp-with-small-positive-argument (rational)
   (loop with pfloat-argument = (pf:pfloat-from-rational rational)
-        for term = *one* then (pf:* (pf:* term pfloat-argument) inv)
-        for sum = *one* then (pf:+ sum term)
+        for term = pf:*one* then (pf:* (pf:* term pfloat-argument) inv)
+        for sum = pf:*one* then (pf:+ sum term)
         for inv in *inverses*
         do (when (pf:< term *pfloat-exp-limit*)
              (loop-finish))
@@ -82,5 +79,5 @@
 
 (defun pfloat-exp (pfloat)
   (if (pf:minusp pfloat)
-      (pf:/ *one* (pfloat-exp-with-positive-argument (pf:negate pfloat)))
+      (pf:/ pf:*one* (pfloat-exp-with-positive-argument (pf:negate pfloat)))
       (pfloat-exp-with-positive-argument pfloat)))
