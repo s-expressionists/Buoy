@@ -4,6 +4,8 @@
   (:use #:common-lisp)
   (:shadow . #1=(#:+ #:- #:* #:/ #:< #:= #:minusp))
   (:export #:make-pfloat
+           #:mantissa
+           #:exponent
            #:pfloat-from-rational
            #:rational-from-pfloat
            #:double-float-from-pfloat
