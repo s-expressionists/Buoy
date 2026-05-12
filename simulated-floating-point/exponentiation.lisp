@@ -56,7 +56,7 @@
 
 ;;; Compute PFLOAT to the power of the second argument.  The second
 ;;; argument is an integer that is alwo a power of 2.
-(defun power (pfloat power-of-two)
+(defun pfloat-power (pfloat power-of-two)
   (loop with result = pfloat
         until (= power-of-two 1)
         do (setf result (pf:* result result))
@@ -66,16 +66,16 @@
 (defun pfloat-exp-with-positive-argument (pfloat)
   (let ((magnitude (+ (pf:exponent pfloat) pf:*precision*))
         (copy (pf:make-pfloat (pf:mantissa pfloat)
-                              (pf:exponent pflaot)))
-        (power 1))
+                              (pf:exponent pfloat)))
+        (pfloat-power 1))
     ;; When the magnitute is positive, the argument is larger than
     ;; what we would like, and in fact, we want it to be a bit smaller
     ;; than required to make the magnitude negative. 
     (when (> magnitude -2)
-      (setf power (ash 1 (1+ (integer-length (- magnitude 2)))))
+      (setf pfloat-power (ash 1 (1+ (integer-length (- magnitude 2)))))
       (decf (pf:exponent copy) magnitude))
     (let ((exp (pfloat-exp-with-small-positive-argument copy)))
-      (power exp power))))
+      (pfloat-power exp pfloat-power))))
 
 (defun pfloat-exp (pfloat)
   (if (pf:minusp pfloat)
