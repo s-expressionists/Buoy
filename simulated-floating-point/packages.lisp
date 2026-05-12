@@ -9,6 +9,7 @@
            #:double-float-from-pfloat
            #:negate
            #:*precison*
+           #:*one*
            . #1#))
 
 (defpackage #:buoy-simulate
