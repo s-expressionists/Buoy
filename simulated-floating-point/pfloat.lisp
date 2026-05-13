@@ -84,12 +84,12 @@
     (make-pfloat (cl:+ mantissa1 (ash mantissa2 (cl:- diff)))
                  exponent1)))
 
+(defun - (pfloat1 pfloat2)
+  (+ pfloat1 (negate pfloat2)))
+
 (defun rational-from-pfloat (pfloat)
   (cl:* (mantissa pfloat)
         (expt 2 (exponent pfloat))))
-
-(defun double-float-from-pfloat (pfloat)
-  (dfloat (rational-from-pfloat pfloat)))
 
 (defun pfloat-from-rational (rational)
   (let ((sign (if (cl:minusp rational) -1 1))
