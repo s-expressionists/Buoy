@@ -45,9 +45,8 @@
 (defparameter *pfloat-exp-limit*
   (pf:pfloat-from-rational (expt 2 -200)))
 
-(defun pfloat-exp-with-small-positive-argument (rational)
-  (loop with pfloat-argument = (pf:pfloat-from-rational rational)
-        for term = pf:*one* then (pf:* (pf:* term pfloat-argument) inv)
+(defun pfloat-exp-with-small-positive-argument (pfloat)
+  (loop for term = pf:*one* then (pf:* (pf:* term pfloat) inv)
         for sum = pf:*one* then (pf:+ sum term)
         for inv in *inverses*
         do (when (pf:< term *pfloat-exp-limit*)
@@ -65,15 +64,16 @@
   
 (defun pfloat-exp-with-positive-argument (pfloat)
   (let ((magnitude (+ (pf:exponent pfloat) pf:*precision*))
-        (copy (pf:make-pfloat (pf:mantissa pfloat)
-                              (pf:exponent pfloat)))
+        (copy pfloat)
         (pfloat-power 1))
     ;; When the magnitute is positive, the argument is larger than
     ;; what we would like, and in fact, we want it to be a bit smaller
     ;; than required to make the magnitude negative. 
     (when (> magnitude -2)
       (setf pfloat-power (ash 1 (1+ (integer-length (- magnitude 2)))))
-      (decf (pf:exponent copy) magnitude))
+      (setf copy
+            (pf:make-pfloat (pf:mantissa pfloat)
+                            (- (pf:exponent pfloat) magnitude))))
     (let ((exp (pfloat-exp-with-small-positive-argument copy)))
       (pfloat-power exp pfloat-power))))
 
