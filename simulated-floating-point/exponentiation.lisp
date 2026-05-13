@@ -84,5 +84,7 @@
 
 (defun double-float-exp (double-float)
   (let* ((pfloat (pf:pfloat-from-rational (rational double-float)))
-         (pfloat-exp (pfloat-exp pfloat)))
-    (pf:double-float-from-pfloat pfloat-exp)))
+         (pfloat-exp (pfloat-exp pfloat))
+         (rational-result (pf:rational-from-pfloat pfloat-exp)))
+    (dfloat rational-result)))
+
