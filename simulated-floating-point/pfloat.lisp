@@ -13,21 +13,15 @@
 (defun mantissa (pfloat)
   (car pfloat))
 
-(defun (setf mantissa) (mantissa pfloat)
-  (setf (car pfloat) mantissa))
-
 (defun exponent (pfloat)
   (cdr pfloat))
-
-(defun (setf exponent) (exponent pfloat)
-  (setf (cdr pfloat) exponent))
 
 (defun normalize-pfloat (pfloat)
   (let* ((mantissa (mantissa pfloat))
          (length (integer-length mantissa))
          (diff (cl:- *precision* length)))
-    (setf (mantissa pfloat) (ash mantissa diff))
-    (decf (exponent pfloat) diff))
+    (setf (car pfloat) (ash mantissa diff))
+    (decf (cdr pfloat) diff))
   pfloat)
 
 (defun make-pfloat (mantissa exponent)
@@ -69,7 +63,7 @@
   (cl:minusp (mantissa pfloat)))
 
 (defun negate (pfloat)
-  (make-pfloat (- (mantissa pfloat))
+  (make-pfloat (cl:- (mantissa pfloat))
                (exponent pfloat)))
 
 (defun + (pfloat1 pfloat2)
