@@ -123,5 +123,8 @@
       (decf exponent *precision*)
       (make-pfloat (cl:* sign (round (cl:/ numerator denominator))) exponent))))
 
+(defparameter *zero*
+  (cons 0 0))
+
 (defparameter *one*
   (pfloat-from-rational 1))
