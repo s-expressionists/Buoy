@@ -128,3 +128,36 @@
 
 (defparameter *one*
   (pfloat-from-rational 1))
+
+;;; MANTISSA-WIDTH is the number of bits used to represent the
+;;; mantissa in the binary representation of the floating-point
+;;; number.  Here we are not particularly interested in how IEEE
+;;; floats are really represented in a machine word, but more in the
+;;; values that are represented.
+(defun restrict-to-ieee-precision (pfloat mantissa-width exponent-width)
+  (let ((ieee-exponent (cl:+ (exponent pfloat) *precision* -1)))
+    ;; IEEE exponent is the exponent we would get if we turned the
+    ;; mantissa of the pfloat into a number that is greater than or
+    ;; equal to 1 but less than 2.
+    (let ((max-exponent (ash 1 (1- exponent-width))))
+      ;; If a number is greater than or equal to (EXPT 2 MAX-EXPONENT),
+      ;; then we have arithmetic overflow.
+      (when (cl:>= ieee-exponent max-exponent)
+        (if (minusp pfloat)
+            (error 'floating-point-underflow)
+            (error 'floating-point-overflow))))
+    (let* ((exponent-of-least-positive-normal-float
+             (cl:- 2 (ash 1 (1- exponent-width))))
+           (exponent-of-least-positive-float
+             (cl:- exponent-of-least-positive-normal-float
+                   mantissa-width)))
+      ;; The least positive normal float is (EXPT 2
+      ;; EXPONENT-OF-LEAST-POSITIVE-NORMAL-FLOAT), and the least
+      ;; positive float is (EXPT 2 EXPONENT-OF-LEAST-POSITIVE-FLOAT).
+      (if (< ieee-exponent exponent-of-least-positive-float)
+          *zero*
+          (let ((desired-precision (cl:+ ieee-exponent
+                                         exponent-of-least-positive-float
+                                         1)))
+            (make-pfloat (round (cl:/ (mantissa pfloat) (ash 1 desired-precision)))
+                         (cl:+ (exponent pfloat) desired-precision)))))))
