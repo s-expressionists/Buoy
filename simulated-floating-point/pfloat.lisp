@@ -134,6 +134,10 @@
 ;;; number.  Here we are not particularly interested in how IEEE
 ;;; floats are really represented in a machine word, but more in the
 ;;; values that are represented.
+;;;
+;;; FIXME: it is slighly more complicated than this.  If the mantissa
+;;; of the desired precision contains only 1s, then it is going to
+;;; round up in the most significant digit.
 (defun restrict-to-ieee-precision (pfloat mantissa-width exponent-width)
   (let ((ieee-exponent (cl:+ (exponent pfloat) *precision* -1)))
     ;; IEEE exponent is the exponent we would get if we turned the
