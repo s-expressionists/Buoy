@@ -2,7 +2,7 @@
 
 (defpackage #:buoy-pfloat
   (:use #:common-lisp)
-  (:shadow . #1=(#:+ #:- #:* #:/ #:< #:= #:minusp))
+  (:shadow . #1=(#:+ #:- #:* #:/ #:< #:= #:minusp #:zerop))
   (:export #:make-pfloat
            #:mantissa
            #:exponent
@@ -11,6 +11,7 @@
            #:double-float-from-pfloat
            #:negate
            #:*precision*
+           #:*zero*
            #:*one*
            . #1#))
 
