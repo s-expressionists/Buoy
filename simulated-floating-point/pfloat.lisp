@@ -74,9 +74,11 @@
          (exponent1 (exponent pfloat1))
          (mantissa2 (mantissa pfloat2))
          (exponent2 (exponent pfloat2))
-         (diff (cl:- exponent1 exponent2)))
-    (make-pfloat (cl:+ mantissa1 (ash mantissa2 (cl:- diff)))
-                 exponent1)))
+         (diff (cl:- exponent1 exponent2))
+         (resulting-mantissa (cl:+ mantissa1 (ash mantissa2 (cl:- diff)))))
+    (if (cl:zerop resulting-mantissa)
+        *zero*
+        (make-pfloat resulting-mantissa exponent1))))
 
 (defun - (pfloat1 pfloat2)
   (+ pfloat1 (negate pfloat2)))
