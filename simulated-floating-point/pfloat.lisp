@@ -32,7 +32,9 @@
                         (mantissa pfloat2)))
         (exponent (cl:+ (exponent pfloat1)
                         (exponent pfloat2))))
-    (normalize-pfloat (make-pfloat mantissa exponent))))
+    (if (cl:zerop mantissa)
+        *zero*
+        (normalize-pfloat (make-pfloat mantissa exponent)))))
 
 (defun / (pfloat1 pfloat2)
   (let ((mantissa (round (cl:/ (ash (mantissa pfloat1) *precision*)
