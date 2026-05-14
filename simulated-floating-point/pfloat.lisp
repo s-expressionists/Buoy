@@ -27,6 +27,44 @@
 (defun make-pfloat (mantissa exponent)
   (normalize-pfloat (cons mantissa exponent)))
 
+(defun pfloat-from-rational (rational)
+  (let ((sign (if (cl:minusp rational) -1 1))
+        (mantissa (if (cl:minusp rational) (cl:- rational) rational))
+        exponent)
+    (let* ((numerator (numerator mantissa))
+           (numerator-length (integer-length numerator))
+           (denominator (denominator mantissa))
+           (denominator-length (integer-length denominator))
+           (difference (cl:- numerator-length denominator-length)))
+      (setf exponent difference)
+      (if (cl:minusp difference)
+          ;; Then we shift the numerator by the negative
+          ;; difference.
+          (setf numerator (ash numerator (cl:- difference)))
+          ;; Otherwise, we shift the denominator by the
+          ;; difference.
+          (setf denominator (ash denominator difference)))
+      ;; At this point either the numerator is less than the
+      ;; denominator so that the quotient is less than 1, or
+      ;; the numerator is greater than or equal to the
+      ;; denominator, so that the quotient is greater than or
+      ;; equal to 1.  We want the first case.
+      (unless (cl:< numerator denominator)
+        (incf exponent)
+        (setf denominator (ash denominator 1)))
+      ;; Now, we shift the numerator by *PRECISION* positions to get
+      ;; something that should be an integer in the PFLOAT
+      ;; representation.
+      (setf numerator (ash numerator *precision*))
+      (decf exponent *precision*)
+      (make-pfloat (cl:* sign (round (cl:/ numerator denominator))) exponent))))
+
+(defparameter *zero*
+  (cons 0 0))
+
+(defparameter *one*
+  (pfloat-from-rational 1))
+
 (defun * (pfloat1 pfloat2)
   (let ((mantissa (cl:* (mantissa pfloat1)
                         (mantissa pfloat2)))
@@ -93,44 +131,6 @@
 (defun rational-from-pfloat (pfloat)
   (cl:* (mantissa pfloat)
         (expt 2 (exponent pfloat))))
-
-(defun pfloat-from-rational (rational)
-  (let ((sign (if (cl:minusp rational) -1 1))
-        (mantissa (if (cl:minusp rational) (cl:- rational) rational))
-        exponent)
-    (let* ((numerator (numerator mantissa))
-           (numerator-length (integer-length numerator))
-           (denominator (denominator mantissa))
-           (denominator-length (integer-length denominator))
-           (difference (cl:- numerator-length denominator-length)))
-      (setf exponent difference)
-      (if (cl:minusp difference)
-          ;; Then we shift the numerator by the negative
-          ;; difference.
-          (setf numerator (ash numerator (cl:- difference)))
-          ;; Otherwise, we shift the denominator by the
-          ;; difference.
-          (setf denominator (ash denominator difference)))
-      ;; At this point either the numerator is less than the
-      ;; denominator so that the quotient is less than 1, or
-      ;; the numerator is greater than or equal to the
-      ;; denominator, so that the quotient is greater than or
-      ;; equal to 1.  We want the first case.
-      (unless (cl:< numerator denominator)
-        (incf exponent)
-        (setf denominator (ash denominator 1)))
-      ;; Now, we shift the numerator by *PRECISION* positions to get
-      ;; something that should be an integer in the PFLOAT
-      ;; representation.
-      (setf numerator (ash numerator *precision*))
-      (decf exponent *precision*)
-      (make-pfloat (cl:* sign (round (cl:/ numerator denominator))) exponent))))
-
-(defparameter *zero*
-  (cons 0 0))
-
-(defparameter *one*
-  (pfloat-from-rational 1))
 
 ;;; MANTISSA-WIDTH is the number of bits used to represent the
 ;;; mantissa in the binary representation of the floating-point
