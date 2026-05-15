@@ -72,3 +72,8 @@
       (if (minusp diff)
           (/ result-numerator (ash result-denominator (- (/ diff 2))))
           (/ (ash result-numerator (/ diff 2)) result-denominator)))))
+
+(defparameter *rational-square-root-of-2*
+  (let ((string "14142135623730950488016887242096980785696718753769480731766797379907324784621070388503875343276415727"))
+    (/ (read-from-string string)
+       (expt 10 (1- (length string))))))
