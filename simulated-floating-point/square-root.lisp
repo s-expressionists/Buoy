@@ -77,3 +77,6 @@
   (let ((string "14142135623730950488016887242096980785696718753769480731766797379907324784621070388503875343276415727"))
     (/ (read-from-string string)
        (expt 10 (1- (length string))))))
+
+(defparameter *pfloat-square-root-of-2*
+  (pf:pfloat-from-rational *rational-square-root-of-2*))
