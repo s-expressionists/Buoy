@@ -80,3 +80,12 @@
 
 (defparameter *pfloat-square-root-of-2*
   (pf:pfloat-from-rational *rational-square-root-of-2*))
+
+(defparameter *square-root-iteration-count*
+  (loop with two = (pf:make-pfloat 2 0)
+        with root = two
+        for i from 0
+        until (equal root *pfloat-square-root-of-2*)
+        do (setf root
+                 (pf:/ (pf:+ root (pf:/ two root)) two))
+        finally (return i)))
