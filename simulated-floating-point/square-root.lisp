@@ -64,7 +64,7 @@
           (setf numerator (ash numerator 1))
           (decf diff 1)))
     ;; Now (/ numerator denominator) is a number of the right
-    ;; magnitude. So we copute the square root of it.
+    ;; magnitude. So we compute the square root of it.
     (let* ((result (newton (/ numerator denominator)
                            *newton-iteration-count*))
            (result-numerator (numerator result))
