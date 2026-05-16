@@ -50,21 +50,21 @@
        (rational-ln-with-small-ish-argument
         (/ numerator denominator) *ln-iteration-count*))))
 
-(defparameter *ln-inverses*
-  (cons pf:*one* (loop for i from 1 to 100
-                       collect (pf:pfloat-from-rational (/ i (1+ i))))))
+(defparameter *factors*
+  (loop for i from 3 by 2 to 100
+        collect (pf:pfloat-from-rational (/ (- i 2) i))))
 
-;;; We could improve on the efficiency by using the series
-;;; 2/(2k+1) * (a-1)/(a+1)^(2k+1) with k from 0.
-
-;;; This function is called when the argument represents a number
-;;; slightly less than 1.
+;;; This function should be called when the argument is (1+ X) where X
+;;; is a small positive value, preferably less than 0.1.  It uses the
+;;; series 2/(2k+1) * (a-1)/(a+1)^(2k+1) with k from 0.
 (defun pfloat-ln-with-small-argument (argument)
-  (pf:negate (loop with x = (pf:- pf:*one* argument)
-                   for factor in *ln-inverses*
-                   for term = x
-                     then (pf:* (pf:* term x) factor)
-                   for sum = term
-                     then (pf:+ sum term)
-                   until (pf:= (pf:+ sum term) sum)
-                   finally (return sum))))
+  (let* ((quotient (pf:/ (pf:- argument pf:*one*)
+                         (pf:+ argument pf:*one*)))
+         (square (pf:* quotient quotient)))
+    (loop for k from 1 by 2
+          for factor in (cons pf:*zero* *factors*)
+          for term = (pf:* quotient (pf:pfloat-from-rational 2))
+            then (pf:* (pf:* term square) factor)
+          for sum = term then (pf:+ sum term)
+          until (pf:= sum (pf:+ term sum))
+          finally (return sum))))
