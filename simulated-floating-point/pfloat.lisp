@@ -87,6 +87,10 @@
                                *precision*)))
            (make-pfloat mantissa exponent)))))
 
+(defun = (pfloat1 pfloat2)
+  (and (cl:= (mantissa pfloat1) (mantissa pfloat2))
+       (cl:= (exponent pfloat1) (exponent pfloat2))))
+
 (defun < (pfloat1 pfloat2)
   (if (cl:minusp (mantissa pfloat1))
       (or (not (cl:minusp (mantissa pfloat2)))
