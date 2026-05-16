@@ -51,5 +51,20 @@
         (/ numerator denominator) *ln-iteration-count*))))
 
 (defparameter *ln-inverses*
-  (loop for i from 1 to 100
-        collect (pf:pfloat-from-rational (/ i (1+ i)))))
+  (cons pf:*one* (loop for i from 1 to 100
+                       collect (pf:pfloat-from-rational (/ i (1+ i))))))
+
+;;; We could improve on the efficiency by using the series
+;;; 2/(2k+1) * (a-1)/(a+1)^(2k+1) with k from 0.
+
+;;; This function is called when the argument represents a number
+;;; slightly less than 1.
+(defun pfloat-ln-with-small-argument (argument)
+  (pf:negate (loop with x = (pf:- pf:*one* argument)
+                   for factor in *ln-inverses*
+                   for term = x
+                     then (pf:* (pf:* term x) factor)
+                   for sum = term
+                     then (pf:+ sum term)
+                   until (pf:= (pf:+ sum term) sum)
+                   finally (return sum))))
