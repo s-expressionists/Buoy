@@ -64,7 +64,7 @@
          (square (pf:* quotient quotient)))
     (loop for k from 1 by 2
           for factor in *factors*
-          for term = (pf:* quotient (pf:pfloat-from-rational 2))
+          for term = (pf:* quotient pf:*two*)
             then (pf:* (pf:* term square) factor)
           for sum = term then (pf:+ sum term)
           until (pf:= sum (pf:+ term sum))
