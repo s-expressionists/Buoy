@@ -62,10 +62,12 @@
   (let* ((quotient (pf:/ (pf:- argument pf:*one*)
                          (pf:+ argument pf:*one*)))
          (square (pf:* quotient quotient)))
-    (loop for k from 1 by 2
+    (loop with sum = pf:*zero*
+          for k from 1 by 2
           for factor in *factors*
           for term = (pf:* quotient pf:*two*)
             then (pf:* (pf:* term square) factor)
-          for sum = term then (pf:+ sum term)
-          until (pf:= sum (pf:+ term sum))
+          for sum2 = term then (pf:+ sum term)
+          until (pf:= sum sum2)
+          do (setf sum sum2)
           finally (return sum))))
