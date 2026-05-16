@@ -13,6 +13,7 @@
            #:*precision*
            #:*zero*
            #:*one*
+           #:*two*
            . #1#))
 
 (defpackage #:buoy-simulate
