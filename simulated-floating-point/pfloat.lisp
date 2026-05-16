@@ -62,6 +62,9 @@
 (defparameter *zero*
   (cons 0 0))
 
+(defun zerop (pfloat)
+  (equal pfloat *zero*))
+
 (defparameter *one*
   (pfloat-from-rational 1))
 
@@ -119,15 +122,20 @@
   (when (cl:< (exponent pfloat1)
               (exponent pfloat2))
     (rotatef pfloat1 pfloat2))
-  (let* ((mantissa1 (mantissa pfloat1))
-         (exponent1 (exponent pfloat1))
-         (mantissa2 (mantissa pfloat2))
-         (exponent2 (exponent pfloat2))
-         (diff (cl:- exponent1 exponent2))
-         (resulting-mantissa (cl:+ mantissa1 (ash mantissa2 (cl:- diff)))))
-    (if (cl:zerop resulting-mantissa)
-        *zero*
-        (make-pfloat resulting-mantissa exponent1))))
+  (cond ((zerop pfloat1)
+         pfloat2)
+        ((zerop pfloat2)
+         pfloat1)
+        (t
+         (let* ((mantissa1 (mantissa pfloat1))
+                (exponent1 (exponent pfloat1))
+                (mantissa2 (mantissa pfloat2))
+                (exponent2 (exponent pfloat2))
+                (diff (cl:- exponent1 exponent2))
+                (resulting-mantissa (cl:+ mantissa1 (ash mantissa2 (cl:- diff)))))
+           (if (cl:zerop resulting-mantissa)
+               *zero*
+               (make-pfloat resulting-mantissa exponent1))))))
 
 (defun - (pfloat1 pfloat2)
   (+ pfloat1 (negate pfloat2)))
