@@ -68,6 +68,9 @@
 (defparameter *one*
   (pfloat-from-rational 1))
 
+(defparameter *two*
+  (pfloat-from-rational 2))
+
 (defun * (pfloat1 pfloat2)
   (let ((mantissa (cl:* (mantissa pfloat1)
                         (mantissa pfloat2)))
