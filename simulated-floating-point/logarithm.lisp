@@ -51,8 +51,9 @@
         (/ numerator denominator) *ln-iteration-count*))))
 
 (defparameter *factors*
-  (loop for i from 3 by 2 to 100
-        collect (pf:pfloat-from-rational (/ (- i 2) i))))
+  (cons pf:*zero*
+        (loop for i from 3 by 2 to 100
+              collect (pf:pfloat-from-rational (/ (- i 2) i)))))
 
 ;;; This function should be called when the argument is (1+ X) where X
 ;;; is a small positive value, preferably less than 0.1.  It uses the
@@ -62,7 +63,7 @@
                          (pf:+ argument pf:*one*)))
          (square (pf:* quotient quotient)))
     (loop for k from 1 by 2
-          for factor in (cons pf:*zero* *factors*)
+          for factor in *factors*
           for term = (pf:* quotient (pf:pfloat-from-rational 2))
             then (pf:* (pf:* term square) factor)
           for sum = term then (pf:+ sum term)
