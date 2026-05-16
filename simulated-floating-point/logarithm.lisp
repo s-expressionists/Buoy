@@ -49,3 +49,7 @@
     (+ (* diff *ln-2*)
        (rational-ln-with-small-ish-argument
         (/ numerator denominator) *ln-iteration-count*))))
+
+(defparameter *ln-inverses*
+  (loop for i from 1 to 100
+        collect (pf:pfloat-from-rational (/ i (1+ i)))))
