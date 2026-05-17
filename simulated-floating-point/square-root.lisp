@@ -82,9 +82,30 @@
   (pf:pfloat-from-rational *rational-square-root-of-2*))
 
 (defparameter *square-root-iteration-count*
-  (loop with two = (pf:make-pfloat 2 0)
+  (loop with two = pf:*two*
         for root = two
           then (pf:/ (pf:+ root (pf:/ two root)) two)
         for i from 0
         until (equal root *pfloat-square-root-of-2*)
         finally (return i)))
+
+(defun pfloat-square-root (argument)
+  ;; We want to use the Newton iterations on an argument that is
+  ;; between 0.5 and 2. So then the exponent must be either (-
+  ;; pf:*precision*) and (- (1- pf:*precision*)).  We choose one or the
+  ;; other so that the difference between the current exponent and the
+  ;; desired exponent is even.
+  (let* ((exponent (pf:exponent argument))
+         (diff (if (evenp (- exponent pf:*precision*))
+                   (- exponent (- pf:*precision*))
+                   (- exponent (- (1- pf:*precision*)))))
+         (reduced (pf:make-pfloat (pf:mantissa argument)
+                                  (- exponent diff)))
+         (newton
+           (loop for root = reduced
+                   then (pf:/ (pf:+ root (pf:/ reduced root)) pf:*two*)
+                 repeat *square-root-iteration-count*
+                 finally (return root))))
+    (pf:make-pfloat (pf:mantissa newton)
+                    (+ (pf:exponent newton) (/ diff 2)))))
+    
