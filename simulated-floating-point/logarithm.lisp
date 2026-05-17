@@ -71,3 +71,19 @@
           until (pf:= sum sum2)
           do (setf sum sum2)
           finally (return sum))))
+
+(defparameter *pfloat-ln-2*
+  (let ((reduced *pfloat-square-root-of-2*))
+    (pf:* pf:*two* (pfloat-ln-with-small-argument reduced))))
+
+(defun pfloat-ln (argument)
+  (let* ((exponent (pf:exponent argument))
+         (desired-exponent (- (1- pf:*precision*)))
+         (diff (- exponent desired-exponent))
+         (reduced (pf:make-pfloat (pf:mantissa argument) desired-exponent))
+         (reduced (pfloat-square-root reduced))
+         (reduced (pfloat-square-root reduced)))
+    (pf:+ (pf:* pf:*two*
+                (pf:* pf:*two*
+                      (pfloat-ln-with-small-argument reduced)))
+          (pf:* (pf:pfloat-from-rational diff) *pfloat-ln-2*))))
