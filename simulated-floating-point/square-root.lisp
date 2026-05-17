@@ -81,6 +81,12 @@
 (defparameter *pfloat-square-root-of-2*
   (pf:pfloat-from-rational *rational-square-root-of-2*))
 
+;;; The idea here is that we are going to use Newton's method on
+;;; numbers between 0.5 and 2, and we are going to use the argument
+;;; itself as the initial iteration value.  So the worst case is then
+;;; when either 0.5 or 2 is the argument since that's when the
+;;; argument and its root have the largest difference.  So we use the
+;;; value 2 to compute the iteration count.
 (defparameter *square-root-iteration-count*
   (loop with two = pf:*two*
         for root = two
