@@ -78,7 +78,10 @@
                         collect (pf:pfloat-from-rational (/ (* (1- i) i))))))
 
 ;;; This function should be called with a small-ish argument.  It will
-;;; converge for any argument, but it might take a long time.
+;;; converge for any argument, but it might take a long time.  For an
+;;; argument equivalent to 3/4, it will take 22 iterations, and for an
+;;; argumen equivalent to 3/8 it will take 20 iterations.  Not a big
+;;; difference.
 (defun pfloat-sine-with-small-argument (pfloat)
   (loop with sum = pf:*zero*
         with square = (pf:* pfloat pfloat)
@@ -89,3 +92,9 @@
         until (pf:= sum sum2)
         do (setf sum sum2)
         finally (return sum)))
+
+(defun pfloat-sine-with-positive-argument (pfloat)
+  (let* ((rational (pf:rational-from-pfloat pfloat))
+         (rational-less-than-2-pi (mod rational (* 2 *pi*)))
+         (small-pfloat (pf:pfloat-from-rational rational-less-than-2-pi)))
+    (pfloat-sine-with-small-argument small-pfloat)))
