@@ -1,12 +1,11 @@
 (cl:in-package #:buoy-simulate)
 
-;;; I haven't found a way to reduce the argument, so convergence is
-;;; going to be slow for large values of the argument.
-
-(defun rational-hyperbolic-sine (argument)
-  (loop for i from 1 by 2
-        for numerator = argument then (* numerator argument argument)
-        for denominator = 1 then (* denominator (1- i) i)
-        for quotient = (/ numerator denominator)
-        until (< quotient #.(/ (ash 2 120)))
-        sum quotient))
+(defun pfloat-hyperbolic-sine (pfloat)
+  (cond ((pf:zerop pfloat)
+         pf:*zero*)
+        ((pf:minusp pfloat)
+         (let ((exp (pfloat-exp (pf:negate pfloat))))
+           (pf:/ (pf:- (pf:/ pf:*one* exp) exp) pf:*two*)))
+        (t
+         (let ((exp (pfloat-exp pfloat)))
+           (pf:/ (pf:- exp (pf:/ pf:*one* exp)) pf:*two*)))))
