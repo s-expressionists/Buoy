@@ -72,3 +72,20 @@
   (loop for i from 1 to 200
         for factorial = 1 then (* factorial i)
         collect (pf:pfloat-from-rational (/ factorial))))
+
+(defparameter *odd-factors*
+  (cons pf:*zero* (loop for i from 3 by 2 to 200
+                        collect (pf:pfloat-from-rational (/ (* (1- i) i))))))
+
+;;; This function should be called with a small-ish argument.  It will
+;;; converge for any argument, but it might take a long time.
+(defun pfloat-sine-with-small-argument (pfloat)
+  (loop with sum = pf:*zero*
+        with square = (pf:* pfloat pfloat)
+        for i from 0
+        for factor in *odd-factors*
+        for term = pfloat then (pf:* (pf:* term square) factor)
+        for sum2 = term then (if (oddp i) (pf:- sum term) (pf:+ sum term))
+        until (pf:= sum sum2)
+        do (setf sum sum2)
+        finally (return sum)))
