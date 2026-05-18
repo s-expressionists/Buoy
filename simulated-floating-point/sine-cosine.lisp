@@ -127,3 +127,11 @@
          (rational-less-than-2-pi (mod rational (* 2 *pi*)))
          (small-pfloat (pf:pfloat-from-rational rational-less-than-2-pi)))
     (pfloat-cosine-with-small-argument small-pfloat)))
+
+(defun pfloat-cosine (pfloat)
+  (cond ((pf:zerop pfloat)
+         pf:*one*)
+        ((pf:minusp pfloat)
+         (pfloat-cosine-with-positive-argument (pf:negate pfloat)))
+        (t
+         (pfloat-cosine-with-positive-argument pfloat))))
