@@ -98,3 +98,18 @@
          (rational-less-than-2-pi (mod rational (* 2 *pi*)))
          (small-pfloat (pf:pfloat-from-rational rational-less-than-2-pi)))
     (pfloat-sine-with-small-argument small-pfloat)))
+
+(defparameter *even-factors*
+  (cons pf:*zero* (loop for i from 2 by 2 to 200
+                        collect (pf:pfloat-from-rational (/ (* (1- i) i))))))
+
+(defun pfloat-cosine-with-small-argument (pfloat)
+  (loop with sum = pf:*zero*
+        with square = (pf:* pfloat pfloat)
+        for i from 0
+        for factor in *even-factors*
+        for term = pf:*one* then (pf:* (pf:* term square) factor)
+        for sum2 = term then (if (oddp i) (pf:- sum term) (pf:+ sum term))
+        until (pf:= sum sum2)
+        do (setf sum sum2)
+        finally (return sum)))
