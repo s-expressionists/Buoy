@@ -67,3 +67,8 @@
 
 (defun rational-cosine (argument)
   (rational-sine (+ argument (/ *pi* 4))))
+
+(defparameter *inverses-of-factorials*
+  (loop for i from 1 to 200
+        for factorial = 1 then (* factorial i)
+        collect (pf:pfloat-from-rational (/ factorial))))
