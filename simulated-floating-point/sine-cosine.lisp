@@ -99,6 +99,14 @@
          (small-pfloat (pf:pfloat-from-rational rational-less-than-2-pi)))
     (pfloat-sine-with-small-argument small-pfloat)))
 
+(defun pfloat-sine (pfloat)
+  (cond ((pf:zerop pfloat)
+         pf:*zero*)
+        ((pf:minusp pfloat)
+         (pf:negate (pfloat-sine-with-positive-argument (pf:negate pfloat))))
+        (t
+         (pfloat-sine-with-positive-argument pfloat))))
+
 (defparameter *even-factors*
   (cons pf:*zero* (loop for i from 2 by 2 to 200
                         collect (pf:pfloat-from-rational (/ (* (1- i) i))))))
