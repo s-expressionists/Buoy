@@ -1,78 +1,5 @@
 (cl:in-package #:buoy-simulate)
 
-(defparameter *sine-iteration-count* 20)
-
-;;; This function is called when the argument is less than around 4/10
-;;; which is less than around (/ pi 8).
-(defun rational-sine-small-argument (argument)
-  (loop for sign = 1 then (- sign)
-        for n from 0 to *sine-iteration-count*
-        for 2n = (* n 2)
-        for 2n+1! = 1 then (* 2n+1! 2n (1+ 2n))
-        for x = argument then (* x argument argument)
-        sum (* sign (/ x 2n+1!))))
-
-;;; This function is called when the argument is less than around 4/10
-;;; which is less than around (/ pi 8).
-(defun rational-cosine-small-argument (argument)
-  (loop for sign = 1 then (- sign)
-        for n from 0 to *sine-iteration-count*
-        for 2n = (* n 2)
-        for 2n! = 1 then (* 2n! (1- 2n) 2n)
-        for x = 1 then (* x argument argument)
-        sum (* sign (/ x 2n!))))
-
-;;; This function is called when the argument is less than or equal to
-;;; (/ pi 4).
-(defun rational-sine-small-ish-argument (argument)
-  (if (< argument 4/10)
-      (rational-sine-small-argument argument)
-      (let ((small-argument (/ argument 2)))
-        (* 2
-           (rational-sine-small-argument small-argument)
-           (rational-cosine-small-argument small-argument)))))
-
-;;; This function is called when the argument is less than or equal to
-;;; (/ pi 4).
-(defun rational-cosine-small-ish-argument (argument)
-  (if (< argument 4/10)
-      (rational-cosine-small-argument argument)
-      (let* ((small-argument (/ argument 2))
-             (sine (rational-sine-small-argument small-argument))
-             (cosine (rational-cosine-small-argument small-argument)))
-        (- (* cosine cosine) (* sine sine)))))
-
-(defun rational-sine-argument-less-than-pi/2 (argument)
-  (if (< argument (/ *pi* 4))
-      (rational-sine-small-ish-argument argument)
-      (rational-cosine-small-ish-argument (- (/ *pi* 2d0) argument))))
-
-(defun rational-sine-argument-less-than-pi (argument)
-  (if (< argument (/ *pi* 2))
-      (rational-sine-argument-less-than-pi/2 argument)
-      (rational-sine-argument-less-than-pi/2 (- *pi* argument))))
-
-(defun rational-sine-argument-less-than-2-pi (argument)
-  (if (< argument *pi*)
-      (rational-sine-argument-less-than-pi argument)
-      (- (rational-sine-argument-less-than-pi (- argument *pi*)))))
-
-(defun rational-sine-positive-argument (argument)
-  (rational-sine-argument-less-than-2-pi (mod argument (* 2 *pi*))))
-
-(defun rational-sine (argument)
-  (if (minusp argument)
-      (- (rational-sine-positive-argument (- argument)))
-      (rational-sine-positive-argument argument)))
-
-(defun rational-cosine (argument)
-  (rational-sine (+ argument (/ *pi* 4))))
-
-(defparameter *inverses-of-factorials*
-  (loop for i from 1 to 200
-        for factorial = 1 then (* factorial i)
-        collect (pf:pfloat-from-rational (/ factorial))))
-
 (defparameter *odd-factors*
   (cons pf:*zero* (loop for i from 3 by 2 to 200
                         collect (pf:pfloat-from-rational (/ (* (1- i) i))))))
@@ -135,3 +62,13 @@
          (pfloat-cosine-with-positive-argument (pf:negate pfloat)))
         (t
          (pfloat-cosine-with-positive-argument pfloat))))
+
+(defun rational-sine (rational)
+  (let* ((pfloat (pf:pfloat-from-rational rational))
+         (pfloat-result (pfloat-sine pfloat)))
+    (pf:rational-from-pfloat pfloat-result)))
+
+(defun rational-cosine (rational)
+  (let* ((pfloat (pf:pfloat-from-rational rational))
+         (pfloat-result (pfloat-cosine pfloat)))
+    (pf:rational-from-pfloat pfloat-result)))
