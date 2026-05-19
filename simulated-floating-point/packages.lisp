@@ -14,6 +14,9 @@
            #:*zero*
            #:*one*
            #:*two*
+           #:restrict-to-ieee-precision
+           #:restrict-to-ieee-single
+           #:restrict-to-ieee-double
            . #1#))
 
 (defpackage #:buoy-simulate
