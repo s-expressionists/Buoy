@@ -37,7 +37,9 @@
 (defun generate-log-inverse-table-entry (i)
   (let* ((inverse-table-entry (aref *inverse-table* (- i 362)))
          (rational-entry (rational inverse-table-entry))
-         (rational-value (- (sim:rational-ln rational-entry)))
+         (pfloat-entry (pf:pfloat-from-rational rational-entry))
+         (pfloat-value (pf:pfloat-ln pfloat-entry))
+         (rational-value (- (pf:rational-from-pfloat pfloat-value)))
          (high (/ (round (* rational-value (expt 2 42))) (expt 2 42)))
          (float-high (sim:dfloat high))
          (low (- rational-value (rational float-high))))
@@ -278,7 +280,9 @@
 ;;; better.
 (defun generate-log-inverse-table-2-entry (i)
   (let* ((rational-value (/ 256 (+ 128 i)))
-         (rational-log (sim:rational-ln rational-value)))
+         (pfloat-value (pf:pfloat-from-rational rational-value))
+         (pfloat-log (pf:pfloat-ln pfloat-value))
+         (rational-log (pf:rational-from-pfloat pfloat-log)))
     (custom-float-64-from-rational (- rational-log))))
 
 (defparameter *log-inverse-table-2*
@@ -306,7 +310,8 @@
   (custom-float-64-from-rational -1))
 
 (defparameter *log-2*
-  (let ((rational-log-2 (sim:rational-ln 2)))
+  (let* ((pfloat-log-2 (sim:pfloat-ln (pf:pfloat-from-rational 2)))
+         (rational-log-2 (pf:rational-from-pfloat pfloat-log-2)))
     (custom-float-64-from-rational rational-log-2)))
 
 (defun log-2 (r x)
