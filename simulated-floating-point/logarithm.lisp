@@ -48,3 +48,6 @@
                 (pf:* pf:*two*
                       (pfloat-ln-with-small-argument reduced)))
           (pf:* (pf:pfloat-from-rational diff) *pfloat-ln-2*))))
+
+(defun rational-ln (rational)
+  (pf:rational-from-pfloat (pfloat-ln (pf:pfloat-from-rational rational))))
