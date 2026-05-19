@@ -1,6 +1,18 @@
 (cl:in-package #:buoy-core-math-64)
 
-;;; The exact sum of HIGH and LOW is the exact sum of A and B.
+;;; The exact sum of HIGH and LOW is the exact sum of A and B.  One
+;;; might wonder what the purpose is of taking two arguments the sum
+;;; of which is (say) S, and return two values the sum of which is
+;;; also S.  But the thing is that the second return value is smaller
+;;; than the least significant bit in the first return value.  Here is
+;;; how it works: Suppose B is smaller than A (I am not sure it works
+;;; the other way around), then part of B will not be taken into
+;;; account in the sum.  Consider B to be C + D, where C is the part
+;;; of B that will be part of the floating-point sum of A and B, so
+;;; that HIGH is A + C.  Then if you compute HIGH - A, you will get C
+;;; exactly.  Then if you compute B - C, you will get D exactly.  But
+;;; since D was to small to influence HIGH, it means that D is smaller
+;;; than the least significant bit of HIGH.
 (defun fast-two-sum (a b)
   (declare (type double-float a b))
   (let* ((high (+ a b))
