@@ -7,23 +7,19 @@
 ;;; for 0 <= i < 2^6, t0[i] is a double-double approximation of 2^(i/2^6)
 ;;;
 ;;; As for the name, I don't know what it means.
-
-;;; We can't use precise rational calculations until the end, because
-;;; it takes to long to compute.  So we round to a 256-bit value in
-;;; each iteration.
 ;;;
 ;;; Oh, and in the table in core-math the first element is the low
 ;;; value and the second element is the high value.
-(defun make-t-table-element (rational-base i)
-  (loop repeat (1+ i)
-        for result = 1
-          then (sim:floatr-from-rational
-                (* result rational-base)
-                10 256)
-        finally (let* ((high (sim:dfloat result))
-                       (remaining (- result (rational high)))
-                       (low (sim:dfloat remaining)))
-                  (return (values low high)))))
+(defun make-t0-table-element (rational-base i)
+  (let ((pfloat-i (pf:pfloat-from-rational i))
+        (pfloat-64 (pf:pfloat-from-rational (expt 2 6)))
+        (pfloat-ln-2 (sim:pfloat-ln (pf:pfloat-from-rational 2)))
+        (pfloat-exponent (pf:* (pf:/ pfloat-i pfloat-64) pfloat-ln-2))
+        (pfloat-result (sim:pfloat-exp pfloat-exponent))
+        (rational-result (pf:rational-from-pfloat pfloat-result))
+        (high (dfloat rational-result))
+        (low (dfloat (- rational-result (rational high)))))
+    (values high low)))
 
 (defparameter *t0-table*
   (make-array
