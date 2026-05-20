@@ -1,5 +1,27 @@
 (cl:in-package #:buoy-core-math-64)
 
+;;; The following is a degree-7 polynomial with odd coefficients
+;;; approximating sin2pi(x) for -2^-24 < x < 2^-11+2^-24 with relative
+;;; error 2^-77.306. Generated with sin_fast.sollya.
+;;;
+;;; Here is how I think this works.  The polynomial is roughly 6x -
+;;; 40x^3 + 80x^5 - 75x^7.  Now if we want a relative error of
+;;; 2^-77.306, we must evaluate this polynomial with a "double
+;;; double", so that the high part is less than roughly 2^-11, and
+;;; therefore the low part is something like 2^-63 (given the
+;;; precision of a double float).  Now, let's examine the term 40x^3.
+;;; First of all, x^-11 is less than around 2^-33 and even if x is
+;;; represented as only the high part of the double double, we can
+;;; express x as 2^-11 +- 2^-64 so the error is roughly 2*2^-22*2-64
+;;; which is 2^-85.  Multiplied by 40, (say 2^6) we have 2^-79.
+;;; Compared to the first term, this is small enough that it can be
+;;; ignored.  A similar argument can be made for the precision of the
+;;; coefficient of the X^3 term.  This is why that coefficient can be
+;;; represented as only one double float.  A similar (but even easier)
+;;; argument can be made for all other terms except the first one.  So
+;;; we can use only the high part of x for all terms except the first
+;;; one, and we must use both a coefficient and a value of x with more
+;;; precision for the first term. --RS 2026-05-20
 (defparameter  *fast-polynomial-sine-table*
   (make-array
    5
