@@ -87,3 +87,12 @@
   (let* ((h (* xh ch))
          (l (+ (fma xh ch (- h)) (* xl ch))))
     (values h l)))
+
+(defun double-double-from-rational (rational)
+  (let* ((high (dfloat rational))
+         (diff (- rational (rational high)))
+         (low (dfloat diff)))
+    (values high low)))
+
+(defun double-double-from-pfloat (pfloat)
+  (double-double-from-rational (pf:rational-from-pfloat pfloat)))
