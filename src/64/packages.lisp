@@ -2,5 +2,6 @@
 
 (defpackage #:buoy-core-math-64
   (:use #:common-lisp)
-  (:local-nicknames (#:sim #:buoy-simulate))
+  (:local-nicknames (#:sim #:buoy-simulate)
+                    (#:pf #:buoy-pfloat))
   (:export))
