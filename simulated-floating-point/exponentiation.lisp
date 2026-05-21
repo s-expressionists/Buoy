@@ -53,3 +53,13 @@
          (rational-result (pf:rational-from-pfloat pfloat-exp)))
     (dfloat rational-result)))
 
+(defun pfloat-expt (base exponent)
+  (pfloat-exp (pf:* exponent (pfloat-ln base))))
+
+(defun rational-expt (base exponent)
+  (let ((pfloat-base (pf:pfloat-from-rational base))
+        (pfloat-exponent (pf:pfloat-from-rational exponent)))
+    (pf:rational-from-pfloat (pfloat-expt pfloat-base pfloat-exponent))))
+
+        
+        
