@@ -181,7 +181,7 @@
                          (cl:+ (exponent pfloat) desired-precision)))))))
 
 (defun restrict-to-ieee-single (pfloat)
-  (restrict-to-ieee-precision 23 8))
+  (restrict-to-ieee-precision pfloat 23 8))
 
 (defun restrict-to-ieee-double (pfloat)
-  (restrict-to-ieee-precision 52 11))
+  (restrict-to-ieee-precision pfloat 52 11))
