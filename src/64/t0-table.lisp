@@ -12,7 +12,7 @@
 ;;; value and the second element is the high value.
 (defun make-t0-table-element (i)
   (let ((rational-result (sim:rational-expt 2 (/ i 64))))
-    (sim:double-double-from-rational rational-result)))
+    (double-double-from-rational rational-result)))
 
 (defparameter *t0-table*
   (make-array
