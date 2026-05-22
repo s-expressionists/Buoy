@@ -31,7 +31,9 @@
    #:decode-floatr
    #:integer-decode-floatr
    #:dfloat
+   #:pfloat-ln
    #:rational-ln
+   #:pfloat-exp
    #:rational-exp
    #:rational-expt
    #:*pi*
