@@ -22,6 +22,9 @@
 ;;; we can use only the high part of x for all terms except the first
 ;;; one, and we must use both a coefficient and a value of x with more
 ;;; precision for the first term. --RS 2026-05-20
+;;;
+;;; In fact, those coefficients should be close to the coefficients of
+;;; the Taylor expansion, and this is indeed the case. 
 (defparameter  *fast-polynomial-sine-table*
   (make-array
    5
