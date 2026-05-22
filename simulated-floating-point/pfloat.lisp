@@ -172,7 +172,7 @@
       ;; The least positive normal float is (EXPT 2
       ;; EXPONENT-OF-LEAST-POSITIVE-NORMAL-FLOAT), and the least
       ;; positive float is (EXPT 2 EXPONENT-OF-LEAST-POSITIVE-FLOAT).
-      (if (< ieee-exponent exponent-of-least-positive-float)
+      (if (cl:< ieee-exponent exponent-of-least-positive-float)
           *zero*
           (let ((desired-precision (cl:+ ieee-exponent
                                          exponent-of-least-positive-float
