@@ -9,12 +9,16 @@
          (low-inverse (/ high))
          (high-inverse (/ low))
          (average (sim:rational-square-root (* low-inverse high-inverse)))
-         (floatr (sim:floatr-from-rational average 10 9))
+         (pfloat-average (pf:pfloat-from-rational average))
+         (restricted (pf:restrict-to-ieee-precision pfloat-average 10 9))
+         (rational-restricted (pf:rational-from-pfloat restricted))
          (y-low (* i (expt 2 -9)))
          (y-high (* (1+ i) (expt 2 -9))))
-    (assert (<= (sim:dfloat (abs (1- (* floatr y-low)))) 0.00212097167968735d0))
-    (assert (<= (sim:dfloat (abs (1- (* floatr y-high)))) 0.00212097167968735d0))
-    (sim:dfloat floatr)))
+    (assert (<= (sim:dfloat (abs (1- (* rational-restricted y-low))))
+                0.00212097167968735d0))
+    (assert (<= (sim:dfloat (abs (1- (* rational-restricted y-high))))
+                0.00212097167968735d0))
+    (sim:dfloat rational-restricted)))
          
 ;;; The following is the comment in log.c, but it doesn't make sense
 ;;; as parsed.
