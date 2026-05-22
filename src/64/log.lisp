@@ -326,7 +326,7 @@
       (add-custom-float-64 z *minus-one* z)
       (multiply-custom-float-64 r e *log-2*)
       (let ((p (make-custom-float-64)))
-        (p_2 p z)
+        (p-2 p z)
         (add-custom-float-64 p (aref *log-inverse-table-2* (- i 128)) p)
         (add-custom-float-64 r p r)))))
 
