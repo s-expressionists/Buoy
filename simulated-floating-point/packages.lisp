@@ -33,6 +33,7 @@
    #:dfloat
    #:rational-ln
    #:rational-exp
+   #:rational-expt
    #:*pi*
    #:rational-square-root
    #:rational-sine
