@@ -23,13 +23,7 @@
   (:use #:common-lisp)
   (:local-nicknames (#:pf #:buoy-pfloat))
   (:export
-   #:floatr-from-rational
-   #:floatr32-from-rational
-   #:floatr64-from-rational
    #:binary32-from-rational
-   #:floatr-precision
-   #:decode-floatr
-   #:integer-decode-floatr
    #:dfloat
    #:pfloat-ln
    #:rational-ln
