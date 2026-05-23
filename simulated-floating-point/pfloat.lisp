@@ -157,7 +157,7 @@
     ;; IEEE exponent is the exponent we would get if we turned the
     ;; mantissa of the pfloat into a number that is greater than or
     ;; equal to 1 but less than 2.
-    (let ((max-exponent (ash 1 (1- exponent-width))))
+    (let ((max-exponent (cl:- (ash 1 (1- exponent-width)) 2)))
       ;; If a number is greater than or equal to (EXPT 2 MAX-EXPONENT),
       ;; then we have arithmetic overflow.
       (when (cl:>= ieee-exponent max-exponent)
@@ -174,11 +174,20 @@
       ;; positive float is (EXPT 2 EXPONENT-OF-LEAST-POSITIVE-FLOAT).
       (if (cl:< ieee-exponent exponent-of-least-positive-float)
           *zero*
-          (let ((desired-precision (cl:+ ieee-exponent
-                                         exponent-of-least-positive-float
-                                         1)))
-            (make-pfloat (round (cl:/ (mantissa pfloat) (ash 1 desired-precision)))
-                         (cl:+ (exponent pfloat) desired-precision)))))))
+          (let ((desired-precision
+                  (if (cl:< ieee-exponent
+                            exponent-of-least-positive-normal-float)
+                      ;; We have a subnormal float.
+                      (1+ (- ieee-exponent
+                             exponent-of-least-positive-float))
+                      
+                      (1+ mantissa-width))))
+            (let* ((suffix-width (cl:- *precision* desired-precision))
+                   (new-rational-mantissa
+                     (cl:/ (mantissa pfloat) (ash 1 suffix-width)))
+                   (rounded (round new-rational-mantissa))
+                   (integer-mantissa (ash rounded suffix-width)))
+              (make-pfloat integer-mantissa (exponent pfloat))))))))
 
 (defun restrict-to-ieee-single (pfloat)
   (restrict-to-ieee-precision pfloat 23 8))
