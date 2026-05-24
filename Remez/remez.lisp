@@ -34,3 +34,24 @@
   (loop for coefficient in (rest coefficients)
         for i from 1
         collect (* coefficient i)))
+
+;;; We can't use Newton's method directly, because we may have an
+;;; approximation where the derivative is close to 0.  So we need to
+;;; find some approximate roots first, and then refine them
+(defun find-approximate-roots (start end function)
+  (loop for x from start to end by (* (- end start) 1d-3)
+        for y1 = (funcall function x)
+        for y2 = (funcall function (+ x 1d-3))
+        when (not (plusp (* y1 y2)))
+          collect x))
+
+(defun refine-roots (roots function derivative)
+  (loop for root in roots
+        collect (loop for approximation = root
+                        then (newton-step approximation function derivative)
+                      repeat 20
+                      finally (return approximation))))
+
+(defun find-roots (start end function derivative)
+  (refine-roots (find-approximate-roots start end function)
+                function derivative))
