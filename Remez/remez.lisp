@@ -55,3 +55,33 @@
 (defun find-roots (start end function derivative)
   (refine-roots (find-approximate-roots start end function)
                 function derivative))
+
+(defun remez-step (function derivative second-derivative control-points)
+  (let* ((matrix (create-matrix function control-points)))
+    (solve-linear-system matrix)
+    (let* ((coefficients1 (extract-polynomial-coefficients matrix))
+           (polynomial1 (create-polynomial coefficients1))
+           (error1 (lambda (x) (- (funcall polynomial1 x)
+                                  (funcall function x))))
+           (coefficients2 (derivative-coefficients coefficients1))
+           (polynomial2 (create-polynomial coefficients2))
+           (error2 (lambda (x) (- (funcall polynomial2 x)
+                                  (funcall derivative x))))
+           (coefficients3 (derivative-coefficients coefficients2))
+           (polynomial3 (create-polynomial coefficients3))
+           (error3 (lambda (x) (- (funcall polynomial3 x)
+                                  (funcall second-derivative x))))
+           (approximate-roots
+             (find-approximate-roots (first control-points)
+                                     (car (last control-points))
+                                     error2))
+           (roots (refine-roots approximate-roots error2 error3)))
+      (declare (ignore error1))
+      (values (cons (first control-points)
+                    (append roots (last control-points)))
+              coefficients1))))
+
+           
+                         
+      
+         
