@@ -5,4 +5,5 @@
   :components
   ((:file "packages")
    (:file "solve-linear-system")
-   (:file "newton")))
+   (:file "newton")
+   (:file "remez")))
