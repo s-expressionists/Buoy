@@ -16,3 +16,16 @@
            for error-coefficient = 1 then (- error-coefficient)
            collect (create-matrix-row
                     function control-point degree error-coefficient)))))
+
+(defun extract-polynomial-coefficients (solved-system)
+  (destructuring-bind (rows columns)
+      (array-dimensions solved-system)
+    (loop for row from 0 below (1- rows)
+          collect (aref solved-system row (1- columns)))))
+
+(defun create-polynomial (coefficients)
+  (compile nil
+           `(lambda (x)
+              (+ ,@(loop for variables = '() then (cons 'x variables)
+                         for coefficient in coefficients
+                         collect `(* ,coefficient ,@variables))))))
