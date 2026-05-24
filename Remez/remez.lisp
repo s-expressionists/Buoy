@@ -29,3 +29,8 @@
               (+ ,@(loop for variables = '() then (cons 'x variables)
                          for coefficient in coefficients
                          collect `(* ,coefficient ,@variables))))))
+
+(defun derivative-coefficients (coefficients)
+  (loop for coefficient in (rest coefficients)
+        for i from 1
+        collect (* coefficient i)))
