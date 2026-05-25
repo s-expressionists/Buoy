@@ -121,9 +121,13 @@
         (declare (type double-float cy0 cy1))
         (declare (type (unsigned-byte 64) cm0 cm1))
         (let* ((i (ash significand (- (if c cm1 cm0))))
-               ;; i becomes the high 9 or 10 bits of the mantissa of
-               ;; x, depending on whether X is less than or equal to,
-               ;; or greater than (sqrt 2)
+               ;; i becomes the high 8 or 9 bits of the mantissa of x,
+               ;; depending on whether X is less than or equal to, or
+               ;; greater than (sqrt 2).  So when the mantissa
+               ;; represents (/ (sqrt 2) 2), i becomes 362, and if the
+               ;; mantissa is slightly less than (sqrt 2), i becomes
+               ;; 724 which is exactly the index range of
+               ;; *INVERSE-TABLE*.
                ;;
                ;; Y becomes X or X*0.5 depending on whether X is less
                ;; than or equal to, or greater than (sqrt 2)
