@@ -8,13 +8,17 @@
          (high (* (1+ i) (expt 2 -9)))
          (low-inverse (/ high))
          (high-inverse (/ low))
-         (average (buoy-simulate:rational-square-root (* low-inverse high-inverse)))
-         (floatr (buoy-simulate:floatr-from-rational average 10 9))
+         (average (sim:rational-square-root (* low-inverse high-inverse)))
+         (pfloat-average (pf:pfloat-from-rational average))
+         (restricted (pf:restrict-to-ieee-precision pfloat-average 10 9))
+         (rational-restricted (pf:rational-from-pfloat restricted))
          (y-low (* i (expt 2 -9)))
          (y-high (* (1+ i) (expt 2 -9))))
-    (assert (<= (dfloat (abs (1- (* floatr y-low)))) 0.00212097167968735d0))
-    (assert (<= (dfloat (abs (1- (* floatr y-high)))) 0.00212097167968735d0))
-    (dfloat floatr)))
+    (assert (<= (sim:dfloat (abs (1- (* rational-restricted y-low))))
+                0.00212097167968735d0))
+    (assert (<= (sim:dfloat (abs (1- (* rational-restricted y-high))))
+                0.00212097167968735d0))
+    (sim:dfloat rational-restricted)))
          
 ;;; The following is the comment in log.c, but it doesn't make sense
 ;;; as parsed.
@@ -37,11 +41,13 @@
 (defun generate-log-inverse-table-entry (i)
   (let* ((inverse-table-entry (aref *inverse-table* (- i 362)))
          (rational-entry (rational inverse-table-entry))
-         (rational-value (- (buoy-simulate:rational-ln rational-entry)))
+         (pfloat-entry (pf:pfloat-from-rational rational-entry))
+         (pfloat-value (sim:pfloat-ln pfloat-entry))
+         (rational-value (- (pf:rational-from-pfloat pfloat-value)))
          (high (/ (round (* rational-value (expt 2 42))) (expt 2 42)))
-         (float-high (dfloat high))
+         (float-high (sim:dfloat high))
          (low (- rational-value (rational float-high))))
-    (values float-high (dfloat low))))
+    (values float-high (sim:dfloat low))))
 
 ;;; For 362 <= i <= 724, (h,l) = _LOG_INV[i-362] is a double-double
 ;;; approximation of -log(r) with r=INVERSE[i-362]), with h an integer
@@ -83,13 +89,31 @@
 ;;; Given 1 <= x < 2, where x = v.f, put in h+l a double-double
 ;;; approximation of log(2^e*x), with absolute error bounded by
 ;;; 2^-68.22 (details below).
+;;;
+;;; The above comment is a bit umclear.  What it means is that the
+;;; original value of x has been modified so that 1 <= x < 2 by
+;;; dividing it with 2^e.  If the original argument is a normal float,
+;;; then this is easy.  But if it is a subnormal float, things have
+;;; been adjusted so that the mantissa is normalized and the exponent
+;;; has been decreased accordingly.  That's how 1 <= x < 2 is
+;;; possible.
+;;;
+;;; In the end e*log(2) will have to be added to the result of
+;;; taking the log of x here.
 (defun cr-log-fast (e x)
   (multiple-value-bind (significand)
       (integer-decode-float x)
     ;; x = m/2^52
     ;; if x > sqrt(2), we divide it by 2 to avoid cancellation 
+    ;; 
+    ;; The value #x16a09e667f3bcd is exactly the significand of (SQRT
+    ;; 2).  To divide by 2, it suffices to shift right by 1 and to
+    ;; increase the exponent.  But, in fact, x itself is not shifted,
+    ;; and instead the shifted value is reflected in the variable y.
     (let ((c (>= significand #x16a09e667f3bcd)))
       (incf e (if c 1 0)) ; now -1074 <= e <= 1024
+      ;; The lower values happen when the original argument was
+      ;; subnormal.
       (let ((cy0 1d0)
             (cy1 0.5d0)
             (cm0 43)
@@ -97,6 +121,12 @@
         (declare (type double-float cy0 cy1))
         (declare (type (unsigned-byte 64) cm0 cm1))
         (let* ((i (ash significand (- (if c cm1 cm0))))
+               ;; i becomes the high 9 or 10 bits of the mantissa of
+               ;; x, depending on whether X is less than or equal to,
+               ;; or greater than (sqrt 2)
+               ;;
+               ;; Y becomes X or X*0.5 depending on whether X is less
+               ;; than or equal to, or greater than (sqrt 2)
                (y (* x (if c cy1 cy0)))
                (offset 362)
                (r (aref *inverse-table* (- i offset)))
@@ -162,7 +192,7 @@
             ;; is an integer multiple of 2^-42, with 2^42*|hh+l1| <=
             ;; 3275606777621385 < 2^52, thus hh+l1 is exactly
             ;; representable.
-            (let ((ee (dfloat e)))
+            (let ((ee (sim:dfloat e)))
               (multiple-value-bind (h l)
                   (fast-two-sum (fma ee log2-h l1) z)
                 ;; here |hh+l1|+|z| <= 3275606777621385*2^-42 + 0.0022
@@ -255,7 +285,8 @@
       (make-custom-float-64
        :high high :low 0 :exponent exponent :sign 0))))
 
-(defparameter *inverse-table-2*
+;;; FIXME: there is something wrong with generate-inverse-table-2-entry
+#+(or)(defparameter *inverse-table-2*
   (make-array
    240
    :initial-contents
@@ -280,7 +311,9 @@
 ;;; better.
 (defun generate-log-inverse-table-2-entry (i)
   (let* ((rational-value (/ 256 (+ 128 i)))
-         (rational-log (buoy-simulate:rational-ln rational-value)))
+         (pfloat-value (pf:pfloat-from-rational rational-value))
+         (pfloat-log (sim:pfloat-ln pfloat-value))
+         (rational-log (pf:rational-from-pfloat pfloat-log)))
     (custom-float-64-from-rational (- rational-log))))
 
 (defparameter *log-inverse-table-2*
@@ -308,7 +341,8 @@
   (custom-float-64-from-rational -1))
 
 (defparameter *log-2*
-  (let ((rational-log-2 (buoy-simulate:rational-ln 2)))
+  (let* ((pfloat-log-2 (sim:pfloat-ln (pf:pfloat-from-rational 2)))
+         (rational-log-2 (pf:rational-from-pfloat pfloat-log-2)))
     (custom-float-64-from-rational rational-log-2)))
 
 (defun log-2 (r x)
@@ -319,11 +353,11 @@
       (setf i (ash i -1)))
     (decf (exponent x) e)
     (let ((z (make-custom-float-64)))
-      (multiply-custom-float-64 z x (aref *inverse-table-2* (- i 128)))
+      (multiply-custom-float-64 z x (aref *log-inverse-table-2* (- i 128)))
       (add-custom-float-64 z *minus-one* z)
       (multiply-custom-float-64 r e *log-2*)
       (let ((p (make-custom-float-64)))
-        (p_2 p z)
+        (p-2 p z)
         (add-custom-float-64 p (aref *log-inverse-table-2* (- i 128)) p)
         (add-custom-float-64 r p r)))))
 
