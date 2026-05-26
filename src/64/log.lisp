@@ -70,8 +70,8 @@
 ;;; 2^-70.278. The polynomial is P[0]*x + P[1]*x^2 + ... +
 ;;; P[5]*x^6. The algorithm assumes that P[0]=1.
 ;;;
-;;; The preceding comment is interesting, but it doesn't say what the
-;;; polynomial is an approximation of.
+;;; The polynomial, say P is an approximation so that P(x) is an
+;;; approximation of log(1+x).
 (defparameter *log-polynomial-table*
   (make-array
    6
