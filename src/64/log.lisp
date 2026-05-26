@@ -100,6 +100,18 @@
 ;;;
 ;;; In the end e*log(2) will have to be added to the result of
 ;;; taking the log of x here.
+;;;
+;;; Here is how I understand the main idea.  Consider X to be a sum of
+;;; a high part A and a low part B.  The inverse table contains the
+;;; inverse of A, which is used to multiply with X, so essentially, we
+;;; get (A + B)/A from which we subtract 1, so we get B/A.  Now B/A is
+;;; very small, like its absolute value is around 0.002.  We compute
+;;; the logarithm of 1 + B/A by using a degree 6 polynomial that takes
+;;; B/A as an input.  So log(x) is log(1 + B/A) - log(A).  But -log(A)
+;;; is what the *log-inverse-table* contains.  So we add that value to
+;;; log(1 + B/A).  Finally, we add e*log(2) to account for the
+;;; original exponent.  The thing I still don't understand is why the
+;;; precisiion of the *INVERSE-TABLE* must be limited to 10 bits.
 (defun cr-log-fast (e x)
   (multiple-value-bind (significand)
       (integer-decode-float x)
@@ -107,9 +119,8 @@
     ;; if x > sqrt(2), we divide it by 2 to avoid cancellation 
     ;; 
     ;; The value #x16a09e667f3bcd is exactly the significand of (SQRT
-    ;; 2).  To divide by 2, it suffices to shift right by 1 and to
-    ;; increase the exponent.  But, in fact, x itself is not shifted,
-    ;; and instead the shifted value is reflected in the variable y.
+    ;; 2).  The variable Y becomes either X or X*0.5 so that the
+    ;; precision is preserved.
     (let ((c (>= significand #x16a09e667f3bcd)))
       (incf e (if c 1 0)) ; now -1074 <= e <= 1024
       ;; The lower values happen when the original argument was
@@ -139,6 +150,10 @@
                (z (fma r y -1d0)) ; exact
                ;; evaluate P(z), for |z| < 0.00212097167968735
                (ph 0d0) ; will hold the value of P(z)-z
+               ;; The reason ph does not hold P(z) is that the
+               ;; polynomial is evaluated without taking into account
+               ;; the first coefficient, which is equal to 1.
+               ;;
                ;; |z2| < 4.5e-6 thus the rounding error on z2 is
                ;; |bounded by ulp(4.5e-6) = 2^-70.
                (z2 (* z z)) 
@@ -198,6 +213,7 @@
             ;; representable.
             (let ((ee (sim:dfloat e)))
               (multiple-value-bind (h l)
+                  ;; Z that was omitted above is added here.
                   (fast-two-sum (fma ee log2-h l1) z)
                 ;; here |hh+l1|+|z| <= 3275606777621385*2^-42 + 0.0022
                 ;; < 745 thus |h| < 745, and the additional error from
