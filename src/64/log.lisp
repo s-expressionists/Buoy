@@ -110,8 +110,9 @@
 ;;; B/A as an input.  So log(x) is log(1 + B/A) - log(A).  But -log(A)
 ;;; is what the *log-inverse-table* contains.  So we add that value to
 ;;; log(1 + B/A).  Finally, we add e*log(2) to account for the
-;;; original exponent.  The thing I still don't understand is why the
-;;; precisiion of the *INVERSE-TABLE* must be limited to 10 bits.
+;;; original exponent.  The precision of the entries in
+;;; *INVERSE-TABLE* must be limited to 10 bits in order to guarantee
+;;; that the form (fma r y -1d0) returns an exact value.
 (defun cr-log-fast (e x)
   (multiple-value-bind (significand)
       (integer-decode-float x)
