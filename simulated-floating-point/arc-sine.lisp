@@ -22,7 +22,7 @@
                        (/ (arc-sine-term-coefficient i)
                           (arc-sine-term-coefficient (1- i)))))))
 
-(defun pfloat-arc-sine-of-positive-argument (pfloat)
+(defun pfloat-arc-sine-of-small-positive-argument (pfloat)
   (loop with sum = pf:*zero*
         with square = (pf:* pfloat pfloat)
         for factor in *arc-sine-factors*
@@ -31,6 +31,15 @@
         until (pf:= sum sum2)
         do (setf sum sum2)
         finally (return sum)))
+
+(defun pfloat-arc-sine-of-positive-argument (pfloat)
+  (if (pf:< pfloat (pf:/ pf:*one* pf:*two*))
+      (pfloat-arc-sine-of-small-positive-argument pfloat)
+      (pf:- (pf:/ *pfloat-pi* pf:*two*)
+            (pf:* pf:*two*
+                  (pfloat-arc-sine-of-small-positive-argument
+                   (pfloat-square-root
+                    (pf:/ (pf:- pf:*one* pfloat) pf:*two*)))))))
 
 (defun pfloat-arc-sine (pfloat)
   (cond ((pf:zerop pfloat)
