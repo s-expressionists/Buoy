@@ -17,7 +17,7 @@
    (:file "pi")
    (:file "sine-cosine")
    (:file "tangent")
-   (:file "arcsine")
+   (:file "arc-sine")
    (:file "arc-cosine")
    (:file "hyperbolic-sine")
    (:file "hyperbolic-cosine")))
