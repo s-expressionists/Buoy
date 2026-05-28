@@ -118,8 +118,10 @@
    :initial-contents
    (loop for i from 0 to 32
          for ratio = (/ i 64)
-         for rational-sine = (sim:rational-sine ratio)
+         for pfloat-ratio = (pf:pfloat-from-rational ratio)
+         for pfloat-argument = (pf:* sim:*pfloat-pi* pfloat-ratio)
+         for pfloat-sine = (sim:pfloat-sine pfloat-argument)
          collect (multiple-value-bind (high low)
-                     (double-double-from-rational rational-sine)
+                     (double-double-from-pfloat pfloat-sine)
                    ;; Notice the order.
                    (list low high)))))
