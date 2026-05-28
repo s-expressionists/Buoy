@@ -31,6 +31,7 @@
    #:rational-exp
    #:rational-expt
    #:*pi*
+   #:*pfloat-pi*
    #:rational-square-root
    #:pfloat-sine
    #:rational-sine
