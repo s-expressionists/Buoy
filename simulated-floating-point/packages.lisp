@@ -32,7 +32,9 @@
    #:rational-expt
    #:*pi*
    #:rational-square-root
+   #:pfloat-sine
    #:rational-sine
+   #:pfloat-cosine
    #:rational-cosine
    #:rational-tangent
    #:rational-arcsine
