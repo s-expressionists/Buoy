@@ -112,6 +112,9 @@
                         (aref *asin-database* m 2)))
                  f))))
 
+;;; Double-double approximations of sin(pi*i/64 for i from 0 to 32.
+;;; Note that the first value is the low part and the second value is
+;;; the high part.
 (defparameter *sin-i/64*
   (make-array
    '(33 2)
