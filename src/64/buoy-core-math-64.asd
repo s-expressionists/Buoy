@@ -20,4 +20,5 @@
    (:file "reduce")
    (:file "sin")
    (:file "cos")
-   (:file "log")))
+   (:file "log")
+   (:file "asin")))
