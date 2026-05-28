@@ -7,4 +7,4 @@
   (pf:pfloat-from-rational (/ *pi* 2)))
 
 (defun pfloat-arccos (pfloat)
-  (pf:- *pfloat-pi/2* (pfloat-arcsine pfloat)))
+  (pf:- *pfloat-pi/2* (pfloat-arc-sine pfloat)))
