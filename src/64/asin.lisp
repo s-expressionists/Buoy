@@ -111,3 +111,15 @@
                      (- (- (aref *asin-database* m 1))
                         (aref *asin-database* m 2)))
                  f))))
+
+(defparameter *sin-i/64*
+  (make-array
+   '(33 2)
+   :initial-contents
+   (loop for i from 0 to 32
+         for ratio = (/ i 64)
+         for rational-sine = (sim:rational-sine ratio)
+         collect (multiple-value-bind (high low)
+                     (double-double-from-rational rational-sine)
+                   ;; Notice the order.
+                   (list low high)))))
