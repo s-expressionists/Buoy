@@ -21,4 +21,5 @@
    (:file "arc-cosine")
    (:file "arc-tangent")
    (:file "hyperbolic-sine")
-   (:file "hyperbolic-cosine")))
+   (:file "hyperbolic-cosine")
+   (:file "hyperbolic-tangent")))
