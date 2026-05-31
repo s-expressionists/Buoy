@@ -24,4 +24,5 @@
    (:file "hyperbolic-cosine")
    (:file "hyperbolic-tangent")
    (:file "area-hyperbolic-sine")
-   (:file "area-hyperbolic-cosine")))
+   (:file "area-hyperbolic-cosine")
+   (:file "area-hyperbolic-tangent")))
