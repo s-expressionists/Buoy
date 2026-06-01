@@ -440,19 +440,19 @@
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
         ;; less than half of ulp of asin(x)
         (progn 
-          (if (< absx #.(parse-c-literal "0x1.7137449123ef6p-26"))
-              (when (< absx #.(parse-c-literal "0x1.0p-1022"))
-                (error 'floating-point-underfloat))
-              (return-from cr-asin
-                (fma #.(parse-c-literal "0x1.0p-55") x x)))
+          (when (< absx #.(parse-c-literal "0x1.7137449123ef6p-26"))
+              (if (< absx #.(parse-c-literal "0x1.0p-1022"))
+                  (error 'floating-point-underfloat)
+                  (return-from cr-asin
+                    (fma #.(parse-c-literal "0x1.0p-55") x x))))
           (setf tt (* x x))
           (setf jd (round (* tt #.(parse-c-literal "0x1.0p7"))))
-          (setf z x)))
-    (setf zl 0d0)
-    (setf tt (fma x x (* #.(parse-c-literal "-0x1.0p-7") jd)))
-    ;; fails for 0x1.0fp-52 with x=0x1.fa3c79a3c19abp-3 (rndz,
-    ;; no FMA)
-    (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))
+          (setf tt (fma x x (* #.(parse-c-literal "-0x1.0p-7") jd)))
+          (setf z x)
+          (setf zl 0d0)
+          ;; fails for 0x1.0fp-52 with x=0x1.fa3c79a3c19abp-3 (rndz,
+          ;; no FMA)
+          (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))))
     (let* ((j (round jd))
            (t2 (* tt tt))
            (p *asin-polynomial-approximations*)
