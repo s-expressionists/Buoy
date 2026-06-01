@@ -403,7 +403,9 @@
 
 (defun cr-asin (x)
   (let ((absx (abs x))
-        (eps 0.0d0))
+        (eps 0.0d0)
+        (j 0)
+        (ttt 0d0))
     (if (> absx 0.5d0)
         (let ((off00 #.(parse-c-literal "0x1.921fb54442d18p+0"))
               (off01 #.(parse-c-literal "0x1.1a62633145c07p-54"))
@@ -425,10 +427,12 @@
                    (sqrt (sqrt tt))
                    (z (if (minusp x) sqrt (- sqrt)))
                    (zl (* (fma z z (- tt) (* (/ -0.5d0 tt) z)))))
+              (setf j jd)
               (setf tt (- (* 0.25d0 tt)
                           (* jd  #.(parse-c-literal "0x1.0p-7"))))
               ;; fails with 0x1.98p-52 and x=0x1.3f47056fc030ap-1
               ;; (rndz, no fma)
+              (setf ttt tt)
               (setf eps (abs (* (* z tt)
                                 #.(parse-c-literal "0x1.99p-52")))))))
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
@@ -440,7 +444,27 @@
         (let ((f0h 0d0)
               (f0l 0d0)
               (tt (* x x))
-              (jd (round (* tt #.(parse-c-literal "0x1.0p7")))))
+              (jd (round (* tt #.(parse-c-literal "0x1.0p7"))))
+              (z x)
+              (zl 0))
           (setf tt (fma x x (* #.(parse-c-literal "-0x1.0-7") jd)))
+          ;; fails for 0x1.0fp-52 with x=0x1.fa3c79a3c19abp-3 (rndz,
+          ;; no FMA)
+          (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))
+          (setf ttt tt)
+          (setf j jd)))
+    (let ((t2 (* ttt ttt))
+          (p *asin-polynomial-approximations*)
+          (d (* ttt
+                (+ (+ (aref p j 2)
+                      (* ttt (aref p j 3)))
+                   (* t2
+                      (+ (+ (aref p j 4)
+                            (* ttt (aref p j 5)))
+                         (* t2
+                            (+ (aref p j 6)
+                               (* ttt (aref p j 7))))))))))
 
+                      
+                      
         )))
