@@ -32,6 +32,12 @@
     ;; |(a+b)-(hi+lo)| <= 2^-105 min(|a+b|,|hi|)
     (values high low)))
 
+(defun fast-sum (xh xl yh yl)
+  (multiple-value-bind (sh sl)
+      (fast-two-sum xh yh)
+    (let ((e (+ (+ xl yl) sl)))
+      (values sh e))))
+
 ;;; The core-math library uses a C99 function called `fma'.  It takes
 ;;; three arguments, x, y, and z and it returns (+ (* x y) z),
 ;;; apparently without losing any intermediate precision.  The only
