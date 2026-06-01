@@ -431,4 +431,16 @@
               ;; (rndz, no fma)
               (setf eps (abs (* (* z tt)
                                 #.(parse-c-literal "0x1.99p-52")))))))
+        ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
+        ;; less than half of ulp of asin(x)
+        (if (< absx #.(parse-c-literal "0x1.7137449123ef6p-26"))
+            (when (< absx #.(parse-c-literal "0x1.0p-1022"))
+              (error 'floating-point-underfloat))
+            (return-from cr-asin (fma #.(parse-c-literal "0x1.0p-55") x x)))
+        (let ((f0h 0d0)
+              (f0l 0d0)
+              (tt (* x x))
+              (jd (round (* tt #.(parse-c-literal "0x1.0p7")))))
+          (setf tt (fma x x (* #.(parse-c-literal "-0x1.0-7") jd)))
+
         )))
