@@ -415,8 +415,8 @@
               (off01 #.(parse-c-literal "0x1.1a62633145c07p-54"))
               (off10 #.(parse-c-literal "-0x1.921fb54442d18p+0"))
               (off11 #.(parse-c-literal "-0x1.1a62633145c07p-54")))
-          (setf f0h (if (minusp x) off00 off01))
-          (setf f0l (if (minusp x) off10 off11))
+          (setf f0h (if (minusp x) off10 off00))
+          (setf f0l (if (minusp x) off11 off01))
           (when (>= absx 1d0)
             (if (= absx 1d0)
                 (return-from cr-asin (+ f0h f0l))
@@ -436,7 +436,8 @@
             ;; fails with 0x1.98p-52 and x=0x1.3f47056fc030ap-1
             ;; (rndz, no fma)
             (setf eps (abs (* (* z tt)
-                              #.(parse-c-literal "0x1.99p-52"))))))
+                              #.(parse-c-literal "0x1.99p-52"))))
+            (break)))
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
         ;; less than half of ulp of asin(x)
         (progn 
