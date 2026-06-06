@@ -102,3 +102,12 @@
 
 (defun double-double-from-pfloat (pfloat)
   (double-double-from-rational (pf:rational-from-pfloat pfloat)))
+
+(defun copy-sign (x y)
+  (if (minusp y)
+      (if (minusp x)
+          x
+          (- x))
+      (if (minusp x)
+          (- x)
+          x)))
