@@ -401,6 +401,39 @@
                  (p "0x1.5c3c13008a099p-4")
                  (p "0x1.662225a1b4f77p-4"))))))
 
+;;; Same as in code for ACOS.
+(defparameter *c-table*
+  (flet ((p (x) (parse-c-literal x)))
+    (make-array
+     '(5 2)
+     :initial-contents
+     (list (list (p "0x1.0p+0")
+                 (p "-0x1.fc2c76456515bp-108"))
+           (list (p "0x1.5555555555555p-3")
+                 (p "0x1.5555555623513p-57"))
+           (list (p "0x1.3333333333333p-4")
+                 (p "0x1.9997e3427441bp-59"))
+           (list (p "0x1.6db6db6db6db7p-5")
+                 (p "-0x1.cb95ff08658e6p-62"))
+           (list (p "0x1.f1c71c71c6d5bp-6")
+                 (p "0x1.b125bccdcc89ep-60"))))))
+              
+
+(defun poly-dd (xh xl n table l)
+  (let ((i (1- n)))
+    (multiple-value-bind (ch l)
+        (fast-two-sum (aref table i 0) l l)
+      (let ((cl (+ (aref table i 1) l)))
+        (loop for j downfrom (1- i) to 0
+              do (multiple-value-bind (cch ccl)
+                     (multiply-dd xh xl ch cl)
+                   (setf ch cch cl ccl))
+                 (multiple-value-bind (cch ccl)
+                     (fast-sum (aref table i 0) (aref table i 1)
+                               ch cl)
+                   (setf ch cch cl ccl)))
+        (values ch l)))))        
+
 (defun as-asine-refine (x phi)
   ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
   ;; Using angle rotation formula bring the argument close to zero
@@ -449,7 +482,10 @@
               (setf dv (* dv sgn))
               (let ((fl (* v2 (+ ct0 (* v2 (+ ct1 (* vt ct2)))))))
                 (multiple-value-bind (fh fl)
-                    (poly-dd v2 dv2 ...)
+                    (poly-dd v2 dv2 5 *c-table* fl)
+                  (multiple-value-bind (fh fl)
+                      (multiply-dd v dv fh fl)
+                    
                   )))))))))
 
 (defun cr-asin (x)
