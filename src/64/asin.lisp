@@ -485,7 +485,24 @@
                     (poly-dd v2 dv2 5 *c-table* fl)
                   (multiple-value-bind (fh fl)
                       (multiply-dd v dv fh fl)
-                    
+                    (let* ((lh #.(parse-c-literal "0x1.921fb54442dp-5"))
+                           (ll #.(parse-c-literal "0x1.8469898cc518p-53)"))
+                           (ls #.(parse-c-literal "-0x1.fc8f8cbb5bf6cp-102"))
+                           (ph (* jt lh))
+                           (pl (* ll jt))
+                           (ps (* ls jt)))
+                      (multiple-value-bind (pl ps)
+                          (fast-sum fh fl pl ps)
+                        (multiple-value-bind (ph pl)
+                            (fast-two-sum ph pl)
+                          (multiple-value-bind (pl ps)
+                              (fast-two-sum pl ps)
+                            (multiple-value-bind (ph pl)
+                                (fast-two-sum ph pl)
+                              (multiple-value-bind (pl ps)
+                                  (fast-two-sum pl ps)
+                                
+
                   )))))))))
 
 (defun cr-asin (x)
