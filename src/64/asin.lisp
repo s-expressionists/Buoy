@@ -494,8 +494,10 @@
                   (multiple-value-setq (pl ps) (fast-two-sum pl ps))
                   (multiple-value-setq (ph pl) (fast-two-sum ph pl))
                   (multiple-value-setq (pl ps) (fast-two-sum pl ps))
-                                
-
+                  (multiple-value-bind (ph-significand ph-exponent ph-sign)
+                      (integer-decode-float ph)
+                    (multiple-value-bind (pl-significand pl-exponent pl-sign)
+                        (integer-decode-float pl)
                   )))))))))
 
 (defun cr-asin (x)
