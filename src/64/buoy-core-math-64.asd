@@ -21,4 +21,5 @@
    (:file "sin")
    (:file "cos")
    (:file "log")
-   (:file "asin")))
+   (:file "asin")
+   (:file "exp"))
