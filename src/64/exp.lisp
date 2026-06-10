@@ -33,7 +33,7 @@
       (when (>= aix #x40874910d52d3052)
         ;; x <= -0x1.74910d52d3052p+9
         (error 'floating-point-underflow)))
-    (let* ((s #.(parse-c-literal "0x1.71547652b82fep+12"))
+    (let* ((s 2^12/ln-2)
            (tt (round (* x s)))
            (jt tt)
            (i0 (logand (ash jt -6) #x3f))
