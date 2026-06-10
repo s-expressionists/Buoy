@@ -111,3 +111,8 @@
       (if (minusp x)
           (- x)
           x)))
+
+;;; This approximation of 2^12/ln(2) is used in several places, and in
+;;; the C code, it often appears without any comment.
+(defconstant 2^12/ln-2
+  #.(dfloat (/ (expt 2 12) (sim:rational-ln 2))))
