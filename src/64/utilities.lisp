@@ -114,5 +114,14 @@
 
 ;;; This approximation of 2^12/ln(2) is used in several places, and in
 ;;; the C code, it often appears without any comment.
-(defconstant 2^12/ln-2
-  #.(dfloat (/ (expt 2 12) (sim:rational-ln 2))))
+(defconstant +2^12/ln-2+
+  (dfloat (/ (expt 2 12) (sim:rational-ln 2))))
+
+(defconstant +rational-ln-2+
+  (sim:rational-ln 2))
+
+(defconstant +ln-2/2^12-high+
+  (dfloat (/ +rational-ln-2+ (expt 2 12))))
+
+(defconstant +ln-2/2^12-low+
+  (dfloat (- +rational-ln-2+ (rational +ln-2/2^12-high+))))
