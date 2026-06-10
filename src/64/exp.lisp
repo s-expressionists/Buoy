@@ -33,7 +33,7 @@
       (when (>= aix #x40874910d52d3052)
         ;; x <= -0x1.74910d52d3052p+9
         (error 'floating-point-underflow)))
-    (let* ((s 2^12/ln-2)
+    (let* ((s +2^12/ln-2+)
            (tt (round (* x s)))
            (jt tt)
            (i0 (logand (ash jt -6) #x3f))
@@ -45,8 +45,8 @@
            (t1l (aref *t1-table* i1 0)))
       (multiple-value-bind (th tl)
           (multiply-dd t0h t0l t1h t1l)
-        (let* ((l2h #.(parse-c-literal "0x1.62e42ffp-13"))
-               (l2l #.(parse-c-literal "0x1.718432a1b0e26p-47"))
+        (let* ((l2h +ln-2/2^12-high+)
+               (l2l +ln-2/2^12-low+)
                ;; Use Cody-Waite argument reduction: since |x| < 745, we
                ;; have |t| < 2^23, thus since l2h is exactly
                ;; representable on 29 bits, l2h*t is exact.
