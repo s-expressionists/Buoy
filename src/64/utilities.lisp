@@ -120,8 +120,11 @@
 ;;; We can't just compute this value, because it has to be exactly
 ;;; represented in 29 bits.  Or, rather, I don't know how to compute
 ;;; this value, so instead I just copy the literal from the C code.
+;;; This value is slighly larger than the closest value to ln(2)/2^12.
 (defconstant +ln-2/2^12-high+
   (parse-c-literal "0x1.62e42ffp-13"))
 
+;;; It is actually the difference between the previous constant and
+;;; this one that best approximates ln(2)/2^12.
 (defconstant +ln-2/2^12-low+
   (parse-c-literal "0x1.718432a1b0e26p-47"))
