@@ -28,6 +28,18 @@
 ;;; floor, then, f is positive, so that the 0 <= f*ln(2) < 1. Or the
 ;;; integer part can be computed using round, so that -1/2 < f*ln(2) <
 ;;; 1/2.
+;;;
+;;; The technique used here splits x/ln(2) in more parts, say, a, b,
+;;; c, and d, such that x/ln(2) = a + b*2^-6 + c*2^-12 + d, so that a
+;;; is an integer, b and c are integers between 0 and 63 (i.e., 6 bit
+;;; numbers), and d is the fraction which is then less than 2-12, so
+;;; that e^x = 2^a * 2^(b*2^-6) * 2^(c * 2^-12) * e^(d*ln(2)).  The
+;;; tables t0 and t1 are used to compute the two middle factors as
+;;; double-doubles.  Here, a, b, and c are computed by multiplying x
+;;; by 2^12/ln(2) and rounding the result to an integer that is called
+;;; tt in this code.  Bits 5-0 of tt are then the value c above, and
+;;; bits 11-6 are the value b.  The remaining upper bits are the value
+;;; a.  Since ROUND is used, the value d is -2^13 < d < 2^13.
 
 (defun cr-exp (x)
   (let* ((ix (quaviver:float-bits 'double-float x))
