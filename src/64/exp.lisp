@@ -37,6 +37,39 @@
     (incf ix (ash i 52))
     (quaviver:bits-float 'double-float ix)))
 
+(defun as-exp-accurate (x)
+  (let ((ix (quaviver:float-bits 'double-float x)))
+    (when (< (logand (ash ix -52) #x7ff) #x3c9)
+      (return-from as-exp-accurate (+ 1d0 x)))
+    (let* ((s +2^12/ln-2+)
+           (tt (round (* x s)))
+           (jt tt)
+           (i0 (logand (ash jt -6) #x3f))
+           (i1 (logand jt #x3f))
+           (ie (ash jt -12))
+           (t0h (aref *t0-table* i0 1))
+           (t0l (aref *t0-table* i0 0))
+           (t1h (aref *t1-table* i1 1))
+           (t1l (aref *t1-table* i1 0)))
+      (multiple-value-bind (th tl)
+          (multiply-dd t0h t0l t1h t1l)
+        (let* ((l2h +ln-2/2^12-high+)
+               (l2l +ln-2/2^12-low+)
+               (l2ll +ln-2/2^12-low-low+)
+               ;; Use Cody-Waite argument reduction: since |x| < 745, we
+               ;; have |t| < 2^23, thus since l2h is exactly
+               ;; representable on 29 bits, l2h*t is exact.
+               (dx (- x (* l2h tt)))
+               (dxl (* l2l tt))
+               (dxll (+ (* l2ll tt) (fma l2l t (- dxl))))
+               (dxh (+ dx dxl)))
+          (setf dxl (+ (- dx dxh) dxl dxll))
+          (multiple-value-bind (fl fh)
+              (o-poly-dd dxh dxl 7 *exp-poly-*)
+            (multiple-value-setq (fh fl)
+              (multiply-dd dxh dxl fh fl))
+            
+
 ;;; The basic techniqe for argument reduction goes like this: You want
 ;;; to compute e^x.  You start by multiplying x by lb(e) so that e^x =
 ;;; 2^(x*lb(e)) which is the same as 2^(x/ln(2)).  Then you take the
