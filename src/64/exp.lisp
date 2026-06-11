@@ -6,10 +6,10 @@
          (cl (aref table i 1)))
     (loop for j downfrom (1- i) to 0
           do (multiple-value-setq (ch cl) (multiply-dd xh xl ch cl))
-             (let* ((th (+ ch (aref table i 0)))
-                    (tl (+ (- (aref table i 0) th) ch)))
+             (let* ((th (+ ch (aref table j 0)))
+                    (tl (+ (- (aref table j 0) th) ch)))
                (setf ch th)
-               (incf cl (+ tl (aref table i 1)))))
+               (incf cl (+ tl (aref table j 1)))))
     (values ch cl)))
 
 (defun as-ldexp (x i)
