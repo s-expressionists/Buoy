@@ -128,3 +128,6 @@
 ;;; this one that best approximates ln(2)/2^12.
 (defconstant +ln-2/2^12-low+
   (parse-c-literal "0x1.718432a1b0e26p-47"))
+
+(defconstant +ln-2/2^12-low-low+
+  (parse-c-literal "0x1.9ff0342542fc3p-102"))
