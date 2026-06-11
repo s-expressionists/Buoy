@@ -12,6 +12,26 @@
                (incf cl (+ tl (aref table j 1)))))
     (values ch cl)))
 
+(defparameter *exp-poly-*
+  (make-array
+   '(7 2)
+   :initial-contents
+   (flet ((p (x) (parse-c-literal x)))
+     (list (list (p "0x1.0p+0")
+                  0d0)
+           (list (p "0x1p-1")
+                 (p "0x1.712f72ecec2cfp-99"))
+           (list (p "0x1.5555555555555p-3")
+                 (p "0x1.5555555554d07p-57"))
+           (list (p "0x1.5555555555555p-5")
+                 (p "0x1.55194d28275dap-59"))
+           (list (p "0x1.1111111111111p-7")
+                 (p "0x1.12faa0e1c0f7bp-63"))
+           (list (p "0x1.6c16c16da6973p-10")
+                 (p "-0x1.4ba45ab25d2a3p-64"))
+           (list (p "0x1.a01a019eb7f31p-13")
+                 (p "-0x1.9091d845ecd36p-67"))))))
+
 (defun as-ldexp (x i)
   (let ((ix (quaviver:float-bits 'double-float x)))
     (incf ix (ash i 52))
