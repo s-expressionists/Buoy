@@ -39,7 +39,10 @@
 ;;; by 2^12/ln(2) and rounding the result to an integer that is called
 ;;; tt in this code.  Bits 5-0 of tt are then the value c above, and
 ;;; bits 11-6 are the value b.  The remaining upper bits are the value
-;;; a.  Since ROUND is used, the value d is -2^13 < d < 2^13.
+;;; a.  Since ROUND is used, the value d is -2^13 < d < 2^13.  To find
+;;; d,, or rather d*ln(2), tt is multiplied by ln(2)/2^12 and that
+;;; value is subtracted from x. The value d*ln(x) is called dx in the
+;;; code below.
 
 (defun cr-exp (x)
   (let* ((ix (quaviver:float-bits 'double-float x))
