@@ -117,11 +117,11 @@
 (defconstant +2^12/ln-2+
   (dfloat (/ (expt 2 12) (sim:rational-ln 2))))
 
-(defconstant +rational-ln-2+
-  (sim:rational-ln 2))
-
+;;; We can't just compute this value, because it has to be exactly
+;;; represented in 29 bits.  Or, rather, I don't know how to compute
+;;; this value, so instead I just copy the literal from the C code.
 (defconstant +ln-2/2^12-high+
-  (dfloat (/ +rational-ln-2+ (expt 2 12))))
+  (parse-c-literal "0x1.62e42ffp-13"))
 
 (defconstant +ln-2/2^12-low+
-  (dfloat (- +rational-ln-2+ (rational +ln-2/2^12-high+))))
+  (parse-c-literal "0x1.718432a1b0e26p-47"))
