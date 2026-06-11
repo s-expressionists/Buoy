@@ -19,7 +19,7 @@
    (flet ((p (x) (parse-c-literal x)))
      (list (list (p "0x1.0p+0")
                   0d0)
-           (list (p "0x1p-1")
+           (list (p "0x1.0p-1")
                  (p "0x1.712f72ecec2cfp-99"))
            (list (p "0x1.5555555555555p-3")
                  (p "0x1.5555555554d07p-57"))
