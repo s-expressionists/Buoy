@@ -17,6 +17,18 @@
     (incf ix (ash i 52))
     (quaviver:bits-float 'double-float ix)))
 
+;;; The basic techniqe for argument reduction goes like this: You want
+;;; to compute e^x.  You start by multiplying x by lb(e) so that e^x =
+;;; 2^(x*lb(e)) which is the same as 2^(x/ln(2)).  Then you take the
+;;; integer and the fractional part of x/ln(2), say i and f. so that
+;;; you have 2^(i+f) which is 2^i * 2^f.  2^i is an integer, and you
+;;; can just modify the exponent of 2^f in order to do the
+;;; multiplication.  Now 2^f can be computed as is, or you can replace
+;;; it with e^(f*ln(2)).  If the integer part was computed using
+;;; floor, then, f is positive, so that the 0 <= f*ln(2) < 1. Or the
+;;; integer part can be computed using round, so that -1/2 < f*ln(2) <
+;;; 1/2.
+
 (defun cr-exp (x)
   (let* ((ix (quaviver:float-bits 'double-float x))
          (aix (logand ix (1- (ash 1 63)))))
