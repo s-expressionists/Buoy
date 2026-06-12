@@ -102,9 +102,7 @@
                              (multiple-value-setq (fh fl)
                                (fast-sum th tl fh fl))))))
             (multiple-value-setq (fh fl)
-              (fast-two-sum fh fl)
-              
-                                                            
+              (fast-two-sum fh fl))))))))
                         
 
 ;;; The basic techniqe for argument reduction goes like this: You want
@@ -133,6 +131,18 @@
 ;;; d,, or rather d*ln(2), tt is multiplied by ln(2)/2^12 and that
 ;;; value is subtracted from x. The value d*ln(x) is called dx in the
 ;;; code below.
+;;;
+;;; The variables l2h and l2l together, i.e. l2h-l2l (notice the
+;;; difference and not the sum represent ln(2)/2^12.  These variables
+;;; are derived in a special way so that l2h has exactly 29
+;;; significant bits.  And since |x| < 745 (or else there would be a
+;;; floating-point overflow), the result is that |tt| < 2^23.  When a
+;;; 29-bit number is multiplied by a 23-bit number, the result has at
+;;; most 52 bits, so that it fits in a double float.  We need to
+;;; compute x - tt*(l2h-l2l) to get to the remainder, but we obviously
+;;; can't add l2h and l2l first, so we expand this expression to
+;;; ((x-tt*l2h) + tt* l2l.  That way, (x-tt*l2h) is small enough that
+;;; tt*l2l can be added.
 
 (defun cr-exp (x)
   (let* ((ix (quaviver:float-bits 'double-float x))
