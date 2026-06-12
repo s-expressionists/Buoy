@@ -68,7 +68,44 @@
               (o-poly-dd dxh dxl 7 *exp-poly-*)
             (multiple-value-setq (fh fl)
               (multiply-dd dxh dxl fh fl))
-            
+            (if (> ix #xc086232bdd7abcd2)
+                (progn ; x < -0x1.6232bdd7abcd2p+9
+                  (setf ix (ash (- 1 ie) 52))
+                  (multiple-value-setq (fh fl)
+                    (multiply-dd (fh fl th tl)))
+                  (multiple-value-setq (fh fl)
+                    (fast-sum th tl fh fl))
+                  (let ((if (quaviver:bits-float 'double-float ix)))
+                    (multiple-value-bind (fh e)
+                        (fast-two-sum if fh)
+                      (incf fl e)
+                      (setf fh (as-todenormal (+ fh fl))))))
+                (progn
+                  (if (= th 1d0)
+                      (progn
+                        (multiple-value-bind (fh e)
+                            (fast-two-sum th fh)
+                          (multiple-value-setq (fl e)
+                            (fast-tow-sum e fl))
+                          (let* ((if fl)
+                                 (ix (quaviver:float-bits 'double-float fl)))
+                            (when (zerop (logand ix (1- (ash 1 52))))
+                              (let ((v (quaviver:float-bits
+                                        'double-float e))
+                                    (d (1+ (logxor (ash ix -63)
+                                                   (ash (ash v -63) 1)))))
+                                (incf ix d)
+                                (setf fl (quaviver:bits-float
+                                          'double-float ix)))))))
+                      (progn (multiple-value-setq (fh fl)
+                               (multiply-dd fh fl th tl))
+                             (multiple-value-setq (fh fl)
+                               (fast-sum th tl fh fl))))))
+            (multiple-value-setq (fh fl)
+              (fast-two-sum fh fl)
+              
+                                                            
+                        
 
 ;;; The basic techniqe for argument reduction goes like this: You want
 ;;; to compute e^x.  You start by multiplying x by lb(e) so that e^x =
