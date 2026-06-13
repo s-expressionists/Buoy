@@ -1,5 +1,14 @@
 (cl:in-package #:buoy-core-math-64)
 
+(defun as-todenormal (x)
+  (flet ((f-to-i (x)
+           (quaviver:float-bits 'double-float x))
+         (i-to-f (i)
+           (quaviver:bits-float 'double-float i)))
+    (let ((ix (f-to-i x)))
+      (setf ix (logand ix (1- (ash 1 52))))
+      (i-to-f ix))))
+
 (defun o-poly-dd (xh xl n table)
   (let* ((i (1- n))
          (ch (aref table i 0))
