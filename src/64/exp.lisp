@@ -89,10 +89,11 @@
                   (progn
                     (if (= th 1d0)
                         (progn
-                          (multiple-value-bind (fh e)
-                              (fast-two-sum th fh)
+                          (let ((e 0d0))
+                            (multiple-value-setq (fh e)
+                              (fast-two-sum th fh))
                             (multiple-value-setq (fl e)
-                              (fast-tow-sum e fl))
+                              (fast-two-sum e fl))
                             (setf fx fl)
                             (setf ix (f-to-i fx))
                             (when (zerop (logand ix (1- (ash 1 52))))
