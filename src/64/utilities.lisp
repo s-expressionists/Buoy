@@ -131,3 +131,9 @@
 
 (defconstant +ln-2/2^12-low-low+
   (parse-c-literal "0x1.9ff0342542fc3p-102"))
+
+(defun f-to-i (x)
+  (quaviver:float-bits 'double-float x))
+
+(defun i-to-f (i)
+  (quaviver:bits-float 'double-float i))
