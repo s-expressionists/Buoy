@@ -60,5 +60,24 @@
             (* (copy-sign #.(parse-c-literal "0x1p1023") x) 2d0))))
     ;; now 0.25 <= |x| < 710.47586
     ;; this branch was checked exhaustively with/without FMA
-    
-                
+    (let* ((il (ash (ash jtu 14) -40))
+           (jl (- il))
+           (i1 (logand il #x3f))
+           (i0 (logand (ash il -6) #x3f))
+           (ie (ash il -12))
+           (ji (logand jl #x3f))
+           (j0 (logand (ash jl -6) #x3f))
+           (je (ash jl -12))
+           (spu (ash (+ 1022 ie) 52))
+           (spf (i-to-f spu))
+           (smu (ash (+ 1022 je) 52))
+           (smf (i-to-f smu))
+           (t0h (aref t0 i0 1))
+           (t0l (aref t0 i0 0))
+           (t1h (aref t1 i1 1))
+           (t1l (aref t1 i1 0))
+           (th (* t0h t1h))
+           (tl (+ (* t0h t1l) (* t1h t0l) (fma t0h t1h (- th))))
+           (l2h +ln-2/2^12-high+)
+           (l2l +ln-2/2^12-low+)
+           (dx 
