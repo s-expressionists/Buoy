@@ -83,4 +83,10 @@
            (dx (+ (- ax (* l2h t1)) (* l2l t1)))
            (dx2 (* dx dx))
            (mx (- dx))
-           
+           (ch0 #.(parse-c-literal "0x1.0p+0"))
+           (ch1 #.(parse-c-literal "0x1.0p-1"))
+           (ch2 #.(parse-c-literal "0x1.5555555aaaaaep-3"))
+           (ch3 #.(parse-c-literal "0x1.55555551c98cp-5"))
+           (pp (* dx (+ (+ ch0 (* dx ch1)) (* dx2 (+ ch2 (* dx ch3))))))
+           (let ((rh 0d0)
+                 (rl 0d0))
