@@ -80,4 +80,7 @@
            (tl (+ (* t0h t1l) (* t1h t0l) (fma t0h t1h (- th))))
            (l2h +ln-2/2^12-high+)
            (l2l +ln-2/2^12-low+)
-           (dx 
+           (dx (+ (- ax (* l2h t1)) (* l2l t1)))
+           (dx2 (* dx dx))
+           (mx (- dx))
+           
