@@ -6,12 +6,12 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "parse-c-literal")
    (:file "utilities")
    (:file "pi-rational")
    (:file "custom-float")
    (:file "sin-table")
    (:file "cos-table")
-   (:file "parse-c-literal")
    (:file "polynomial-sine")
    (:file "polynomial-cosine")
    (:file "sine-cosine-table")
@@ -23,4 +23,4 @@
    (:file "log")
    (:file "asin")
    (:file "exp")
-   (:file "sinh")))
+   #+(or)(:file "sinh")))
