@@ -9,6 +9,8 @@
 ;;; higher than double precision. For 36.736801<|x|<710.47586
 ;;; exp(-|x|) becomes too small and only exp(|x|) is calculated.
 
+;;; This function is called when the absolute value of X is less than
+;;; 0.25.
 (defun sinh-small-argument (x ax aix)
   (when (< aix #x3e57137449123ef7)
     ;; |x| < x0 = 0x1.7137449123ef7p-26
@@ -38,6 +40,11 @@
            (ub (+ x (+ p e))))
       (if (= ub lb) lb (as-sinh-zero x)))))
 
+(defun sinh-very-large-argument (x aix)
+  (if (>= aix #x7ff0000000000000)
+      (error 'floating-point-overflow)
+      (* (copy-sign #.(parse-c-literal "0x1p1023") x) 2d0)))
+
 (defun cr-sinh (x)
   (let* ((t0 *t0-table*)
          (t1 *t1-table*)
@@ -56,10 +63,8 @@
       (return-from cr-sinh
         (sinh-small-argument x ax aix)))
     (when (> aix #x408633ce8fb9f87) ; |x| >~ 710.47586
-      (if (>= aix #x7ff0000000000000)
-          (error 'floating-point-overflow)
-          (return-from cr-sinh
-            (* (copy-sign #.(parse-c-literal "0x1p1023") x) 2d0))))
+      (return-from cr-sinh
+        (sinh-very-large-argument x aix)))
     ;; now 0.25 <= |x| < 710.47586
     ;; this branch was checked exhaustively with/without FMA
     (let* ((il (ash (ash jtu 14) -40))
