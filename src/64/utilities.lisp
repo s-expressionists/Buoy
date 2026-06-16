@@ -95,9 +95,9 @@
     (values h l)))
 
 (defun double-double-from-rational (rational)
-  (let* ((high (dfloat rational))
+  (let* ((high (sim:dfloat rational))
          (diff (- rational (rational high)))
-         (low (dfloat diff)))
+         (low (sim:dfloat diff)))
     (values high low)))
 
 (defun double-double-from-pfloat (pfloat)
@@ -115,7 +115,7 @@
 ;;; This approximation of 2^12/ln(2) is used in several places, and in
 ;;; the C code, it often appears without any comment.
 (defconstant +2^12/ln-2+
-  (dfloat (/ (expt 2 12) (sim:rational-ln 2))))
+  (sim:dfloat (/ (expt 2 12) (sim:rational-ln 2))))
 
 ;;; We can't just compute this value, because it has to be exactly
 ;;; represented in 29 bits.  Or, rather, I don't know how to compute
