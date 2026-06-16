@@ -10,8 +10,8 @@
          (pfloat-exponent (pf:* (pf:/ pfloat-i pfloat-4096) pfloat-ln-2))
          (pfloat-result (sim:pfloat-exp pfloat-exponent))
          (rational-result (pf:rational-from-pfloat pfloat-result))
-         (high (dfloat rational-result))
-         (low (dfloat (- rational-result (rational high)))))
+         (high (sim:dfloat rational-result))
+         (low (sim:dfloat (- rational-result (rational high)))))
     (values high low)))
 
 (defparameter *t1-table*
