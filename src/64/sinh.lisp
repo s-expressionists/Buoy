@@ -9,6 +9,22 @@
 ;;; higher than double precision. For 36.736801<|x|<710.47586
 ;;; exp(-|x|) becomes too small and only exp(|x|) is calculated.
 
+(defparameter *ch-table*
+  (make-array
+   (? 2)
+   :initial-contents
+   (flet ((p (x) (parse-c-literal x)))
+     (list (list (p "0x1.5555555555555p-3")
+                 (p "0x1.555555555552fp-57"))
+           (list (p "0x1.1111111111111p-7")
+                 (p "0x1.11111115cf00dp-63"))
+           (list (p "0x1.a01a01a01a01ap-13")
+                 (p "0x1.a0011c925b85cp-73"))
+           (list (p "0x1.71de3a556c734p-19")
+                 (p "-0x1.b4e2835532bcdp-73"))
+           (list (p "0x1.ae64567f54482p-26")
+                 (p "-0x1.defcf17a6ab79p-81"))))))
+
 ;;; This function is called when the absolute value of X is less than
 ;;; 0.25.
 (defun sinh-small-argument (x ax aix)
