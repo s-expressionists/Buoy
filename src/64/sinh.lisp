@@ -39,6 +39,26 @@
                (setf cl (+ (+ cl (aref c i 1)) e)))
       (values ch cl))))
 
+(defun as-sinh-zero (x)
+  (let* ((x2 (* x x))
+         (x2l (fma x x (- x2)))
+         (magic1 (parse-c-literal "0x1.6124613aef206p-33"))
+         (magic2 (parse-c-literal "0x1.ae7f36beea815p-41"))
+         (magic3 (parse-c-literal "0x1.95785063cd974p-49"))
+         (y2 (* x2 (+ magic1 (* x2 (+ magic2 (* x2 magic3))))))
+         (y1 0d0)
+         (y0 0d0))
+    (multiple-value-setq (y1 y2)
+      (sinh-poly-dd x2 x2l 5 *ch-table* y2))
+    (multiple-value-setq (y1 y2)
+      (multiply-ddd y1 y2 x))
+    (multiple-value-setq (y1 y2)
+      (multply-dd y1 y2 x2 x2l))
+    (multiple-value-setq (y0 y1)
+      (fast-two-sum x y1))
+    
+    
+
 ;;; This function is called when the absolute value of X is less than
 ;;; 0.25.
 (defun sinh-small-argument (x ax aix)
