@@ -225,7 +225,7 @@
 ;;; The technique used here splits x/ln(2) in more parts, say, a, b,
 ;;; c, and d, such that x/ln(2) = a + b*2^-6 + c*2^-12 + d, so that a
 ;;; is an integer, b and c are integers between 0 and 63 (i.e., 6 bit
-;;; numbers), and d is the fraction which is then less than 2-12, so
+;;; numbers), and d is the fraction which is then less than 2^-12, so
 ;;; that e^x = 2^a * 2^(b*2^-6) * 2^(c * 2^-12) * e^(d*ln(2)).  The
 ;;; tables t0 and t1 are used to compute the two middle factors as
 ;;; double-doubles.  Here, a, b, and c are computed by multiplying x
