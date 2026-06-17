@@ -25,6 +25,20 @@
            (list (p "0x1.ae64567f54482p-26")
                  (p "-0x1.defcf17a6ab79p-81"))))))
 
+(defun sinh-poly-dd (xh xl n c l)
+  (let ((i (1- n))
+        (e 0d0))
+    (multiple-value-bind (ch cl)
+        (fast-two-sum (aref c i 0) l)
+      (incf cl (aref c i 1))
+      (loop for j from (1- i) downto 0
+            do (multiple-value-setq (ch cl)
+                 (multiply-dd xh xl ch cl))
+               (multiple-value-setq (ch e)
+                 (fast-two-sum (aref c i 0) ch))
+               (setf cl (+ (+ cl (aref c i 1)) e)))
+      (values ch cl))))
+
 ;;; This function is called when the absolute value of X is less than
 ;;; 0.25.
 (defun sinh-small-argument (x ax aix)
