@@ -40,11 +40,11 @@
       (values ch cl))))
 
 ;;; For small values of x, this function computes SINH using a
-;;; 17-degree polynomial, but since SINH is an odd function and so is
-;;; the approximating polynomial, only the 9 odd powers are used.  The
-;;; polynomial is evaluated on double-doubles for all powers except
-;;; for 15 and 17 which are so small that an ordinary double gives
-;;; enough precision.
+;;; 17-degree polynomial, but since SINH is an odd function, so is the
+;;; approximating polynomial, and only the 9 odd powers are used.  The
+;;; polynomial is evaluated on double-doubles for degrees 3 to 11, and
+;;; with a doubles for degrees 13 to 17.  The last three are so small
+;;; that they contribute little to the result.
 (defun as-sinh-zero (x)
   (let* ((x2 (* x x))
          (x2l (fma x x (- x2)))
