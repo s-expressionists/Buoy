@@ -223,6 +223,24 @@
                  (p "0x1.9ea7540a3d1f9p+952")
                  (p "-0x1.2dp+848"))))))
 
+(defun as-sinh-database (x f)
+  (let* ((tt *sinh-database*)
+         (a 0)
+         (b (1- (array-dimension tt 0)))
+         (m (floor (+ a b) 2))
+         (ax (abs x)))
+    (loop while (<= a b)
+          do (cond ((< (aref tt m 0) ax)
+                    (setf a (1+ m)))
+                   ((= (aref tt m 0) ax)
+                    (setf f (+ (* (copy-sign 1 x) (aref tt m 1))
+                               (* (copy-sign 1 x) (aref tt m 2))))
+                    (loop-finish))
+                   (t
+                    (setf b (1- m))))
+             (setf m (floor (+ a b) 2)))
+    f))
+
 ;;; This function is called when the absolute value of X is less than
 ;;; 0.25.
 (defun sinh-small-argument (x ax aix)
