@@ -7,4 +7,5 @@
 ;;; double. For 5<|x|<36.736801, exp(-|x|) is rather small and is
 ;;; calculated with double precision but exp(|x|) is calculated with
 ;;; higher than double precision. For 36.736801<|x|<710.47586
-;;; exp(-|x|) becomes too small and only exp(|x|) is calculated.
+;;; exp(-|x|) becomes too small and only exp(|x|) is calculated,
+;;; yielding an accuracy of 106 bits.
