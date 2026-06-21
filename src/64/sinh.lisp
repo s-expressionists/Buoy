@@ -233,6 +233,9 @@
                  (p "0x1.9ea7540a3d1f9p+952")
                  (p "-0x1.2dp+848"))))))
 
+;;; This function does a binary search, but it tests for equality in
+;;; each iteration, which doubles the number of tests.  But then, this
+;;; function is probably not executed very often.
 (defun as-sinh-database (x f)
   (let* ((tt *sinh-database*)
          (a 0)
