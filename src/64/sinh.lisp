@@ -12,7 +12,7 @@
 
 (defparameter *ch-table*
   (make-array
-   (? 2)
+   '(5 2)
    :initial-contents
    (flet ((p (x) (parse-c-literal x)))
      (list (list (p "0x1.5555555555555p-3")
@@ -60,9 +60,19 @@
     (multiple-value-setq (y1 y2)
       (multiply-ddd y1 y2 x))
     (multiple-value-setq (y1 y2)
-      (multply-dd y1 y2 x2 x2l))
+      (multiply-dd y1 y2 x2 x2l))
     (multiple-value-setq (y0 y1)
-      (fast-two-sum x y1)))) ;;;;;;;;;;;;;;;;
+      (fast-two-sum x y1))
+    (multiple-value-setq (y1 y2)
+      (fast-two-sum y1 y2))
+    (let ((tt (f-to-i y1)))
+      (when (zerop (logand tt (1- (ash 1 52))))
+        (let ((ww (f-to-i y2)))
+          (if (not (zerop (ash (logxor ww tt) -63)))
+              (decf tt)
+              (incf tt))
+          (setf y1 (i-to-f tt)))))
+    (+ y0 y1)))
     
 (defparameter *sinh-database*
   (make-array
