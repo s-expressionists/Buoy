@@ -10,6 +10,20 @@
 ;;; exp(-|x|) becomes too small and only exp(|x|) is calculated,
 ;;; yielding an accuracy of 106 bits.
 
+(defparameter *cosh-ch-table*
+  (make-array
+   '(4 2)
+   :initial-contents
+   (flet ((p (x) (parse-c-literal x)))
+     (list (list (p "0x1.0p-1")
+                 (p "-0x1.c7e8db669f624p-111"))   ; degree 2
+           (list (p "{0x1.5555555555555p-5")
+                 (p "0x1.5555555556135p-59"))     ; degree 4
+           (list (p "{0x1.6c16c16c16c17p-10")
+                 (p "-0x1.f49f4a6e838f2p-65"))    ; degree 6
+           (list (p "0x1.a01a01a01a01ap-16")
+                 (p "0x1.a4ffbe15316aap-76")))))) ; degree 8
+
 (defparameter *cosh-database*
   (make-array
    '(21 3)
