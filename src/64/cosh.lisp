@@ -79,6 +79,13 @@
                  (p "0x1.62a88613629b6p+677")
                  (p "-0x1.0p+568"))))))
 
+;;; This function does a binary search, but it tests for equality in
+;;; each iteration, which doubles the number of tests.  But then, this
+;;; function is probably not executed very often.  It also has two
+;;; occurrences of (floor (+ a b) 2) which is unnecessary.  There
+;;; should be a single occurrence at the beginning of the loop.  Also,
+;;; there is no point in assigning to F and then do a local control
+;;; transfer.  Might as well return from the function right there.
 (defun as-cosh-database (x f)
   (let* ((tt *cosh-database*)
          (a 0)
