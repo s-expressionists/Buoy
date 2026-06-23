@@ -24,6 +24,17 @@
            (list (p "0x1.a01a01a01a01ap-16")
                  (p "0x1.a4ffbe15316aap-76")))))) ; degree 8
 
+(defparameter *cosh-cl-table*
+  (make-array
+   4
+   :initial-contents
+   (flet ((p (x) (parse-c-literal x)))
+     (list (p "0x1.27e4fb7789f5cp-22")     ; degree 10
+           (p "0x1.1eed8eff9089cp-29")     ; degree 12
+           (p "0x1.939749ce13dadp-37")     ; degree 14
+           (p "0x1.ae9891efb6691p-45"))))) ; degree 16
+   
+
 (defparameter *cosh-database*
   (make-array
    '(21 3)
