@@ -10,7 +10,7 @@
 ;;; exp(-|x|) becomes too small and only exp(|x|) is calculated,
 ;;; yielding an accuracy of 106 bits.
 
-(defparameter *ch-table*
+(defparameter *sinh-ch-table*
   (make-array
    '(5 2)
    :initial-contents
@@ -56,7 +56,7 @@
          (y1 0d0)
          (y0 0d0))
     (multiple-value-setq (y1 y2)
-      (sinh-poly-dd x2 x2l 5 *ch-table* y2))
+      (sinh-poly-dd x2 x2l 5 *sinh-ch-table* y2))
     (multiple-value-setq (y1 y2)
       (multiply-ddd y1 y2 x))
     (multiple-value-setq (y1 y2)
