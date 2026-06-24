@@ -290,6 +290,18 @@
       (error 'floating-point-overflow)
       (* (copy-sign #.(parse-c-literal "0x1p1023") x) 2d0)))
 
+(defconstant +sinh-ch0+
+  (parse-c-literal "0x1.0p+0"))
+
+(defconstant +sinh-ch1+
+  (parse-c-literal "0x1.0p-1"))
+
+(defconstant +sinh-ch2+
+  (parse-c-literal "0x1.5555555aaaaaep-3"))
+
+(defconstant +sinh-ch3+
+  (parse-c-literal "0x1.55555551c98cp-5"))
+
 (defun cr-sinh (x)
   (let* ((t0 *t0-table*)
          (t1 *t1-table*)
