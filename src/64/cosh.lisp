@@ -34,7 +34,6 @@
            (p "0x1.939749ce13dadp-37")     ; degree 14
            (p "0x1.ae9891efb6691p-45"))))) ; degree 16
    
-
 (defparameter *cosh-database*
   (make-array
    '(21 3)
