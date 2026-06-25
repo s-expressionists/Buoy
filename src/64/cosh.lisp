@@ -127,5 +127,10 @@
              (setf m (floor (+ a b) 2)))
     f))
 
+(defun cosh-non-negative (x)
+  (if (< x #.(sim:dfloat 1/4))
+      (cosh-non-negative-|x|<1/4)
+      (cosh-non-negative-|x|>=1/4)))
+
 (defun cosh (x)
   (cosh-non-negative (abs x)))
