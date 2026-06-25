@@ -127,6 +127,11 @@
              (setf m (floor (+ a b) 2)))
     f))
 
+(defun cosh-non-negative-|x|<1/4 (x)
+  (if (< x #.(sim:dfloat (expt 2 -26)))
+      1d0
+      (cosh-non-negative-|x|>=2^-26)))
+
 (defun cosh-non-negative (x)
   (if (< x #.(sim:dfloat 1/4))
       (cosh-non-negative-|x|<1/4)
