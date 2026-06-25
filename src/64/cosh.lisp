@@ -130,7 +130,7 @@
 (defun cosh-0<=x<1/4 (x)
   (if (< x #.(sim:dfloat (expt 2 -26)))
       1d0
-      (cosh-x>=2^-26)))
+      (cosh-2^-26<=x<1/4)))
 
 (defun cosh-x>=0 (x)
   (if (< x #.(sim:dfloat 1/4))
