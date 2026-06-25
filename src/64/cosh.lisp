@@ -127,6 +127,32 @@
              (setf m (floor (+ a b) 2)))
     f))
 
+(defun cosh-2^-26<=x<1/4 (x)
+  ;; q(x) = 1 + c0*x^2 + c1*x^4 + c2*x^6 + c3*x^8 + c4*x^10 is a
+  ;; degree-10 polynomial approximating cosh(x) on [2^-26, 0.125] such
+  ;; that: |q(x) - cosh(x)| < 2^-67.518 * x^2.  This polynomial was
+  ;; generated with the following Sollya command: d = [2^-26,0.125];
+  ;; q=1+x^2*fpminimax((cosh(x)-1)/x^2, [|0,2,4,6,8|], [|53...|], d,
+  ;; absolute);
+  (let ((c0 #.(parse-c-literal "0x1.0p-1"))
+        (c1 #.(parse-c-literal "0x1.5555555555554p-5"))
+        (c2 #.(parse-c-literal "0x1.6c16c16c1d0cp-10"))
+        (c3 #.(parse-c-literal "0x1.a01a0075066b4p-16"))
+        (c4 #.(parse-c-literal "0x1.27faff8dcc1c8p-22")))
+    (let* ((x2 (* x x))
+           (x4 (* x2 x2))
+           (p (* x2 (+ (+ c0 (* x2 c1))
+                       (* x4 (+ (+ c2 (* x2 c3))
+                                (* x4 c4))))))
+           ;; fails with e = x2*(0x1.c8p-52), x=0x1.0f0a7d6ea89ep-14
+           ;; (rndu, no FMA)
+           (e (* x2 #.(parse-c-literal "0x1.84p-51")))
+           (lb (+ 1 (- p e)))
+           (ub (+ 1 (+ p e))))
+      (if (= lb ub)
+          lb
+          (as-cosh-zero x)))))
+
 (defun cosh-0<=x<1/4 (x)
   (if (< x #.(sim:dfloat (expt 2 -26)))
       1d0
