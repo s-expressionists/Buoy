@@ -126,3 +126,6 @@
                     (setf b (1- m))))
              (setf m (floor (+ a b) 2)))
     f))
+
+(defun cosh (x)
+  (cosh-non-negative (abs x)))
