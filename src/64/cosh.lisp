@@ -186,10 +186,20 @@
       1d0
       (cosh-2^-26<=x<1/4)))
 
+(defun cosh-5<x<=max (x)
+  (if (> x 36.736801d0)
+      (cosh-36.736801d0<x<=max x)
+      (cosh-5<x<=36.736801d0 x)))
+
+(defun cosh-1/4<=x<=max (x)
+  (if (> x 5d0)
+      (cosh-5<x<=max x)
+      (cosh-1/4<=x<=5 x)))
+
 (defun cosh-x>=1/4 (x)
   (if (> x #.(parse-c-literal "0x1.633ce8fb9f87dp+9"))
       (error 'floating-point-overflow)
-      (cosh-1/4<=x<=0x1.633ce8fb9f87dp+9 x)))
+      (cosh-1/4<=x<=max x)))
 
 (defun cosh-x>=0 (x)
   (if (< x #.(sim:dfloat 1/4))
