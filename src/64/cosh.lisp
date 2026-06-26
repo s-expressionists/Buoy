@@ -186,6 +186,11 @@
       1d0
       (cosh-2^-26<=x<1/4)))
 
+(defun cosh-x>=1/4 (x)
+  (if (> x #.(parse-c-literal "0x1.633ce8fb9f87dp+9"))
+      (error 'floating-point-overflow)
+      (cosh-1/4<=x<=0x1.633ce8fb9f87dp+9 x)))
+
 (defun cosh-x>=0 (x)
   (if (< x #.(sim:dfloat 1/4))
       (cosh-0<=x<1/4)
