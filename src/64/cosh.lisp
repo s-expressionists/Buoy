@@ -34,6 +34,34 @@
            (p "0x1.939749ce13dadp-37")     ; degree 14
            (p "0x1.ae9891efb6691p-45"))))) ; degree 16
    
+(defun as-cosh-zero (x)
+  (let ((ch *cosh-ch-table*)
+        (cl *cosh-cl-table*))
+    (flet ((cl (i) (aref cl i)))
+      (let* ((x2 (* x x))
+             (x2l (fma x x (- x2)))
+             (y2 (* x2 (+ (cl 0)
+                          (* x2 (+ (cl 1)
+                                   (* x2 (+ (cl 2)
+                                            (* x2 (cl 3)))))))))
+             (y1 0d0)
+             (y0 0d0))
+        (multiple-value-setq (y1 y2)
+          (cosh-poly-dd x2 x2l 4 ch))
+        (multiple-value-setq (y1 y2)
+          (multiply-dd y1 y2 x2 x2l))
+        (multiple-value-setq (y0 y1)
+          (fast-two-sum y1 y2))
+        (let ((tu (quaviver:float-bits 'double-float y1)))
+          (when (zerop (logand tu (1- (ash 1 52))))
+            (let ((wu (quaviver:float-bits 'double-float y2)))
+              (if (zerop (ash (logxor wu tu) -63))
+                  (incf tu)
+                  (decf tu))))
+          (if (= (logand tu (1- (ash 1 52))) (1- (ash 1 52)))
+              (as-cosh-database x (+ y0 y1))
+              (+ y0 y1)))))))
+
 (defparameter *cosh-database*
   (make-array
    '(21 3)
