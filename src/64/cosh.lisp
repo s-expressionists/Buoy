@@ -186,7 +186,7 @@
       1d0
       (cosh-2^-26<=x<1/4)))
 
-(defun compute-h-t (x0 x1)
+(defun compute-h-l (x0 x1)
   (let ((t0 *t0-table*)
         (t1 *t1-table*))
     (let* ((0h (aref t0 x0 1))
@@ -196,6 +196,47 @@
            (h (* 0h 1h))
            (l (+ (* 0h 1l) (* 1h 0l) (fma 0h 1h (- h)))))
       (values h l))))
+
+(defun cosh-1/4<=x<=5 (x)
+  (let* ((s #.(parse-c-literal "0x1.71547652b82fep+12"))
+         (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
+         (jtu (quaviver:float-bits 'double-float v0))
+         (vu (quaviver:float-bits 'double-float v0))
+         (tt (ash (1- (ash 1 39)) 25))
+         (vu (logand vu tt))
+         (ttt (- (quaviver:bits-float 'double-float vu)
+                 #.(parse-c-literal "0x1.8p26")))
+         (aix (quaviver:float-bits 'double-float x))
+         (il (ash (logand (ash jtu 14) (1- (ash 1 64))) -40))
+         (jl (- il))
+         (i1 (logand il #x3f))
+         (i0 (logand (ash il -6) #x3f))
+         (ie (ash il -12))
+         (j1 (logand jl #x3f))
+         (j0 (logand (ash jl -6) #x3f))
+         (je (ash jl -12))
+         (l2h #.(parse-c-literal "0x1.62e42ffp-13"))
+         (l2l #.(parse-c-literal "0x1.718432a1b0e26p-47"))
+         (ch0 #.(parse-c-literal "0x1.0p+0"))
+         (ch1 #.(parse-c-literal "0x1.0p-1"))
+         (ch2 #.(parse-c-literal "0x1.5555555aaaaaep-3"))
+         (ch3 #.(parse-c-literal "0x1.55555551c98cp-5"))
+    (multiple-value-bind (th tl)
+        (compute-h-l i0 i1)
+      (let* ((dx (+ (- x (*  l2h ttt)) (* l2l ttt)))
+             (dx2 (* dx dx))
+             (pp (* dx (+ (+ ch0 (* dx ch1))
+                          (* dx2 (+ ch2 (* dx ch3))))))
+             (rh 0d0)
+             (rl 0d0))
+        
+      
+         
+    
+
+  (multiple-value-bind (qh ql)
+      (compute-h-l j0 j1)
+    
 
 (defun cosh-5<x<=max (x)
   (if (> x 36.736801d0)
