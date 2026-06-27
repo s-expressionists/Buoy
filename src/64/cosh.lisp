@@ -186,6 +186,17 @@
       1d0
       (cosh-2^-26<=x<1/4)))
 
+(defun compute-th-tl (i0 i1)
+  (let ((t0 *t0-table*)
+        (t1 *t1-table*))
+    (let* ((t0h (aref t0 i0 1))
+           (t0l (aref t0 i0 0))
+           (t1h (aref t1 i1 1))
+           (t1l (aref t1 i1 0))
+           (th (* t0h t1h))
+           (tl (+ (* t0h t1l) (* t1h t0l) (fma t0h t1h (- th)))))
+      (values th tl))))
+
 (defun cosh-5<x<=max (x)
   (if (> x 36.736801d0)
       (cosh-36.736801d0<x<=max x)
