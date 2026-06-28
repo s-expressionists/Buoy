@@ -317,7 +317,7 @@
          (s +2^12/ln-2+)
          (ax (abs x))
          ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
-         ;; ends up in bits 35-26 (10 bits) of the result.  So we are
+         ;; ends up in bits 47-26 (22 bits) of the result.  So we are
          ;; going to compute 2^(i+f) where i the integer part and f is
          ;; the fractional part.  That is 2^i*2^f where 2^i is the
          ;; exponent of the result.

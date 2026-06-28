@@ -200,7 +200,7 @@
 (defun cosh-1/4<=x<=5 (x)
   (let* ((s +2^12/LN-2+)
          ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
-         ;; ends up in bits 35-26 (10 bits) of the result.  So we are
+         ;; ends up in bits 47-26 (22 bits) of the result.  So we are
          ;; going to compute 2^(i+f) where i the integer part and f is
          ;; the fractional part.  That is 2^i*2^f where 2^i is the
          ;; exponent of the result.
@@ -221,8 +221,11 @@
          ;; IL contains the integer part of x*s.
          (il (ldb (byte 10 26) jtu))
          (jl (- il))
+         ;; I1 contains the lower 6 bits of the integer part of x*s.
          (i1 (logand il #x3f))
+         ;; I0 contains bits 11-6 of the integer part of x*s.
          (i0 (logand (ash il -6) #x3f))
+         ;; IE contains the upper 10 bits of the integer part of x*s
          (ie (ash il -12))
          (j1 (logand jl #x3f))
          (j0 (logand (ash jl -6) #x3f))
