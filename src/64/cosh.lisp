@@ -207,7 +207,8 @@
          (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
          (jtu (quaviver:float-bits 'double-float v0))
          (vu (quaviver:float-bits 'double-float v0))
-         (tt (ash (1- (ash 1 39)) 25))
+         ;; tt is an integer with 39 1s followed by 25 0s.
+         (tt #.(ash (1- (ash 1 39)) 25))
          (vu (logand vu tt))
          (ttt (- (quaviver:bits-float 'double-float vu)
                  #.(parse-c-literal "0x1.8p26")))
