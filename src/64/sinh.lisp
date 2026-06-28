@@ -316,6 +316,8 @@
          (t1 *t1-table*)
          (s +2^12/ln-2+)
          (ax (abs x))
+         ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
+         ;; ends up in bits 34-26 (9 bits) of the result.
          (v0 (fma ax s #.(parse-c-literal "0x1.8000002p+26")))
          (jtu (f-to-i v0))
          (vu jtu)
