@@ -324,7 +324,8 @@
          (v0 (fma ax s #.(parse-c-literal "0x1.8000002p+26")))
          (jtu (f-to-i v0))
          (vu jtu)
-         (tt (- (ash 1 64) 2 (ash 1 26)))
+         ;; tt is an integer with 39 1s followed by 25 0s.
+         (tt #.(ash (1- (ash 1 39)) 25))
          (vu (logand vu tt))
          (vf (i-to-f vu))
          (t1 (- vf #.(parse-c-literal "0x1.8p26")))
