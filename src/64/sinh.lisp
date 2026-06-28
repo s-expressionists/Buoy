@@ -317,7 +317,10 @@
          (s +2^12/ln-2+)
          (ax (abs x))
          ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
-         ;; ends up in bits 34-26 (9 bits) of the result.
+         ;; ends up in bits 35-26 (10 bits) of the result.  So we are
+         ;; going to compute 2^(i+f) where i the integer part and f is
+         ;; the fractional part.  That is 2^i*2^f where 2^i is the
+         ;; exponent of the result.
          (v0 (fma ax s #.(parse-c-literal "0x1.8000002p+26")))
          (jtu (f-to-i v0))
          (vu jtu)
