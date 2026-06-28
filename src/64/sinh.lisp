@@ -254,6 +254,15 @@
              (setf m (floor (+ a b) 2)))
     f))
 
+;;; The core-math proof paper for SINH proves that when |X| is
+;;; strictly smaller than the value X0 = 0x1.7137449123ef7p-26, then
+;;; basically the value is X, but to take into account different
+;;; rounding modes, the expression (FMA x (expt 2 -55) x) is used
+;;; instead. But of course, we pre-compute (expt 2 -55), and we can't
+;;; rely on the FLOAT function of the implementation to return the
+;;; correct value, so we use our PARSE-C-FLOAT function which uses
+;;; DFLOAT, which is meant to be correct.
+
 ;;; This function is called when the absolute value of X is less than
 ;;; 0.25.
 (defun sinh-small-argument (x ax aix)
