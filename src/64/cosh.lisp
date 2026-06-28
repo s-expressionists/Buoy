@@ -209,11 +209,17 @@
          (vu (quaviver:float-bits 'double-float v0))
          ;; tt is an integer with 39 1s followed by 25 0s.
          (tt #.(ash (1- (ash 1 39)) 25))
+         ;; VU has the fractional bits of V0 eliminated, except for
+         ;; bit 26 which is still what it was.
          (vu (logand vu tt))
+         ;;; TTT now contains the integer part of x*s, except that 0.5
+         ;;; has been added to it if and only if the integer part was
+         ;;; not the result of rounding up.
          (ttt (- (quaviver:bits-float 'double-float vu)
                  #.(parse-c-literal "0x1.8p26")))
          (aix (quaviver:float-bits 'double-float x))
-         (il (ash (logand (ash jtu 14) (1- (ash 1 64))) -40))
+         ;; IL contains the integer part of x*s.
+         (il (ldb (byte 10 26) jtu))
          (jl (- il))
          (i1 (logand il #x3f))
          (i0 (logand (ash il -6) #x3f))

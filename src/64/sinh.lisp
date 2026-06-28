@@ -339,7 +339,8 @@
         (sinh-very-large-argument x aix)))
     ;; now 0.25 <= |x| < 710.47586
     ;; this branch was checked exhaustively with/without FMA
-    (let* ((il (ash (ash jtu 14) -40))
+    (let* (;; il contains the integer part of ax*s.
+           (il (ldb (byte 10 26 jtu)))
            (jl (- il))
            (i1 (logand il #x3f))
            (i0 (logand (ash il -6) #x3f))
