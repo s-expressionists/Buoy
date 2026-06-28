@@ -198,7 +198,7 @@
       (values h l))))
 
 (defun cosh-1/4<=x<=5 (x)
-  (let* ((s #.(parse-c-literal "0x1.71547652b82fep+12"))
+  (let* ((s +2^12/LN-2+)
          (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
          (jtu (quaviver:float-bits 'double-float v0))
          (vu (quaviver:float-bits 'double-float v0))
