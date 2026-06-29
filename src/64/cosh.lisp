@@ -198,6 +198,14 @@
       (values h l))))
 
 (defun cosh-1/4<=x<=5 (x)
+  )
+
+(defun cosh-5<x<=max (x)
+  (if (> x 36.736801d0)
+      (cosh-36.736801d0<x<=max x)
+      (cosh-5<x<=36.736801d0 x)))
+
+(defun cosh-1/4<=x<=max (x)
   (let* ((s +2^12/LN-2+)
          ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
          ;; ends up in bits 47-26 (22 bits) of the result.  So we are
@@ -238,24 +246,20 @@
                                 (* dx2 (+ ch2 (* dx ch3))))))
                    (rh 0d0)
                    (rl 0d0))
-        
-      
-         
-    
-
-  (multiple-value-bind (qh ql)
-      (compute-h-l j0 j1)
-    
-
-(defun cosh-5<x<=max (x)
-  (if (> x 36.736801d0)
-      (cosh-36.736801d0<x<=max x)
-      (cosh-5<x<=36.736801d0 x)))
-
-(defun cosh-1/4<=x<=max (x)
-  (if (> x 5d0)
-      (cosh-5<x<=max x)
-      (cosh-1/4<=x<=5 x)))
+              (if (> x 5d0)
+                  (cosh-5<x<=max x)
+                  (cosh-1/4<=x<=5 x))
+              (multiple-value-setq (rh rl)
+                (fast-two-sum rh rl))
+              (let* ((uhi (f-to-i rh))
+                     (uli (f-to-i rl))
+                     (eh (logand (ash uhi -52) #x7ff))
+                     (el (logand (ash uli -52) #x7ff))
+                     (ml (logand (+ uli 8) ...)))
+                (incf rh rl)
+                (if (or (<= ml 16) (> (- eh el) 103))
+                    (as-cosh-database x rh)
+                    rh)))))))))
 
 (defun cosh-x>=1/4 (x)
   (if (> x #.(parse-c-literal "0x1.633ce8fb9f87dp+9"))
