@@ -137,3 +137,12 @@
 
 (defun i-to-f (i)
   (quaviver:bits-float 'double-float i))
+
+;;; This function is used in several places.  It takes an integer and
+;;; returns three values.  The third value is the lower 6 bits of the
+;;; integer.  The second value is bits 11-6 (6 bits) of the integer.
+;;; The first value is the integer shifted right 12 bits.
+(defun split-integer (integer)
+  (values (ash integer -12)
+          (ldb (byte 6 6) integer)
+          (ldb (byte 6 0) integer)))
