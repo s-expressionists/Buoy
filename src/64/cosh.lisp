@@ -224,6 +224,14 @@
 (defconstant +cosh-ch3+
   (parse-c-literal "0x1.55555551c98cp-5"))
 
+(defun evaluate-ch-polynomial (x x2)
+  (let ((ch0 +cosh-ch0+)
+        (ch1 +cosh-ch1+)
+        (ch2 +cosh-ch2+)
+        (ch3 +cosh-ch3+))
+    (* x (+ (+ ch0 (* x ch1))
+            (* x2 (+ ch2 (* x ch3)))))))
+
 (defun cosh-1/4<=x<=5 (x)
   (let* ((q0h (aref t0 j0 1))
          (q0l (aref t0 j0 0))
