@@ -155,6 +155,21 @@
              (setf m (floor (+ a b) 2)))
     f))
 
+(defconstant +cosh-c0+
+  (parse-c-literal "0x1.0p-1"))
+
+(defconstant +cosh-c1+
+  (parse-c-literal "0x1.5555555555554p-5"))
+
+(defconstant +cosh-c2+
+  (parse-c-literal "0x1.6c16c16c1d0cp-10"))
+
+(defconstant +cosh-c3+
+  (parse-c-literal "0x1.a01a0075066b4p-16"))
+
+(defconstant +cosh-c4+
+  (parse-c-literal "0x1.27faff8dcc1c8p-22"))
+
 (defun cosh-2^-26<=x<1/4 (x)
   ;; q(x) = 1 + c0*x^2 + c1*x^4 + c2*x^6 + c3*x^8 + c4*x^10 is a
   ;; degree-10 polynomial approximating cosh(x) on [2^-26, 0.125] such
@@ -162,11 +177,11 @@
   ;; generated with the following Sollya command: d = [2^-26,0.125];
   ;; q=1+x^2*fpminimax((cosh(x)-1)/x^2, [|0,2,4,6,8|], [|53...|], d,
   ;; absolute);
-  (let ((c0 #.(parse-c-literal "0x1.0p-1"))
-        (c1 #.(parse-c-literal "0x1.5555555555554p-5"))
-        (c2 #.(parse-c-literal "0x1.6c16c16c1d0cp-10"))
-        (c3 #.(parse-c-literal "0x1.a01a0075066b4p-16"))
-        (c4 #.(parse-c-literal "0x1.27faff8dcc1c8p-22")))
+  (let ((c0 +cosh-c0+)
+        (c1 +cosh-c1+)
+        (c2 +cosh-c2+)
+        (c3 +cosh-c3+)
+        (c4 +cosh-c4+))
     (let* ((x2 (* x x))
            (x4 (* x2 x2))
            (p (* x2 (+ (+ c0 (* x2 c1))
