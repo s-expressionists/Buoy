@@ -223,6 +223,36 @@
         ;; (rndz, no fma)
         ))))
 
+(defun cosh-36.736801d0<x<=max (x)
+  (let* ((spu (ash (+ 1021 ie) 52))
+         (spf (i-to-f spu)))
+    (setf rh th)
+    (setf rl (+ tl (* th pp)))
+    (let* ((e (* #.(parse-c-literal "0.12e-18") th))
+           (lb (+ rh (- rl e)))
+           (ub (+ rh (+ rl e))))
+      (if (= lb ub)
+          (* (* lb spf) 2d0)
+          (progn
+            (multiple-value-setq (th tl)
+              (cosh-as-exp-accurate x ttt th tl))
+            (multiple-value-setq (th tl)
+              (fast-two-sum th tl))
+            (let* ((uhi (f-to-i th))
+                   (uli (f-to-i tl))
+                   (eh (logand (ash uhi -52) #x7ff))
+                   (el (logand (ash uli -52) #x7ff))
+                   (ml (logand (+ uli 8) (1- (ash 1 52)))))
+              (incf th tl)
+              (setf th (* th 2d0))
+              (setf th (* th spf))
+              ;; if the exponent difference between eh and el is
+              ;; larger than 103, or if the last bits from ml are <= 8
+              ;; in absolute value, call the accurate path.
+              (if (or (<= ml 16) (> (- eh el) 103))
+                  (as-cosh-database x th)
+                  th)))))))
+
 (defun cosh-5<x<=max (x)
   (if (> x 36.736801d0)
       (cosh-36.736801d0<x<=max x)
