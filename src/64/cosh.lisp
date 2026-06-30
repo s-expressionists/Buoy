@@ -212,6 +212,18 @@
            (l (+ (* 0h 1l) (* 1h 0l) (fma 0h 1h (- h)))))
       (values h l))))
 
+(defconstant +cosh-ch0+
+  (parse-c-literal "0x1.0p+0"))
+
+(defconstant +cosh-ch1+
+  (parse-c-literal "0x1.0p-1"))
+
+(defconstant +cosh-ch2+
+  (parse-c-literal "0x1.5555555aaaaaep-3"))
+
+(defconstant +cosh-ch3+
+  (parse-c-literal "0x1.55555551c98cp-5"))
+
 (defun cosh-1/4<=x<=5 (x)
   (let* ((q0h (aref t0 j0 1))
          (q0l (aref t0 j0 0))
@@ -360,10 +372,10 @@
           (split-integer (- il))
         (let* ((l2h +ln-2/2^12-high+)
                (l2l +ln-2/2^12-low+)
-               (ch0 #.(parse-c-literal "0x1.0p+0"))
-               (ch1 #.(parse-c-literal "0x1.0p-1"))
-               (ch2 #.(parse-c-literal "0x1.5555555aaaaaep-3"))
-               (ch3 #.(parse-c-literal "0x1.55555551c98cp-5")))
+               (ch0 +cosh-ch0+)
+               (ch1 +cosh-ch1+)
+               (ch2 +cosh-ch2+)
+               (ch3 +cosh-ch3+))
           (multiple-value-bind (th tl)
               (compute-h-l i0 i1)
             (let* ((dx (+ (- x (*  l2h ttt)) (* l2l ttt)))
