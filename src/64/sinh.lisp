@@ -311,6 +311,13 @@
 (defconstant +sinh-ch3+
   (parse-c-literal "0x1.55555551c98cp-5"))
 
+(defun evaluate-sinh-ch-polynomial (x x2)
+  (let ((ch0 +sinh-ch0+)
+        (ch1 +sinh-ch1+)
+        (ch2 +sinh-ch2+)
+        (ch3 +sinh-ch3+))
+    (* x (+ (+ ch0 (* x ch1)) (* x2 (+ ch2 (* x ch3)))))))
+
 (defun cr-sinh (x)
   (let* ((t0 *t0-table*)
          (t1 *t1-table*)
@@ -360,14 +367,10 @@
                  (dx (+ (- ax (* l2h t1)) (* l2l t1)))
                  (dx2 (* dx dx))
                  (mx (- dx))
-                 (ch0 #.(parse-c-literal "0x1.0p+0"))
-                 (ch1 #.(parse-c-literal "0x1.0p-1"))
-                 (ch2 #.(parse-c-literal "0x1.5555555aaaaaep-3"))
-                 (ch3 #.(parse-c-literal "0x1.55555551c98cp-5"))
-                 (pp (* dx (+ (+ ch0 (* dx ch1)) (* dx2 (+ ch2 (* dx ch3))))))
-                 (let ((rh 0d0)
-                       (rl 0d0))
-                   (if (> aix #x4014000000000000) ; |x| > 5
+                 (pp (evaluate-sinh-ch-polynomial dx dx2)))
+            (let ((rh 0d0)
+                  (rl 0d0))
+              (if (> aix #x4014000000000000) ; |x| > 5
                        (progn
                          (when (> aix #x40425e4f7b2737fa) ; |x| >~36.736801
                            (setf spu (ash (+ 1021 ie) 52))
@@ -404,9 +407,7 @@
                      (setf th (* th spf))
                      (setf tl (* tl spf))
                      (setf qh (* qh smf))
-                     (let* ((pm (* mx (+ (+ ch0 (* mx ch1))
-                                         (* dx2
-                                            (+ ch2 (* mx ch3))))))
+                     (let* ((pm (evaluate-sinh-ch-polynomial mx dx2))
                             (em (+ qh (* qh pm))))
                        (setf rh th)
                        (setf r1 (+ (- tl em) (* th pp)))
@@ -442,8 +443,7 @@
     (setf tl (* tl spf))
     (setf qh (* qh smf))
     (setf ql (* ql smf))
-    (let ((pm (* mx (+ (+ +sinh-ch0+ (* mx +sinh-ch1))
-                       (* dx2 (+ +sinh-ch2 (* mx +sinh-ch3))))))
+    (let ((pm (evaluate-sinh-ch-polynomial mx dx2))
           (fph th)
           (fpl (+ tl (* th pp)))
           (fmh qh)
