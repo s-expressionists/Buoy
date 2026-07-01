@@ -511,6 +511,18 @@
                           (as-asin-database x res)
                           res))))))))))))
 
+(defconstant +sinh-off00+
+  (parse-c-literal "0x1.921fb54442d18p+0"))
+
+(defconstant +sinh-off01+
+  (parse-c-literal "-0x1.921fb54442d18p+0"))
+
+(defconstant +sinh-off10+
+  (parse-c-literal "-0x1.921fb54442d18p+0"))
+
+(defconstant +sinh-off11+
+  (parse-c-literal "-0x1.1a62633145c07p-54"))
+
 (defun cr-asin (x)
   (let ((absx (abs x))
         (eps 0.0d0)
@@ -521,10 +533,10 @@
         (f0h 0d0)
         (f0l 0d0))
     (if (> absx 0.5d0)
-        (let ((off00 #.(parse-c-literal "0x1.921fb54442d18p+0"))
-              (off01 #.(parse-c-literal "0x1.1a62633145c07p-54"))
-              (off10 #.(parse-c-literal "-0x1.921fb54442d18p+0"))
-              (off11 #.(parse-c-literal "-0x1.1a62633145c07p-54")))
+        (let ((off00 +sinh-off00+)
+              (off01 +sinh-off01+)
+              (off10 +sinh-off10+)
+              (off11 +sinh-off11+))
           (setf f0h (if (minusp x) off10 off00))
           (setf f0l (if (minusp x) off11 off01))
           (when (>= absx 1d0)
