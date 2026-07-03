@@ -514,23 +514,22 @@
 (defun asin-0<=x<=1 (x)
   (if (= x 1d0)
       (/ pi 2d0)
-  (let ((absx (abs x))
-        (eps 0.0d0)
+  (let ((eps 0.0d0)
         (z 0d0)
         (zl 0d0)
         (jd 0d0)
         (tt 0d0)
         (f0h 0d0)
         (f0l 0d0))
-    (if (> absx 0.5d0)
+    (if (> x 0.5d0)
         (progn
           ;; for |x|>0.5 we use range reduction for double angle
           ;; formula asin(x) = pi/2 - 2*asin(sqrt((1-x)/2)) and for
           ;; x<-0.5 acos(x) = -pi/2 + 2*asin(sqrt((1-|x|)/2))
-          (setf tt (- 2d0 (* 2d0 absx)))
+          (setf tt (- 2d0 (* 2d0 x)))
           (let* ((sqrt (sqrt tt)))
             (setf jd (round (* tt 32d0)))
-            (setf z (if (minusp x) sqrt (- sqrt)))
+            (setf z (- sqrt))
             (setf zl (* (fma z z (- tt)) (* (/ -0.5d0 tt) z)))
             (setf tt (- (* 0.25d0 tt)
                         (* jd  #.(parse-c-literal "0x1.0p-7"))))
@@ -542,8 +541,8 @@
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
         ;; less than half of ulp of asin(x)
         (progn 
-          (when (< absx #.(parse-c-literal "0x1.7137449123ef6p-26"))
-              (if (< absx #.(parse-c-literal "0x1.0p-1022"))
+          (when (< x #.(parse-c-literal "0x1.7137449123ef6p-26"))
+              (if (< x #.(parse-c-literal "0x1.0p-1022"))
                   (error 'floating-point-underfloat)
                   (return-from cr-asin
                     (fma #.(parse-c-literal "0x1.0p-55") x x))))
