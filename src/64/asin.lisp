@@ -511,19 +511,9 @@
                           (as-asin-database x res)
                           res))))))))))))
 
-(defconstant +asin-off00+
-  (parse-c-literal "0x1.921fb54442d18p+0"))
-
-(defconstant +asin-off01+
-  (parse-c-literal "0x1.1a62633145c07p-54"))
-
-(defconstant +asin-off10+
-  (parse-c-literal "-0x1.921fb54442d18p+0"))
-
-(defconstant +asin-off11+
-  (parse-c-literal "-0x1.1a62633145c07p-54"))
-
 (defun asin-0<=x<=1 (x)
+  (if (= x 1d0)
+      (/ pi 2d0)
   (let ((absx (abs x))
         (eps 0.0d0)
         (z 0d0)
@@ -533,18 +523,7 @@
         (f0h 0d0)
         (f0l 0d0))
     (if (> absx 0.5d0)
-        (let ((off00 +asin-off00+)
-              (off01 +asin-off01+)
-              (off10 +asin-off10+)
-              (off11 +asin-off11+))
-          (setf f0h (if (minusp x) off10 off00))
-          (setf f0l (if (minusp x) off11 off01))
-          (when (>= absx 1d0)
-            (if (= absx 1d0)
-                (return-from cr-asin (+ f0h f0l))
-                (if (minusp x)
-                    (error 'floating-point-underflow)
-                    (error 'floating-point-overflow))))
+        (progn
           ;; for |x|>0.5 we use range reduction for double angle
           ;; formula asin(x) = pi/2 - 2*asin(sqrt((1-x)/2)) and for
           ;; x<-0.5 acos(x) = -pi/2 + 2*asin(sqrt((1-|x|)/2))
