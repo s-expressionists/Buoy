@@ -515,7 +515,7 @@
   (parse-c-literal "0x1.921fb54442d18p+0"))
 
 (defconstant +sinh-off01+
-  (parse-c-literal "-0x1.921fb54442d18p+0"))
+  (parse-c-literal "0x1.1a62633145c07p-54"))
 
 (defconstant +sinh-off10+
   (parse-c-literal "-0x1.921fb54442d18p+0"))
