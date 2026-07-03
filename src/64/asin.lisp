@@ -523,7 +523,7 @@
 (defconstant +asin-off11+
   (parse-c-literal "-0x1.1a62633145c07p-54"))
 
-(defun cr-asin (x)
+(defun asin-0<=x<=1 (x)
   (let ((absx (abs x))
         (eps 0.0d0)
         (z 0d0)
@@ -601,3 +601,13 @@
         (if (/= lb ub)
             (as-asin-refine x lb)
             lb)))))
+
+(defun cr-asin (x)
+  (cond ((> x 1d0)
+         (error 'floating-point-overflow))
+        ((< x -1d0)
+         (error 'floating-point-underflow))
+        ((minusp x)
+         (- (asin-0<=x<=1 (- x))))
+        (t
+         (asin-0<=x<=1 x))))
