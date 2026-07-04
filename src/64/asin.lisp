@@ -566,7 +566,7 @@
             ;; (rndz, no fma)
             (setf eps (abs (* (* z tt)
                               #.(parse-c-literal "0x1.99p-52"))))
-            (break)))
+            (asin-final x eps tt jd z zl f0h f0l)))
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
         ;; less than half of ulp of asin(x)
         (progn 
@@ -582,22 +582,8 @@
           (setf zl 0d0)
           ;; fails for 0x1.0fp-52 with x=0x1.fa3c79a3c19abp-3 (rndz,
           ;; no FMA)
-          (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))))
-    (let* ((j (round jd))
-           (t2 (* tt tt))
-           (d (asin-polynomial-approximation tt t2 j))
-           (p *asin-polynomial-approximations*)
-           (fh (aref p j 0))
-           (fl (+ (aref p j 1) d)))
-      (multiple-value-setq (fh fl)
-        (multiply-dd z zl fh fl))
-      (multiple-value-setq (fh fl)
-        (fast-sum f0h f0l fh fl))
-      (let ((lb (+ fh (- fl eps)))
-            (ub (+ fh (+ fl eps))))
-        (if (/= lb ub)
-            (as-asin-refine x lb)
-            lb)))))
+          (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))
+          (asin-final x eps tt jd z zl f0h f0l))))))
 
 (defun cr-asin (x)
   (cond ((> x 1d0)
