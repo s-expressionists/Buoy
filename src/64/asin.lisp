@@ -511,6 +511,18 @@
                           (as-asin-database x res)
                           res))))))))))))
 
+(defun asin-polynomial-approximation (t1 t2 j)
+  (let ((p *asin-polynomial-approximations*))
+    (* t1
+       (+ (+ (aref p j 2)
+             (* t1 (aref p j 3)))
+          (* t2
+             (+ (+ (aref p j 4)
+                   (* t1 (aref p j 5)))
+                (* t2
+                   (+ (aref p j 6)
+                      (* t1 (aref p j 7))))))))))
+
 (defun asin-0<=x<=1 (x)
   (if (= x 1d0)
       (/ pi 2d0)
@@ -556,16 +568,7 @@
           (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))))
     (let* ((j (round jd))
            (t2 (* tt tt))
-           (p *asin-polynomial-approximations*)
-           (d (* tt
-                 (+ (+ (aref p j 2)
-                       (* tt (aref p j 3)))
-                    (* t2
-                       (+ (+ (aref p j 4)
-                             (* tt (aref p j 5)))
-                          (* t2
-                             (+ (aref p j 6)
-                                (* tt (aref p j 7)))))))))
+           (d (asin-polynomial-approximation tt t2 j))
            (fh (aref p j 0))
            (fl (+ (aref p j 1) d)))
       (multiple-value-bind (h l)
