@@ -547,7 +547,7 @@
         (z 0d0)
         (zl 0d0)
         (jd 0d0)
-        (tt 0d0)
+        (t1 0d0)
         (f0h 0d0)
         (f0l 0d0))
     (if (> x 0.5d0)
@@ -555,18 +555,18 @@
           ;; for |x|>0.5 we use range reduction for double angle
           ;; formula asin(x) = pi/2 - 2*asin(sqrt((1-x)/2)) and for
           ;; x<-0.5 acos(x) = -pi/2 + 2*asin(sqrt((1-|x|)/2))
-          (setf tt (- 2d0 (* 2d0 x)))
-          (let* ((sqrt (sqrt tt)))
-            (setf jd (round (* tt 32d0)))
+          (setf t1 (- 2d0 (* 2d0 x)))
+          (let* ((sqrt (sqrt t1)))
+            (setf jd (round (* t1 32d0)))
             (setf z (- sqrt))
-            (setf zl (* (fma z z (- tt)) (* (/ -0.5d0 tt) z)))
-            (setf tt (- (* 0.25d0 tt)
+            (setf zl (* (fma z z (- t1)) (* (/ -0.5d0 t1) z)))
+            (setf t1 (- (* 0.25d0 t1)
                         (* jd  #.(parse-c-literal "0x1.0p-7"))))
             ;; fails with 0x1.98p-52 and x=0x1.3f47056fc030ap-1
             ;; (rndz, no fma)
-            (setf eps (abs (* (* z tt)
+            (setf eps (abs (* (* z t1)
                               #.(parse-c-literal "0x1.99p-52"))))
-            (asin-final x eps tt jd z zl f0h f0l)))
+            (asin-final x eps t1 jd z zl f0h f0l)))
         ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
         ;; less than half of ulp of asin(x)
         (progn 
@@ -575,15 +575,15 @@
                   (error 'floating-point-underfloat)
                   (return-from cr-asin
                     (fma #.(parse-c-literal "0x1.0p-55") x x))))
-          (setf tt (* x x))
-          (setf jd (round (* tt #.(parse-c-literal "0x1.0p7"))))
-          (setf tt (fma x x (* #.(parse-c-literal "-0x1.0p-7") jd)))
+          (setf t1 (* x x))
+          (setf jd (round (* t1 #.(parse-c-literal "0x1.0p7"))))
+          (setf t1 (fma x x (* #.(parse-c-literal "-0x1.0p-7") jd)))
           (setf z x)
           (setf zl 0d0)
           ;; fails for 0x1.0fp-52 with x=0x1.fa3c79a3c19abp-3 (rndz,
           ;; no FMA)
-          (setf eps (* (abs (* z tt)) #.(parse-c-literal "0x1.10p-52")))
-          (asin-final x eps tt jd z zl f0h f0l))))))
+          (setf eps (* (abs (* z t1)) #.(parse-c-literal "0x1.10p-52")))
+          (asin-final x eps t1 jd z zl f0h f0l))))))
 
 (defun cr-asin (x)
   (cond ((> x 1d0)
