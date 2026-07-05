@@ -557,7 +557,9 @@
                  ;; fails with 0x1.98p-52 and x=0x1.3f47056fc030ap-1
                  ;; (rndz, no fma)
                  (eps (abs (* (* z t1)
-                              #.(parse-c-literal "0x1.99p-52")))))
+                              #.(parse-c-literal "0x1.99p-52"))))
+                 (f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
+                 (f0l #.(parse-c-literal "0x1.1a62633145c07p-54")))
             (asin-final x eps t1 jd z zl f0h f0l))
           ;; |x|<=0.5 for |x| < 0x1.7137449123ef6p-26 |asin(x) - x| is
           ;; less than half of ulp of asin(x)
@@ -574,7 +576,7 @@
                   (error 'floating-point-underfloat)
                   (return-from cr-asin
                     (fma #.(parse-c-literal "0x1.0p-55") x x))))
-            (asin-final x eps t1 jd z zl f0h f0l)))))
+            (asin-final x eps t1 jd z zl 0d0 0d0)))))
 
 (defun cr-asin (x)
   (cond ((> x 1d0)
