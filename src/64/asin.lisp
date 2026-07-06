@@ -452,6 +452,9 @@
     (let ((tt *sin-i/64*))
       (let* ((ch (sqrt c2h))
              (cl (- (* (fma ch ch (- c2h)) (/ 0.5d0 ch))))
+             ;; let eps = ch^2-c2h, then c2h + c2l = ch^2 + c2l - eps,
+             ;; thus sqrt(c2h + c2l) = sqrt(ch^2*(1+(c2l-eps)/ch^2)) ~
+             ;; ch*(1 + (c2l-eps)/ch^2/2) = ch + (c2l-eps)/ch/2
              (jf (round (* (abs phi)
                            #.(parse-c-literal "0x1.45f306dc9c883p+4"))))
              ;; jf = round(|phi|*64/pi)
