@@ -434,7 +434,7 @@
                    (setf ch cch cl ccl)))
         (values ch l)))))        
 
-(defun compute-1-x^2 (x)
+(defun 1-x^2 (x)
   (let* ((x^2 (* x x))
          (dx^2 (fma x x (- x^2))))
     (multiple-value-bind (c2h c2l)
@@ -447,7 +447,7 @@
   ;; Using angle rotation formula bring the argument close to zero
   ;; where the asin Taylor expansion works well.
   (multiple-value-bind (c2h c2l)
-      (compute-1-x^2 x)
+      (1-x^2 x)
     ;; c2h+c2l approximates 1-x^2
     (let ((tt *sin-i/64*))
       (let* ((ch (sqrt c2h))
