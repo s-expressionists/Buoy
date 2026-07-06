@@ -442,6 +442,14 @@
       (decf c2l dx^2)
       (fast-two-sum c2h c2l))))
 
+(defun square-root (h l)
+  (let* ((ch (sqrt h))
+         (cl (- l (* (fma ch ch (- h)) (/ 0.5d0 ch)))))
+    ;; let eps = ch^2-c2h, then c2h + c2l = ch^2 + c2l - eps, thus
+    ;; sqrt(c2h + c2l) = sqrt(ch^2*(1+(c2l-eps)/ch^2)) ~ ch*(1 +
+    ;; (c2l-eps)/ch^2/2) = ch + (c2l-eps)/ch/2
+    (values ch cl)))
+
 (defun as-asine-refine (x phi)
   ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
   ;; Using angle rotation formula bring the argument close to zero
@@ -449,12 +457,9 @@
   (multiple-value-bind (c2h c2l)
       (1-x^2 x)
     ;; c2h+c2l approximates 1-x^2
-    (let ((tt *sin-i/64*))
-      (let* ((ch (sqrt c2h))
-             (cl (- (* (fma ch ch (- c2h)) (/ 0.5d0 ch))))
-             ;; let eps = ch^2-c2h, then c2h + c2l = ch^2 + c2l - eps,
-             ;; thus sqrt(c2h + c2l) = sqrt(ch^2*(1+(c2l-eps)/ch^2)) ~
-             ;; ch*(1 + (c2l-eps)/ch^2/2) = ch + (c2l-eps)/ch/2
+    (multiple-value-bind (ch cl)
+        (square-root c2h c2l)
+      (let* ((tt *sin-i/64*)
              (jf (round (* (abs phi)
                            #.(parse-c-literal "0x1.45f306dc9c883p+4"))))
              ;; jf = round(|phi|*64/pi)
