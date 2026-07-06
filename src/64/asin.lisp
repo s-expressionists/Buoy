@@ -442,9 +442,9 @@
       (decf c2l dx^2)
       (fast-two-sum c2h c2l))))
 
-(defun square-root (h l)
-  (let* ((ch (sqrt h))
-         (cl (- l (* (fma ch ch (- h)) (/ 0.5d0 ch)))))
+(defun square-root (high low)
+  (let* ((ch (sqrt high))
+         (cl (- low (* (fma ch ch (- high)) (/ 0.5d0 ch)))))
     ;; let eps = ch^2-c2h, then c2h + c2l = ch^2 + c2l - eps, thus
     ;; sqrt(c2h + c2l) = sqrt(ch^2*(1+(c2l-eps)/ch^2)) ~ ch*(1 +
     ;; (c2l-eps)/ch^2/2) = ch + (c2l-eps)/ch/2
