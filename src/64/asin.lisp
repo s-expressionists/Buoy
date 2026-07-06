@@ -434,19 +434,22 @@
                    (setf ch cch cl ccl)))
         (values ch l)))))        
 
+(defun compute-1-x^2 (x)
+  (let* ((x^2 (* x x))
+         (dx^2 (fma x x (- x^2))))
+    (multiple-value-bind (c2h c2l)
+        (fast-two-sum 1d0 (- x^2))
+      (decf c2l dx^2)
+      (fast-two-sum c2h c2l))))
+
 (defun as-asine-refine (x phi)
   ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
   ;; Using angle rotation formula bring the argument close to zero
   ;; where the asin Taylor expansion works well.
-  (let* ((tt *sin-i/64*)
-         (s2 (* x x))
-         (dx2 (fma x x (- s2))))
-         ;; s2+dx2 = x^2
-    (multiple-value-bind (c2h c2l)
-        (fast-two-sum 1d0 (- s2))
-      ;; c2h+c2l approximates 1-x^2
-      (decf c2l dx2)
-      (multiple-value-setq (c2h c2l) (fast-two-sum c2h c2l))
+  (multiple-value-bind (c2h c2l)
+      (compute-1-x^2 x)
+    ;; c2h+c2l approximates 1-x^2
+    (let ((tt *sin-i/64*))
       (let* ((ch (sqrt c2h))
              (cl (- (* (fma ch ch (- c2h)) (/ 0.5d0 ch))))
              (jf (round (* (abs phi)
