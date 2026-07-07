@@ -105,11 +105,8 @@
                  (setf b m))
           finally  
              (if (= (aref *asin-database* m 0) ax)
-                 (if (plusp x)
-                     (+ (aref *asin-database* m 1)
-                        (aref *asin-database* m 2))
-                     (- (- (aref *asin-database* m 1))
-                        (aref *asin-database* m 2)))
+                 (+ (aref *asin-database* m 1)
+                    (aref *asin-database* m 2))
                  f))))
 
 ;;; Double-double approximations of sin(pi*i/64 for i from 0 to 32.
