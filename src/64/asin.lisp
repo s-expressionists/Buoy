@@ -115,7 +115,7 @@
 ;;; Double-double approximations of sin(pi*i/64 for i from 0 to 32.
 ;;; Note that the first value is the low part and the second value is
 ;;; the high part.
-(defparameter *sin-i/64*
+(defparameter *sin-i*pi/64*
   (make-array
    '(33 2)
    :initial-contents
@@ -450,6 +450,16 @@
          (cl (- low (* (fma ch ch (- high)) (/ 0.5d0 ch)))))
     (values ch cl)))
 
+;;; Here, φ ∈ [0, π/2].  We multiply φ by 64/π and round the result To
+;;; obtain a j ∈ [0, 32].  Then asin(x) = j · π/64 + δ, or
+;;; equivalently δ = asin(x) - j · π/64.  Taking sine of both sides
+;;; gives sin(δ) = x · cos(j · π/64) - √(1 - x²) · sin(j · π/64).
+;;; Index j of the table *sin-i*pi/64* contains a double-double
+;;; approximations of sin(j · π/64) and the index 32 - j contains a
+;;; double-double approximations of cos(j · π/64), so we can obtain a
+;;; good approximation of sin(δ).  This value is small, and we use a
+;;; polynomial approximation to compute δ.  We then obtain the value
+;;; of asin (x) as j · π/64 + δ.
 (defun as-asine-refine (x phi)
   ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
   ;; Using angle rotation formula bring the argument close to zero
@@ -459,7 +469,7 @@
     ;; c2h+c2l approximates 1-x^2
     (multiple-value-bind (ch cl)
         (square-root c2h c2l)
-      (let* ((tt *sin-i/64*)
+      (let* ((tt *sin-i*pi/64*)
              (jf (round (* (abs phi)
                            #.(parse-c-literal "0x1.45f306dc9c883p+4"))))
              ;; jf = round(|phi|*64/pi)
