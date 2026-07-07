@@ -443,9 +443,8 @@
       (fast-two-sum c2h c2l))))
 
 ;;; Let eps = ch² - high.  Then high + low = ch² + low - eps.  Thus,
-;;; √(high + low) = √(ch² · (1 + (low - eps)/ch²)) which is
-;;; approximately equal to ch · (1 + (low - eps)/ch²/2) = ch + (low -
-;;; eps)/ch/2.
+;;; √(high + low) = √(ch² · (1 + (low - eps)/ch²)) ≈ ch · (1 + (low -
+;;; eps)/ch²/2) = ch + (low - eps)/ch/2.
 (defun square-root (high low)
   (let* ((ch (sqrt high))
          (cl (- low (* (fma ch ch (- high)) (/ 0.5d0 ch)))))
