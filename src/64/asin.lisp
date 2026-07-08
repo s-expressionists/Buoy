@@ -458,9 +458,6 @@
 ;;; we use a polynomial approximation to compute δ.  We then obtain
 ;;; the value of asin(x) as θ + δ.
 (defun as-asine-refine (x phi)
-  ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
-  ;; Using angle rotation formula bring the argument close to zero
-  ;; where the asin Taylor expansion works well.
   (multiple-value-bind (c2h c2l)
       (1-x^2 x)
     ;; c2h+c2l approximates 1-x^2
