@@ -448,15 +448,15 @@
     (values ch cl)))
 
 ;;; Here, φ ∈ [0, π/2].  We multiply φ by 64/π and round the result To
-;;; obtain a j ∈ [0, 32].  Then asin(x) = j · π/64 + δ, or
-;;; equivalently δ = asin(x) - j · π/64.  Taking sine of both sides
-;;; gives sin(δ) = x · cos(j · π/64) - √(1 - x²) · sin(j · π/64).
-;;; Index j of the table *sin-i*pi/64* contains a double-double
-;;; approximations of sin(j · π/64) and the index 32 - j contains a
-;;; double-double approximations of cos(j · π/64), so we can obtain a
-;;; good approximation of sin(δ).  This value is small, and we use a
-;;; polynomial approximation to compute δ.  We then obtain the value
-;;; of asin(x) as j · π/64 + δ.
+;;; obtain a j ∈ [0, 32].  Let θ = j · π/64.  Like φ, θ is an
+;;; approximation o f asin(x).  Then asin(x) = θ + δ, or equivalently
+;;; δ = asin(x) - θ.  Taking sine of both sides gives sin(δ) = x ·
+;;; cos(θ) - √(1 - x²) · sin(θ).  Index j of the table *sin-i*pi/64*
+;;; contains a double-double approximations of sin(θ) and the index 32
+;;; - j contains a double-double approximations of cos(θ), so we can
+;;; obtain a good approximation of sin(δ).  This value is small, and
+;;; we use a polynomial approximation to compute δ.  We then obtain
+;;; the value of asin(x) as θ + δ.
 (defun as-asine-refine (x phi)
   ;; Consider x as sin(phi) then cos(phi) is ch + cl = sqrt(1-x^2)
   ;; Using angle rotation formula bring the argument close to zero
