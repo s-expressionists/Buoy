@@ -449,14 +449,14 @@
 
 ;;; Here, φ ∈ [0, π/2].  We multiply φ by 64/π and round the result To
 ;;; obtain a j ∈ [0, 32].  Let θ = j · π/64.  Like φ, θ is an
-;;; approximation o f asin(x).  Then asin(x) = θ + δ, or equivalently
-;;; δ = asin(x) - θ.  Taking sine of both sides gives sin(δ) = x ·
-;;; cos(θ) - √(1 - x²) · sin(θ).  Index j of the table *sin-i*pi/64*
-;;; contains a double-double approximations of sin(θ) and the index 32
-;;; - j contains a double-double approximations of cos(θ), so we can
-;;; obtain a good approximation of sin(δ).  This value is small, and
-;;; we use a polynomial approximation to compute δ.  We then obtain
-;;; the value of asin(x) as θ + δ.
+;;; approximation o f asin(x).  Also, let α = asin(x).  Then α = θ +
+;;; δ, or equivalently δ = α - θ.  Taking sine of both sides gives
+;;; sin(δ) = x · cos(θ) - √(1 - x²) · sin(θ).  Index j of the table
+;;; *sin-i*pi/64* contains a double-double approximations of sin(θ)
+;;; and the index 32 - j contains a double-double approximations of
+;;; cos(θ), so we can obtain a good approximation of sin(δ).  This
+;;; value is small, and we use a polynomial approximation to compute
+;;; δ.  We then obtain the value of α as θ + δ.
 (defun as-asine-refine (x phi)
   (multiple-value-bind (c2h c2l)
       (1-x^2 x)
@@ -472,15 +472,25 @@
              (cos-low (aref tt (- 32 jf) 0))
              (sin-high (aref tt jf 1))
              (sin-low (aref tt jf 0))
+             ;; dsh + dsl approximate sin(α) - sin(θ)
              (dsh (- x sin-high))
              (dsl (- sin-low))
+             ;; dsh + dsl approximate cos(α) - cos(θ)
              (dch (- square-root-high cos-high))
              (dcl (- square-root-low cos-low))
              (magic #.(parse-c-literal "0x1.8p-4"))
+             ;; Aside from the magic value, ssc + dssc approximate
+             ;; sin(θ) · (cos(α) - cos(θ)).
              (ssc (- (fma sin-high dch magic) magic))
              (dssc (fma sin-high dch (- ssc)))
+             ;; Aside from the magic value, ssc + dssc approximate
+             ;; cos(θ) · (sin(α) - sin(θ)).
              (ccs (- (fma cos-high dsh magic) magic))
              (dccs (fma cos-high dsh (- ccs)))
+             ;; v approximates cos(θ) · (sin(α) - sin(θ)) - sin(θ) ·
+             ;; (cos(α) - cos(θ)) = cos(θ) · sin(α) - cos(θ) · sin(θ))
+             ;; - sin(θ) · cos(α) + sin(θ) · cos(θ) = cos(θ) · sin(α)
+             ;; - sin(θ) · cos(α) = sin(θ - α) = -sin(δ.
              (v (- ccs ssc))
              (dv (- (+ (* cos-high dsl) (* cos-low dsh))
                     (+ (* sin-high dcl) (* sin-low dch))
