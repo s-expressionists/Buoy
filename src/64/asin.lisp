@@ -421,14 +421,12 @@
         (fast-two-sum (aref table i 0) l)
       (let ((cl (+ (aref table i 1) l)))
         (loop for j downfrom (1- i) to 0
-              do (multiple-value-bind (cch ccl)
-                     (multiply-dd xh xl ch cl)
-                   (setf ch cch cl ccl))
-                 (multiple-value-bind (cch ccl)
-                     (fast-sum (aref table i 0) (aref table i 1)
-                               ch cl)
-                   (setf ch cch cl ccl)))
-        (values ch l)))))        
+              do (multiple-value-setq (ch cl)
+                     (multiply-dd xh xl ch cl))
+                 (multiple-value-setq (ch cl)
+                     (fast-sum (aref table j 0) (aref table j 1)
+                               ch cl)))
+        (values ch cl)))))
 
 (defun 1-x^2 (x)
   (let* ((x^2 (* x x))
@@ -456,7 +454,7 @@
 ;;; cos(θ), so we can obtain a good approximation of sin(δ).  This
 ;;; value is small, and we use a polynomial approximation to compute
 ;;; δ.  We then obtain the value of α as θ + δ.
-(defun as-asine-refine (x phi)
+(defun as-asin-refine (x phi)
   (multiple-value-bind (c2h c2l)
       (1-x^2 x)
     ;; c2h+c2l approximates 1-x^2
