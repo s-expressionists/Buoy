@@ -26,4 +26,4 @@
         ((< x -1d0)
          (error 'floating-point-underflow))
         (t
-         (asin-0<=x<=1 (abs x)))))
+         (acos-0<=x<=1 (abs x)))))
