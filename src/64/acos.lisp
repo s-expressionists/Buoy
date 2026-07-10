@@ -16,3 +16,14 @@
       (if (/= lb ub)
           (as-acos-refine x lb)
           lb))))
+
+(defun acos-0<=x<=1 (x)
+  ))
+
+(defun cr-acos (x)
+  (cond ((> x 1d0)
+         (error 'floating-point-overflow))
+        ((< x -1d0)
+         (error 'floating-point-underflow))
+        (t
+         (asin-0<=x<=1 (abs x)))))
