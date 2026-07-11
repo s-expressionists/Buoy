@@ -84,28 +84,28 @@
               ;; + cl| 
               (let ()
                 (if (not (zerop is-cos))
-                    (multiple-value-bind (sh sl)
-                        (s-multiply (aref table i 2) sh sl)
-                      (multiple-value-bind (ch cl)
-                          (s-multiply (aref table i 1) ch cl)
-                        (multiple-value-bind (h l)
-                            (fast-two-sum ch sh)
-                          (setf high h low l)
-                          (incf low (+ sl cl))
-                          ;; absolute error bounded by 2^-68.588 from
-                          ;; global_error(is_sin=true,rel=false) in
-                          ;; sin.sage: | h + l - sin2pi (R) | <
-                          ;; 2^-68.588 thus: | h + l - cos(x) | <
-                          ;; 2^-68.588 + | sin2pi (R) - sin |x| | <
-                          ;; 2^-68.588 + err1
-                          (setf err #.(parse-c-literal "0x1.55p-69")))))
-                    (multiple-value-bind (ch cl)
-                        (s-multiply (aref table i 2) ch cl)
-                      (multiple-value-bind (sh sl)
-                          (s-multiply (aref table i 1) sh sl)
-                        (multiple-value-bind (h l)
-                            (fast-two-sum ch (- sh))
-                          (setf high h low l)
+                    (progn
+                      (multiple-value-setq (sh sl)
+                        (s-multiply (aref table i 2) sh sl))
+                      (multiple-value-setq (ch cl)
+                        (s-multiply (aref table i 1) ch cl))
+                      (multiple-value-setq (high low)
+                        (fast-two-sum ch sh))
+                      (incf low (+ sl cl))
+                      ;; absolute error bounded by 2^-68.588 from
+                      ;; global_error(is_sin=true,rel=false) in
+                      ;; sin.sage: | h + l - sin2pi (R) | <
+                      ;; 2^-68.588 thus: | h + l - cos(x) | <
+                      ;; 2^-68.588 + | sin2pi (R) - sin |x| | <
+                      ;; 2^-68.588 + err1
+                      (setf err #.(parse-c-literal "0x1.55p-69")))
+                    (progn
+                      (multiple-value-setq (ch cl)
+                        (s-multiply (aref table i 2) ch cl))
+                        (multiple-value-setq (sh sl)
+                          (s-multiply (aref table i 1) sh sl))
+                          (multiple-value-setq (high low)
+                              (fast-two-sum ch (- sh)))
                           (incf low (- cl sl))
                           ;; absolute error bounded by 2^-68.414 from
                           ;; global_error(is_sin=false,rel=false) in
@@ -114,7 +114,7 @@
                           ;; 2^-68.414 + | cos2pi (R) - sin |x| | <
                           ;; 2^-68.414 + err1 */
                           (setf err
-                                #.(parse-c-literal "0x1.81p-69")))))))))))
+                                #.(parse-c-literal "0x1.81p-69")))))))))
       (unless (zerop negative)
         (setf high (- high))
         (setf low (- low)))
