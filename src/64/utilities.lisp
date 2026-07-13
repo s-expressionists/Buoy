@@ -1,5 +1,7 @@
 (cl:in-package #:buoy-core-math-64)
 
+(deftype dfloat () 'double-float)
+
 ;;; The exact sum of HIGH and LOW is the exact sum of A and B.  One
 ;;; might wonder what the purpose is of taking two arguments the sum
 ;;; of which is (say) S, and return two values the sum of which is
