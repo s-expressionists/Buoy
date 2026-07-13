@@ -148,3 +148,7 @@
   (values (ash integer -12)
           (ldb (byte 6 6) integer)
           (ldb (byte 6 0) integer)))
+
+(defun infinity-or-nan-p (dfloat)
+  (let ((bits (f-to-i dfloat)))
+    (= (ldb (byte 11 52) dfloat) #x7ff)))
