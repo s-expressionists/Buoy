@@ -17,7 +17,7 @@
           (as-acos-refine x lb)
           lb))))
 
-(defun acos-0<=x<=1 (x)
+(defun acos--1<=x<=1 (x)
   ))
 
 (defun cr-acos (x)
@@ -26,4 +26,4 @@
         ((< x -1d0)
          (error 'floating-point-underflow))
         (t
-         (acos-0<=x<=1 (abs x)))))
+         (acos--1<=x<=1))))
