@@ -51,7 +51,17 @@
           ;; for x>0.5 we use range reduction for double angle formula
           ;; acos(x) = 2*asin((1-x)/2) and for x<-0.5 acos(x) = pi -
           ;; 2*asin((1-x)/2).
+          ))))
 
-        
+(defun acos-infinity-or-nan (x)
+  (error "Infinity or NaN supplied to ACOS"))
 
-              
+(defun cr-acos (x)
+  (cond ((infinity-or-nan-p x)
+         (acos-infinity-or-nan x))
+        ;; Now it is safe to use floating-point comparisons.
+        ((or (> x 1d0) (< x -1d0))
+         (error 'type-error
+                :datum x
+                :expected-type '(dfloat -1d0 1d0)))
+        (acos--1d0<=x<=1d0 x)))
