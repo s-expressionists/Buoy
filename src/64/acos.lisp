@@ -38,9 +38,9 @@
                  (off1 #.(parse-c-literal "0x1.1a62633145c07p-53")))
              (return-from acos--1<=x<=1 (+ off0 off1))))
           ((> absx 0.5d0)
-           ;; for x>0.5 we use range reduction for double angle
-           ;; formula acos(x) = 2*asin((1-x)/2) and for x<-0.5 acos(x)
-           ;; = pi - 2*asin((1-x)/2).
+           ;; for x>0.5 we use range reduction acos(x) = 2 ·
+           ;; asin(√((1-x)/2)) and for for x<-0.5 acos(x) = π - 2 ·
+           ;; asin(√((1+x)/2)).
            (setf 1t (- 2d0 (* 2d0 abs-x)))
            (setf jd (round (* 1t 32d0)))
            (setf z (copy-sign (sqrt 1t) x))
