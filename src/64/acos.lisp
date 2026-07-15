@@ -54,8 +54,24 @@
            (setf f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
            (setf f0l #.(parse-c-literal " 0x1.1a62633145c07p-54"))
            (when (< abs-x #.(parse-c-literal "1.0p-15"))
-             
-
+             (let* ((c #.(parse-c-literal "-0x1.5555555555555p-3"))
+                    ;; Avoid a spurious underflow for |x| <= x0 :=
+                    ;; 0x1.cb3b3869747f4p-55; moreover for |x| <= x0
+                    ;; we always have lb=ub, thus the accurate path is
+                    ;; never called.
+                    (v (if (<= ax #x791967670d2e8fe8)
+                           0
+                           (* (* x x) (* c x)))))
+               (multiple-value-bind (h w)
+                   (fast-two-sum f0h (- x))
+                 (let* ((l (+ v (+ w f0l)))
+                        (eps1 #.(parse-c-literal "0x1.34p-79"))
+                        (lb (+ h (- l eps1)))
+                        (ub (+ h (+ l eps1))))
+                   (return-from acos--1<=x<=1
+                     (if (/= lb ub)
+                         (as-acos-refine x lb)
+                         lb))))))
 
 
 (defun acos-infinity-or-nan (x)
