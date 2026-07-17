@@ -151,4 +151,4 @@
 
 (defun infinity-or-nan-p (dfloat)
   (let ((bits (f-to-i dfloat)))
-    (= (ldb (byte 11 52) dfloat) #x7ff)))
+    (= (ldb (byte 11 52) bits) #x7ff)))
