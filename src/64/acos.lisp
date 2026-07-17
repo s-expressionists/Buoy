@@ -41,8 +41,7 @@
          ;; but instead the bits of X shifted one position to the
          ;; left, so that the sign bit is not taken into account.
          (ax (ash (f-to-i x) 1))
-         (abs-x (abs x))
-         (eps 0d0))
+         (abs-x (abs x)))
     (cond ((= x 1d0)
            (return-from acos--1<=x<=1 0d0))
           ((= x -1d0)
@@ -59,10 +58,10 @@
                   (zl (* (fma z z (- 1t)) (* (/ -0.5d0 1t) z))))
              (setf 1t (- (* 0.25d0 1t) (* jd #.(parse-c-literal "1.0p-7"))))
              ;; fails with 0x1.8bp-52 for x=-0x1.3e827a2cd6d51p-1 (no FMA)
-             (setf eps (+ (* (abs (* z 1t))
-                             #.(parse-c-literal "0x1.8cp-52"))
-                          #.(parse-c-literal "0x1.0p-105")))
-             (acos-final x eps 1t jd z zl 0d0 0d0)))
+             (let ((eps (+ (* (abs (* z 1t))
+                              #.(parse-c-literal "0x1.8cp-52"))
+                           #.(parse-c-literal "0x1.0p-105"))))
+               (acos-final x eps 1t jd z zl 0d0 0d0))))
           (t
            (let ((f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
                  (f0l #.(parse-c-literal " 0x1.1a62633145c07p-54")))
