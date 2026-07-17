@@ -48,7 +48,7 @@
            (let ((off0 #.(parse-c-literal "0x1.921fb54442d18p+1"))
                  (off1 #.(parse-c-literal "0x1.1a62633145c07p-53")))
              (return-from acos--1<=x<=1 (+ off0 off1))))
-          ((> absx 0.5d0)
+          ((> abs-x 0.5d0)
            ;; for x>0.5 we use range reduction acos(x) = 2 ·
            ;; asin(√((1-x)/2)) and for for x<-0.5 acos(x) = π - 2 ·
            ;; asin(√((1+x)/2)).
@@ -82,10 +82,11 @@
                     ;; 0x1.d3p-53 and x=0x1.7cb54339263fbp-12; for
                     ;; 2^-4 <= |x| < 0.5, fails with 0x1.80p-52 and
                     ;; x=-0x1.fda6fee396f8p-2 (no FMA, rndz)
-                    (eps (* (* z t) #.(parse-c-literal "0x1.81p-52"))))
+                    (eps (* (* z 1t) #.(parse-c-literal "0x1.81p-52"))))
                (acos-final x eps 1t jd z 0d0 f0h f0l)))))))
 
 (defun acos-infinity-or-nan (x)
+  (declare (ignore x))
   (error "Infinity or NaN supplied to ACOS"))
 
 (defun cr-acos (x)
@@ -96,4 +97,5 @@
          (error 'type-error
                 :datum x
                 :expected-type '(dfloat -1d0 1d0)))
-        (acos--1<=x<=1 x)))
+        (t
+         (acos--1<=x<=1 x))))
