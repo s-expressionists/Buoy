@@ -37,11 +37,10 @@
             lb)))))
 
 (defun acos--1<=x<=1 (x)
-  (let* ((xu (f-to-i x))
-         ;; Contrary to the name, AX is not the absolute value of X,
+  (let* (;; Contrary to the name, AX is not the absolute value of X,
          ;; but instead the bits of X shifted one position to the
          ;; left, so that the sign bit is not taken into account.
-         (ax (ash xu 1))
+         (ax (ash (f-to-i x) 1))
          (abs-x (abs x))
          (eps 0d0))
     (cond ((= x 1d0)
