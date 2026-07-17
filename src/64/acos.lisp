@@ -47,8 +47,6 @@
          (z 0d0)
          (zl 0d0)
          (jd 0d0)
-         (f0h 0d0)
-         (f0l 0d0)
          (eps 0d0))
     (cond ((= x 1d0)
            (return-from acos--1<=x<=1 0d0))
@@ -69,29 +67,29 @@
            (setf eps (+ (* (abs (* z 1t))
                            #.(parse-c-literal "0x1.8cp-52"))
                         #.(parse-c-literal "0x1.0p-105")))
-           (acos-final x eps 1t jd z zl f0h f0l))
+           (acos-final x eps 1t jd z zl 0d0 0d0))
           (t
-           (setf f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
-           (setf f0l #.(parse-c-literal " 0x1.1a62633145c07p-54"))
-           (when (< abs-x #.(parse-c-literal "1.0p-15"))
-             (return-from acos--1<=x<=1
-               (acos-|x|<2^-15 x ax f0h f0l)))
-           ;; for 2^-15 <= |x| <= 0.5 we use acos(x) = pi/2 - asin(x)
-           ;; so the argument range for asin is the same for both
-           ;; branches to reuse the lookup tables.
-           (setf 1t (* x x))
-           (setf jd (round (* 1t #.(parse-c-literal "0x1.0p7"))))
-           (setf 1t (fma x x (* #.(parse-c-literal "0x-1.0p-7") jd)))
-           (setf z (- x))
-           (setf zl 0)
-           ;; eps < 0 for x > 0, but the rounding test is still correct
-           ;;
-           ;; for |x| < 2^-4 (case j=0), fails with 0x1.d3p-53 and
-           ;; x=0x1.7cb54339263fbp-12; for 2^-4 <= |x| < 0.5, fails
-           ;; with 0x1.80p-52 and x=-0x1.fda6fee396f8p-2
-           ;; (no FMA, rndz)
-           (setf eps (* (* z t) #.(parse-c-literal "0x1.81p-52")))
-           (acos-final x eps 1t jd z zl f0h f0l)))))
+           (let ((f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
+                 (f0l #.(parse-c-literal " 0x1.1a62633145c07p-54")))
+             (when (< abs-x #.(parse-c-literal "1.0p-15"))
+               (return-from acos--1<=x<=1
+                 (acos-|x|<2^-15 x ax f0h f0l)))
+             ;; for 2^-15 <= |x| <= 0.5 we use acos(x) = pi/2 - asin(x)
+             ;; so the argument range for asin is the same for both
+             ;; branches to reuse the lookup tables.
+             (setf 1t (* x x))
+             (setf jd (round (* 1t #.(parse-c-literal "0x1.0p7"))))
+             (setf 1t (fma x x (* #.(parse-c-literal "0x-1.0p-7") jd)))
+             (setf z (- x))
+             (setf zl 0)
+             ;; eps < 0 for x > 0, but the rounding test is still correct
+             ;;
+             ;; for |x| < 2^-4 (case j=0), fails with 0x1.d3p-53 and
+             ;; x=0x1.7cb54339263fbp-12; for 2^-4 <= |x| < 0.5, fails
+             ;; with 0x1.80p-52 and x=-0x1.fda6fee396f8p-2
+             ;; (no FMA, rndz)
+             (setf eps (* (* z t) #.(parse-c-literal "0x1.81p-52")))
+             (acos-final x eps 1t jd z zl f0h f0l))))))
 
 (defun acos-infinity-or-nan (x)
   (error "Infinity or NaN supplied to ACOS"))
