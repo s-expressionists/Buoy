@@ -56,7 +56,8 @@
                   (jd (round (* 1t 32d0)))
                   (z (copy-sign (sqrt 1t) x))
                   (zl (* (fma z z (- 1t)) (* (/ -0.5d0 1t) z))))
-             (setf 1t (- (* 0.25d0 1t) (* jd #.(parse-c-literal "1.0p-7"))))
+             (setf 1t (- (* 0.25d0 1t)
+                         (* jd #.(parse-c-literal "0x1.0p-7"))))
              ;; fails with 0x1.8bp-52 for x=-0x1.3e827a2cd6d51p-1 (no FMA)
              (let ((eps (+ (* (abs (* z 1t))
                               #.(parse-c-literal "0x1.8cp-52"))
@@ -65,7 +66,7 @@
           (t
            (let ((f0h #.(parse-c-literal "0x1.921fb54442d18p+0"))
                  (f0l #.(parse-c-literal " 0x1.1a62633145c07p-54")))
-             (when (< abs-x #.(parse-c-literal "1.0p-15"))
+             (when (< abs-x #.(parse-c-literal "0x1.0p-15"))
                (return-from acos--1<=x<=1
                  (acos-|x|<2^-15 x ax f0h f0l)))
              ;; for 2^-15 <= |x| <= 0.5 we use acos(x) = pi/2 - asin(x)
