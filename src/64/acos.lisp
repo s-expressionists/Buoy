@@ -43,7 +43,6 @@
          ;; left, so that the sign bit is not taken into account.
          (ax (ash xu 1))
          (abs-x (abs x))
-         (zl 0d0)
          (eps 0d0))
     (cond ((= x 1d0)
            (return-from acos--1<=x<=1 0d0))
@@ -57,8 +56,8 @@
            ;; asin(√((1+x)/2)).
            (let* ((1t (- 2d0 (* 2d0 abs-x)))
                   (jd (round (* 1t 32d0)))
-                  (z (copy-sign (sqrt 1t) x)))
-             (setf zl (* (fma z z (- 1t)) (* (/ -0.5d0 1t) z)))
+                  (z (copy-sign (sqrt 1t) x))
+                  (zl (* (fma z z (- 1t)) (* (/ -0.5d0 1t) z))))
              (setf 1t (- (* 0.25d0 1t) (* jd #.(parse-c-literal "1.0p-7"))))
              ;; fails with 0x1.8bp-52 for x=-0x1.3e827a2cd6d51p-1 (no FMA)
              (setf eps (+ (* (abs (* z 1t))
@@ -74,17 +73,17 @@
              ;; for 2^-15 <= |x| <= 0.5 we use acos(x) = pi/2 - asin(x)
              ;; so the argument range for asin is the same for both
              ;; branches to reuse the lookup tables.
-             (let* ((1t (* x x))
-                    (jd (round (* 1t #.(parse-c-literal "0x1.0p7"))))
-                    (z (- x)))
-               (setf 1t (fma x x (* #.(parse-c-literal "0x-1.0p-7") jd)))
-               ;; eps < 0 for x > 0, but the rounding test is still correct
-               ;;
-               ;; for |x| < 2^-4 (case j=0), fails with 0x1.d3p-53 and
-               ;; x=0x1.7cb54339263fbp-12; for 2^-4 <= |x| < 0.5,
-               ;; fails with 0x1.80p-52 and x=-0x1.fda6fee396f8p-2 (no
-               ;; FMA, rndz)
-               (setf eps (* (* z t) #.(parse-c-literal "0x1.81p-52")))
+             (let* ((jd (round (* (* x x) #.(parse-c-literal "0x1.0p7"))))
+                    (z (- x))
+                    (1t (fma x x (* #.(parse-c-literal "0x-1.0p-7") jd)))
+                    ;; eps < 0 for x > 0, but the rounding test is
+                    ;; still correct
+                    ;;
+                    ;; for |x| < 2^-4 (case j=0), fails with
+                    ;; 0x1.d3p-53 and x=0x1.7cb54339263fbp-12; for
+                    ;; 2^-4 <= |x| < 0.5, fails with 0x1.80p-52 and
+                    ;; x=-0x1.fda6fee396f8p-2 (no FMA, rndz)
+                    (eps (* (* z t) #.(parse-c-literal "0x1.81p-52"))))
                (acos-final x eps 1t jd z 0d0 f0h f0l)))))))
 
 (defun acos-infinity-or-nan (x)
