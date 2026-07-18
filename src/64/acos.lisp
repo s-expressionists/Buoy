@@ -1,5 +1,78 @@
 (cl:in-package #:buoy-core-math-64)
 
+;;; Consider x as cos(phi) then sin(phi) is ch + cl = sqrt(1-x^2)
+;;; Using angle rotation formula bring the argument close to zero
+;;; where the asin Taylor expansion works well: acos(x) =
+;;; asin(sqrt(1-x^2)) for x > 0 acos(x) = pi+asin(-sqrt(1-x^2)) for x
+;;; < 0
+(defun as-acos-refine (x phi)
+  (let* ((s2 (* x x*))
+         (dx2 (fma x x (- s2))))
+    ;; s2 + dx2 = x²
+    (multiple-value-bind (c2h c2l)
+        (fast-two-sum 1d0 (- s2))
+      (decf c2l dx2)
+      (multiple-value-setq (c2h c2l)
+        (fast-two-sum c2h c2l))
+      ;; c2h+c2l approximates 1-x²
+      (let* ((ch (sqrt c2h))
+             ;; let eps = ch^2-c2h, then c2h + c2l = ch^2 + c2l - eps,
+             ;;thus sqrt(c2h + c2l) = sqrt(ch^2*(1+(c2l-eps)/ch^2)) ~
+             ;;ch*(1 + (c2l-eps)/ch^2/2) = ch + (c2l-eps)/ch/2
+             (cl (* (- c2l (fma ch ch (- c2h))) (/ 0.5d0 ch)))
+             ;; now ch+cl approximates sqrt(1-x²)
+             (magic1 #.(parse-c-literal "0x1.921fb54442d18p+0"))
+             (magic2 #.(parse-c-literal "0x1.45f306dc9c883p+4"))
+             (jf (round (abs (* (- phi magic1) magic2)))))
+             ;; jf = round(|phi-pi/2|*64/pi)
+        ;; let y = acos(x) and assume y = pi/2 -/+ jf*pi/64 - delta,
+        ;; with |delta| < pi/128,
+        ;; where -/+ means - for x > 0, and + for x < 0:
+        ;; delta = pi/2 -/+ jf*pi/64 - y thus
+        ;; sin(delta) = sin(pi/2 -/+ jf*pi/64 - y)
+        ;;            = cos(-/+jf*pi/64 - y)
+        ;;            = cos(-/+jf*pi/64)*cos(y) + sin(-/+jf*pi/64)*sin(y)
+        ;;            = cos(jf*pi/64)*x -/+ sin(jf*pi/64)*sqrt(1-x^2)
+        ;;
+        ;; 0 <= jf <= 32
+        (let* ((tt *asin-polynomial-approximations*)
+               (cch (aref tt (- 32 jf) 1))
+               (ccl (aref tt (- 32 jf) 0))
+               (ssh (aref tt jf 1))
+               (ssl (aref tt jf 0))
+               ;; Ch+Cl approximates cos(jf*pi/64), Sh+Sl approximates
+               ;; sin(jf*pi/64) thus sin(delta) = (Ch+Cl)*x -/+
+               ;; (Sh+Sl)*sqrt(1-x^2) ~ sgn(x) * [ (Ch+Cl)*|x| -
+               ;; (Sh+Sl)*(ch+cl)] */
+               (ax (abs x))
+               (dsh (- ax ssh))
+               (dsl (- ssl))
+               (dch (- ch cch))
+               (dcl (- cl ccl))
+               ;; now |x| = Sh+Sl + dsh+dsl, ch+cl = Ch+Cl + dch+dcl
+               ;; thus sin(delta) ~ sgn(x) * [ (Ch+Cl)*(Sh+Sl +
+               ;; dsh+dsl) - (Sh+Sl)*(Ch+Cl + dch+dcl)] ~ sgn(x) *
+               ;; [(Ch+Cl)*(dsh+dsl) - (Sh+Sl)*(dch+dcl)].  Since
+               ;; |delta| < pi/128 and y = pi/2 -/+ jf*pi/64 - delta,
+               ;; |dsh|, |dch| < pi/128 < 0.0246
+               (magic #.(parse-c-literal "0x1.8p4"))
+               ;; Remark: we could reduce magic to 0x1.8p-5, then Cs -
+               ;; Sc below would still be exact, but this would add
+               ;; one exceptional case (x=-0x1.52f06359672cdp-2) and
+               ;; save one, thus there is no benefit. */
+               (sc (- (fma ssh dch magic) magic))
+               (dsc (fma ssh dch (- sc)))
+               ;; Sc + dSc approximates Sh*dch, with Sc multiple of
+               ;; 2^-56 and |Sc| < 2^-5
+               (cs (- (fma cch dsh magic) magic))
+               (dcs (fma cch dsh (- cs)))
+               ;; Cs+dCs approximates Ch*dsh, with Cs multiple of
+               ;; 2^-56 and |Cs| < 2^-5
+
+
+                   
+
+
 (defun acos-final (x eps tt jd z zl f0h f0l)
   (let* ((j (round jd))
          (t2 (* tt tt))
