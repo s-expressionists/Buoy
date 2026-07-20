@@ -85,6 +85,16 @@
                  (jt (- 32 (* jf sgn))))
             ;; pi/2 -/+ jf*pi/64 = jt*pi/64 thus y = jt*pi/64 - delta
             ;; with 0 <= jt <= 64
+            (let ((ct0 #.(parse-c-literal "0x1.6e8ba2ec8cb69p-6"))
+                  (ct1 #.(parse-c-literal "0x1.1c4ea7a15c997p-6"))
+                  (ct2 #.(parse-c-literal "0x1.ca8355d39bb67p-7")))
+              ;; c[0]*x+c[1]*x^3+...+c[4]*x^9+ct[0]*x^11+...+ct[2]*x^15
+              ;; is a polynomial approximation of asin(x) at x=0 */
+              (multiple-value-bind (v2 dv2)
+                  (multiply-dd v dv v dv)
+                (setf v (* v (- sign)))
+                (setf dv (* dv (- sign)))
+                (let ((fl (
 
 (defun acos-final (x eps tt jd z zl f0h f0l)
   (let* ((j (round jd))
