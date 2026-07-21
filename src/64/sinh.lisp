@@ -431,8 +431,8 @@
                        (as-exp-accurate (- ax) (- t) qh ql))
                      (setf rh (- th qh))
                      (setf rl (+ (- (- (- th rh) qh) ql) t1)))))))
-                     
-  ;; 0.25 <= |x| <= 5                     
+                   ))))))))))  
+  ;; 0.25 <= |x| <= 5             
   (let* ((q0h (aref t0 j0 1))
          (q0l (aref t0 j0 0))
          (q1h (aref t1 j1 1))
@@ -463,4 +463,4 @@
         (multiple-value-setq (qh ql)
           (sinh-as-exp-accurate ax tt qh ql))
         (setf rh (- th qh))
-        (setf rl (+ (- (- (- th rh) qh) ql) tl)))))))
+        (setf rl (+ (- (- (- th rh) qh) ql) tl))))))
