@@ -297,7 +297,7 @@
 (defun sinh-very-large-argument (x aix)
   (if (>= aix #x7ff0000000000000)
       (error 'floating-point-overflow)
-      (* (copy-sign #.(parse-c-literal "0x1p1023") x) 2d0)))
+      (* (copy-sign #.(parse-c-literal "0x1.0p1023") x) 2d0)))
 
 (defconstant +sinh-ch0+
   (parse-c-literal "0x1.0p+0"))
@@ -338,7 +338,7 @@
          (t1 (- vf #.(parse-c-literal "0x1.8p26")))
          (ixu (f-to-i ax))
          (aix ixu))
-    (when (< aix #x3fd0000000000000) ; |x| < 0x1p-2
+    (when (< aix #x3fd0000000000000) ; |x| < 0x.01p-2
       (return-from cr-sinh
         (sinh-small-argument x ax aix)))
     (when (> aix #x408633ce8fb9f87) ; |x| >~ 710.47586
