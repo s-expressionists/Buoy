@@ -110,7 +110,7 @@
                                 (aref *asin-database* m 2))
                              (- (- (aref *asin-database* m 1))
                                 (aref *asin-database* m 2)))
-                         f)))))pp
+                         f)))))
 
 ;;; Double-double approximations of sin(pi*i/64 for i from 0 to 32.
 ;;; Note that the first value is the low part and the second value is
