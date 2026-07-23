@@ -82,7 +82,7 @@
           (multiple-value-setq (v dv)
             (fast-two-sum v dv))
           (let* ((sgn (copysign 1d0 x))
-                 (jt (- 32 (* jf sgn))))
+                 (jet (- 32 (* jf sgn))))
             ;; pi/2 -/+ jf*pi/64 = jt*pi/64 thus y = jt*pi/64 - delta
             ;; with 0 <= jt <= 64
             (let ((ct0 #.(parse-c-literal "0x1.6e8ba2ec8cb69p-6"))
@@ -94,7 +94,37 @@
                   (multiply-dd v dv v dv)
                 (setf v (* v (- sign)))
                 (setf dv (* dv (- sign)))
-                (let ((fl (
+                (let ((fl (* v2 (+ ct0 (* v2 (+ ct1 (* v2 ct2)))))))
+                  (multiple-value-bind (fh fl)
+                      (poly-dd v2 dv2 5 *c-table*)
+                    (multiple-value-setq (fh fl)
+                      (multiply-dd v dv fh fl))
+                    ;; now fh+fl approximates -delta
+                    ;;
+                    ;; h+l+s with h=0x1.921fb54442dp-5,
+                    ;; l=0x1.8469898cc518p-53,
+                    ;; s=-0x1.fc8f8cbb5bf6cp-102 approximates pi/64
+                    ;; with error bounded by 2^-155, thus ph+pl+ps
+                    ;; approximates jt*pi/64 with error bounded by
+                    ;; 2^-149 */
+                    (let* ((cc1 #.(parse-c-literal "0x1.921fb54442dp-5"))
+                           (cc2 #.(parse-c-literal "0x1.8469898cc518p-53"))
+                           (cc3 #.(parse-c-literal "-0x1.fc8f8cbb5bf6cp-102"))
+                           (ph (* jt cc1))
+                           (pl (* jt cc2))
+                           (ps (* jt cc3)))
+                      (multiple-value-setq (pl ps)
+                        (sum fh fl pl ps))
+                      (multiple-value-setq (ph pl)
+                        (fast-two-sum ph pl))
+                      (multiple-value-setq (pl ps)
+                        (fast-two-sum pl ps))
+                      (multiple-value-setq (ph pl)
+                        (fast-two-sum ph pl))
+                      (multiple-value-setq (pl ps)
+                        (fast-two-sum pl ps))
+                      
+                      
 
 (defun acos-final (x eps tt jd z zl f0h f0l)
   (let* ((j (round jd))
