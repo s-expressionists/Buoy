@@ -123,7 +123,19 @@
                         (fast-two-sum ph pl))
                       (multiple-value-setq (pl ps)
                         (fast-two-sum pl ps))
-                      
+                      (let* ((tu (f-to-i pl))
+                             (e (- (logand (ash tu -52) #x7ff) 1023)))
+                        (setf e (- 52 (+ 107 e)))
+                        (setf e (if (minusp e) 0 e))
+                        (setf e (if (> e 52) 52 e))
+                        (let ((m (- (ash 1 52) (ash 1 e))))
+                          (setf e (if (zerop e) 64 e))
+                          (when (zerop (logand (+ tu (ash 1 (1- e))) m))
+                            (cond ((= x #.(parse-c-literal "0x1.ffffffffffdc0p-1"))
+                                   (return-from as-acos-refine
+                                     (+ #.(parse-c-literal "0x1.8000000000024p-22")
+                                        #.(parse-c-literal "0x1.0p-76"))))
+                                  (= x #.(parse-c-literal
                       
 
 (defun acos-final (x eps tt jd z zl f0h f0l)
