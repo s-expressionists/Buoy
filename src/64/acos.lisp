@@ -135,8 +135,29 @@
                                    (return-from as-acos-refine
                                      (+ #.(parse-c-literal "0x1.8000000000024p-22")
                                         #.(parse-c-literal "0x1.0p-76"))))
-                                  (= x #.(parse-c-literal
-                      
+                                  ((= x #.(parse-c-literal "0x1.53ea6c7255e88p-4"))
+                                   (return-from as-acos-refine
+                                     (+ #.(parse-c-literal "0x1.7cdacb6bbe707p+0")
+                                        #.(parse-c-literal "0x1.0p-54"))))
+                                  ((= x #.(parse-c-literal "0x1.fd737be914578p-11"))
+                                   (return-from as-acos-refine
+                                     (+ #.(parse-c-literal "0x1.91e006d41d8d8p+0")
+                                        #.(parse-c-literal "0x1.8p-53"))))
+                                  ((= x #.(parse-c-literal "0x1.fffffffffff70p-1"))
+                                   (return-from as-acos-refine
+                                     (+ #.(parse-c-literal "0x1.8000000000009p-23")
+                                        #.(parse-c-literal "0x1.0p-77"))))
+                                  ((= x #.(parse-c-literal "0x1.390e6939cd1a6p-5"))
+                                   (return-from as-acos-refine
+                                     (- #.(parse-c-literal "0x1.8856a5d3296a4p+0")
+                                        #.(parse-c-literal "0x1.0p-109"))))
+                                  (t
+                                   (let ((wu (f-to-i ps)))
+                                     (if (zerop (ash (logxor wu tu) -63))
+                                         (incf tu)
+                                         (decf tu)))
+                                   (setf pl (i-to-f tu)))))))
+                      (+ ph pl))))))))))))
 
 (defun acos-final (x eps tt jd z zl f0h f0l)
   (let* ((j (round jd))
