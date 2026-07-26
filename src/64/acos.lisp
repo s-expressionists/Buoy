@@ -81,7 +81,7 @@
                ;; sin(delta)
           (multiple-value-setq (v dv)
             (fast-two-sum v dv))
-          (let* ((sgn (copysign 1d0 x))
+          (let* ((sgn (copy-sign 1d0 x))
                  (jt (- 32 (* jf sgn))))
             ;; pi/2 -/+ jf*pi/64 = jt*pi/64 thus y = jt*pi/64 - delta
             ;; with 0 <= jt <= 64
