@@ -92,8 +92,8 @@
               ;; is a polynomial approximation of asin(x) at x=0 */
               (multiple-value-bind (v2 dv2)
                   (multiply-dd v dv v dv)
-                (setf v (* v (- sign)))
-                (setf dv (* dv (- sign)))
+                (setf v (* v (- sgn)))
+                (setf dv (* dv (- sgn)))
                 (let ((fl (* v2 (+ ct0 (* v2 (+ ct1 (* v2 ct2))))))
                       (fh 0d0))
                   (multiple-value-setq (fh fl)
