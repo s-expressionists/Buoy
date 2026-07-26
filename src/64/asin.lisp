@@ -595,7 +595,7 @@
             (when (< x #.(parse-c-literal "0x1.7137449123ef6p-26"))
               (if (< x #.(parse-c-literal "0x1.0p-1022"))
                   (error 'floating-point-underfloat)
-                  (return-from cr-asin
+                  (return-from asin-0<=x<=1
                     (fma #.(parse-c-literal "0x1.0p-55") x x))))
             (asin-final x eps t1 jd z zl 0d0 0d0)))))
 
