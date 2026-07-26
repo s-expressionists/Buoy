@@ -6,7 +6,7 @@
 ;;; asin(sqrt(1-x^2)) for x > 0 acos(x) = pi+asin(-sqrt(1-x^2)) for x
 ;;; < 0
 (defun as-acos-refine (x phi)
-  (let* ((s2 (* x x*))
+  (let* ((s2 (* x x))
          (dx2 (fma x x (- s2))))
     ;; s2 + dx2 = x²
     (multiple-value-bind (c2h c2l)
@@ -97,68 +97,68 @@
                 (let ((fl (* v2 (+ ct0 (* v2 (+ ct1 (* v2 ct2))))))
                       (fh 0d0))
                   (multiple-value-setq (fh fl)
-                      (poly-dd v2 dv2 5 *c-table* fl)
-                    (multiple-value-setq (fh fl)
-                      (multiply-dd v dv fh fl))
-                    ;; now fh+fl approximates -delta
-                    ;;
-                    ;; h+l+s with h=0x1.921fb54442dp-5,
-                    ;; l=0x1.8469898cc518p-53,
-                    ;; s=-0x1.fc8f8cbb5bf6cp-102 approximates pi/64
-                    ;; with error bounded by 2^-155, thus ph+pl+ps
-                    ;; approximates jt*pi/64 with error bounded by
-                    ;; 2^-149 */
-                    (let* ((cc1 #.(parse-c-literal "0x1.921fb54442dp-5"))
-                           (cc2 #.(parse-c-literal "0x1.8469898cc518p-53"))
-                           (cc3 #.(parse-c-literal "-0x1.fc8f8cbb5bf6cp-102"))
-                           (ph (* jt cc1))
-                           (pl (* jt cc2))
-                           (ps (* jt cc3)))
-                      (multiple-value-setq (pl ps)
-                        (sum fh fl pl ps))
-                      (multiple-value-setq (ph pl)
-                        (fast-two-sum ph pl))
-                      (multiple-value-setq (pl ps)
-                        (fast-two-sum pl ps))
-                      (multiple-value-setq (ph pl)
-                        (fast-two-sum ph pl))
-                      (multiple-value-setq (pl ps)
-                        (fast-two-sum pl ps))
-                      (let* ((tu (f-to-i pl))
-                             (e (- (logand (ash tu -52) #x7ff) 1023)))
-                        (setf e (- 52 (+ 107 e)))
-                        (setf e (if (minusp e) 0 e))
-                        (setf e (if (> e 52) 52 e))
-                        (let ((m (- (ash 1 52) (ash 1 e))))
-                          (setf e (if (zerop e) 64 e))
-                          (when (zerop (logand (+ tu (ash 1 (1- e))) m))
-                            (cond ((= x #.(parse-c-literal "0x1.ffffffffffdc0p-1"))
-                                   (return-from as-acos-refine
-                                     (+ #.(parse-c-literal "0x1.8000000000024p-22")
-                                        #.(parse-c-literal "0x1.0p-76"))))
-                                  ((= x #.(parse-c-literal "0x1.53ea6c7255e88p-4"))
-                                   (return-from as-acos-refine
-                                     (+ #.(parse-c-literal "0x1.7cdacb6bbe707p+0")
-                                        #.(parse-c-literal "0x1.0p-54"))))
-                                  ((= x #.(parse-c-literal "0x1.fd737be914578p-11"))
-                                   (return-from as-acos-refine
-                                     (+ #.(parse-c-literal "0x1.91e006d41d8d8p+0")
-                                        #.(parse-c-literal "0x1.8p-53"))))
-                                  ((= x #.(parse-c-literal "0x1.fffffffffff70p-1"))
-                                   (return-from as-acos-refine
-                                     (+ #.(parse-c-literal "0x1.8000000000009p-23")
-                                        #.(parse-c-literal "0x1.0p-77"))))
-                                  ((= x #.(parse-c-literal "0x1.390e6939cd1a6p-5"))
-                                   (return-from as-acos-refine
-                                     (- #.(parse-c-literal "0x1.8856a5d3296a4p+0")
-                                        #.(parse-c-literal "0x1.0p-109"))))
-                                  (t
-                                   (let ((wu (f-to-i ps)))
-                                     (if (zerop (ash (logxor wu tu) -63))
-                                         (incf tu)
-                                         (decf tu)))
-                                   (setf pl (i-to-f tu)))))))
-                      (+ ph pl))))))))))))
+                      (poly-dd v2 dv2 5 *c-table* fl))
+                  (multiple-value-setq (fh fl)
+                    (multiply-dd v dv fh fl))
+                  ;; now fh+fl approximates -delta
+                  ;;
+                  ;; h+l+s with h=0x1.921fb54442dp-5,
+                  ;; l=0x1.8469898cc518p-53,
+                  ;; s=-0x1.fc8f8cbb5bf6cp-102 approximates pi/64
+                  ;; with error bounded by 2^-155, thus ph+pl+ps
+                  ;; approximates jt*pi/64 with error bounded by
+                  ;; 2^-149 */
+                  (let* ((cc1 #.(parse-c-literal "0x1.921fb54442dp-5"))
+                         (cc2 #.(parse-c-literal "0x1.8469898cc518p-53"))
+                         (cc3 #.(parse-c-literal "-0x1.fc8f8cbb5bf6cp-102"))
+                         (ph (* jt cc1))
+                         (pl (* jt cc2))
+                         (ps (* jt cc3)))
+                    (multiple-value-setq (pl ps)
+                      (sum fh fl pl ps))
+                    (multiple-value-setq (ph pl)
+                      (fast-two-sum ph pl))
+                    (multiple-value-setq (pl ps)
+                      (fast-two-sum pl ps))
+                    (multiple-value-setq (ph pl)
+                      (fast-two-sum ph pl))
+                    (multiple-value-setq (pl ps)
+                      (fast-two-sum pl ps))
+                    (let* ((tu (f-to-i pl))
+                           (e (- (logand (ash tu -52) #x7ff) 1023)))
+                      (setf e (- 52 (+ 107 e)))
+                      (setf e (if (minusp e) 0 e))
+                      (setf e (if (> e 52) 52 e))
+                      (let ((m (- (ash 1 52) (ash 1 e))))
+                        (setf e (if (zerop e) 64 e))
+                        (when (zerop (logand (+ tu (ash 1 (1- e))) m))
+                          (cond ((= x #.(parse-c-literal "0x1.ffffffffffdc0p-1"))
+                                 (return-from as-acos-refine
+                                   (+ #.(parse-c-literal "0x1.8000000000024p-22")
+                                      #.(parse-c-literal "0x1.0p-76"))))
+                                ((= x #.(parse-c-literal "0x1.53ea6c7255e88p-4"))
+                                 (return-from as-acos-refine
+                                   (+ #.(parse-c-literal "0x1.7cdacb6bbe707p+0")
+                                      #.(parse-c-literal "0x1.0p-54"))))
+                                ((= x #.(parse-c-literal "0x1.fd737be914578p-11"))
+                                 (return-from as-acos-refine
+                                   (+ #.(parse-c-literal "0x1.91e006d41d8d8p+0")
+                                      #.(parse-c-literal "0x1.8p-53"))))
+                                ((= x #.(parse-c-literal "0x1.fffffffffff70p-1"))
+                                 (return-from as-acos-refine
+                                   (+ #.(parse-c-literal "0x1.8000000000009p-23")
+                                      #.(parse-c-literal "0x1.0p-77"))))
+                                ((= x #.(parse-c-literal "0x1.390e6939cd1a6p-5"))
+                                 (return-from as-acos-refine
+                                   (- #.(parse-c-literal "0x1.8856a5d3296a4p+0")
+                                      #.(parse-c-literal "0x1.0p-109"))))
+                                (t
+                                 (let ((wu (f-to-i ps)))
+                                   (if (zerop (ash (logxor wu tu) -63))
+                                       (incf tu)
+                                       (decf tu)))
+                                 (setf pl (i-to-f tu)))))))
+                    (+ ph pl)))))))))))
 
 (defun acos-final (x eps tt jd z zl f0h f0l)
   (let* ((j (round jd))
