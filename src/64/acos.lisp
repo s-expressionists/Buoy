@@ -82,7 +82,7 @@
           (multiple-value-setq (v dv)
             (fast-two-sum v dv))
           (let* ((sgn (copysign 1d0 x))
-                 (jet (- 32 (* jf sgn))))
+                 (jt (- 32 (* jf sgn))))
             ;; pi/2 -/+ jf*pi/64 = jt*pi/64 thus y = jt*pi/64 - delta
             ;; with 0 <= jt <= 64
             (let ((ct0 #.(parse-c-literal "0x1.6e8ba2ec8cb69p-6"))
