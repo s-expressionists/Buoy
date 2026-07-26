@@ -97,7 +97,7 @@
                 (let ((fl (* v2 (+ ct0 (* v2 (+ ct1 (* v2 ct2))))))
                       (fh 0d0))
                   (multiple-value-setq (fh fl)
-                      (poly-dd v2 dv2 5 *c-table*)
+                      (poly-dd v2 dv2 5 *c-table* fl)
                     (multiple-value-setq (fh fl)
                       (multiply-dd v dv fh fl))
                     ;; now fh+fl approximates -delta
