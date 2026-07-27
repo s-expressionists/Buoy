@@ -2,6 +2,24 @@
 
 (deftype dfloat () 'double-float)
 
+;;; Reference: Handbook of Floating-Point Arithmetic, Algorithm 4.4.
+;;; Theorem 4.1 from "On the Robustness of the 2Sum and Fast2Sum
+;;; Algorithms" by Sylvie Boldo, Stef Graillat and Jean-Michel Muller,
+;;; ACM Transactions on Mathematical Software, 2017 says: t = (a+b) -
+;;; s + alpha with |alpha| <= 2^(-p+1) ulp(s) [here p=53]
+(defun two-sum (a b)
+  (let* ((s (+ a b))
+         (a-prime (- s b))
+         (b-prime (- s a-prime))
+         (delta-a (- a a-prime))
+         (delta-b (- b b-prime)))
+    (values s (+ delta-a delta-b))))
+
+(defun sum (xh xl ch cl)
+  (multiple-value-bind (sh sl)
+      (two-sum xh ch)
+    (values sh (+ (+ xl cl) sl))))
+
 ;;; The exact sum of HIGH and LOW is the exact sum of A and B.  One
 ;;; might wonder what the purpose is of taking two arguments the sum
 ;;; of which is (say) S, and return two values the sum of which is
