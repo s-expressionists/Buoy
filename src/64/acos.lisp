@@ -68,7 +68,7 @@
                (dcs (fma cch dsh (- cs)))
                ;; Cs+dCs approximates Ch*dsh, with Cs multiple of
                ;; 2^-56 and |Cs| < 2^-5
-               (v (- ccs ssc))
+               (v (- cs sc))
                ;; v is exact since |ccs - ssc| is a multiple of 2⁵⁶
                ;; and < 2⁻⁴.
                ;;
