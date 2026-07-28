@@ -40,10 +40,10 @@
                (ccl (aref tt (- 32 jf) 0))
                (ssh (aref tt jf 1))
                (ssl (aref tt jf 0))
-               ;; Ch+Cl approximates cos(jf*pi/64), Sh+Sl approximates
-               ;; sin(jf*pi/64) thus sin(delta) = (Ch+Cl)*x -/+
-               ;; (Sh+Sl)*sqrt(1-x^2) ~ sgn(x) * [ (Ch+Cl)*|x| -
-               ;; (Sh+Sl)*(ch+cl)] */
+               ;; cch+ccl approximates cos(jf*pi/64), ssh+ssl
+               ;; approximates sin(jf*pi/64) thus sin(delta) =
+               ;; (cch+ccl)*x -/+ (ssh+ssl)*sqrt(1-x^2) ~ sgn(x) * [
+               ;; (cch+ccl)*|x| - (ssh+ssl)*(ch+cl)] */
                (ax (abs x))
                (dsh (- ax ssh))
                (dsl (- ssl))
