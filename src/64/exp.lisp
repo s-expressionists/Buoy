@@ -250,7 +250,7 @@
 ;;; tt*l2l can be added.
 
 (defun cr-exp (x)
-  (let* ((ix (quaviver:float-bits 'double-float x))
+  (let* ((ix (f-to-i x))
          (aix (logand ix (1- (ash 1 63)))))
     ;; exp(x) rounds to 1 to nearest for |x| <= 0x1p-54
     (when (< aix #x3c90000000000000)
@@ -302,7 +302,7 @@
                   (progn
                     (setf ix (ash (- 1 ie) 52))
                     (multiple-value-bind (fh e)
-                        (fast-two-sum (quaviver:bits-float 'double-float ix) fh)
+                        (fast-two-sum (i-to-f ix) fh)
                       (incf fl e)
                       (let ((ub (+ fh (+ fl eps)))
                             (lb (+ fh (- fl eps))))
