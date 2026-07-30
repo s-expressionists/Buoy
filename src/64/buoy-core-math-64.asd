@@ -22,5 +22,6 @@
    (:file "cos")
    (:file "log")
    (:file "asin")
+   (:file "acos")
    (:file "exp")
    #+(or)(:file "sinh")))
