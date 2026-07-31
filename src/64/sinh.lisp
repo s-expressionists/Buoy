@@ -427,7 +427,7 @@
                                  (fma q0h q1h (- qh)))))
                      (setf qh (* qh smf))
                      (setf ql (* ql smf))
-                     (multiple-value-setq (qh l)
+                     (multiple-value-setq (qh ql)
                        (as-exp-accurate (- ax) (- t) qh ql))
                      (setf rh (- th qh))
                      (setf rl (+ (- (- (- th rh) qh) ql) t1)))))))
