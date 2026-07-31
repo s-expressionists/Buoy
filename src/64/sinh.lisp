@@ -410,7 +410,7 @@
                      (let* ((pm (evaluate-sinh-ch-polynomial mx dx2))
                             (em (+ qh (* qh pm))))
                        (setf rh th)
-                       (setf r1 (+ (- tl em) (* th pp)))
+                       (setf rl (+ (- tl em) (* th pp)))
                        (setf rh (* rh (copy-sign 1d0 x)))
                        (setf rl (* rl (copy-sign 1d0 x)))
                        ;; fails with e = 0x1.1dbp-63*rh and
