@@ -455,7 +455,7 @@
                   (let* ((magic #.(parse-c-literal "0x1.c0ap-62"))
                          (e (* magic rh))
                          (lb (+ rh (- rl e)))
-                         (ub (+ hr (+ rl e))))
+                         (ub (+ rh (+ rl e))))
                     (when (= lb ub)
                       (return-from cr-sinh lb))
                     (multiple-value-setq (th tl)
