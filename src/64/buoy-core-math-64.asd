@@ -24,4 +24,4 @@
    (:file "asin")
    (:file "acos")
    (:file "exp")
-   #+(or)(:file "sinh")))
+   (:file "sinh")))
