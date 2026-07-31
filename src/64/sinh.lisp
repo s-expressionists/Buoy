@@ -347,7 +347,7 @@
     ;; now 0.25 <= |x| < 710.47586
     ;; this branch was checked exhaustively with/without FMA
     (let* (;; il contains the integer part of ax*s.
-           (il (ldb (byte 10 26 jtu))))
+           (il (ldb (byte 10 26) jtu)))
       (multiple-value-bind (ie i0 i1)
           (split-integer il)
         (multiple-value-bind (je j0 j1)
