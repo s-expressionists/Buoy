@@ -340,7 +340,7 @@
          ;; of x·s, so what is left is the integer part, with 0x1.8p26
          ;; added.  We now subtract 0x1.8p26 so that we get the
          ;; integer part, but represented as a float.
-         (t1 (- vf #.(parse-c-literal "0x1.8p26")))
+         (1t (- vf #.(parse-c-literal "0x1.8p26")))
          (ixu (f-to-i ax))
          (aix ixu))
     (when (< aix #x3fd0000000000000) ; |x| < 0x.01p-2
@@ -369,7 +369,7 @@
                  (tl (+ (* t0h t1l) (* t1h t0l) (fma t0h t1h (- th))))
                  (l2h +ln-2/2^12-high+)
                  (l2l +ln-2/2^12-low+)
-                 (dx (+ (- ax (* l2h t1)) (* l2l t1)))
+                 (dx (+ (- ax (* l2h 1t)) (* l2l 1t)))
                  (dx2 (* dx dx))
                  (mx (- dx))
                  (pp (evaluate-sinh-ch-polynomial dx dx2)))
@@ -389,7 +389,7 @@
                                (return-from cr-sinh
                            (* (* lb spf) 2d0)))
                        (multiple-value-setq (th tl)
-                         (as-exp-accurate ax t1 th tl))
+                         (as-exp-accurate ax 1t th tl))
                        (multiple-value-setq (th tl)
                          (fast-two-sum th tl))
                        (setf th (* th (copy-sign 1d0 x)))
@@ -435,7 +435,7 @@
                      (multiple-value-setq (qh ql)
                        (as-exp-accurate (- ax) (- t) qh ql))
                      (setf rh (- th qh))
-                     (setf rl (+ (- (- (- th rh) qh) ql) t1)))))))
+                     (setf rl (+ (- (- (- th rh) qh) ql) 1t)))))))
                    ))))
               ;; 0.25 <= |x| <= 5             
               (let* ((q0h (aref t0 j0 1))
