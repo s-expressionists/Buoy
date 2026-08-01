@@ -335,6 +335,11 @@
          (tt #.(ash (1- (ash 1 39)) 25))
          (vu (logand vu tt))
          (vf (i-to-f vu))
+         ;; Now vf contains the bits of v0, except that the last 25
+         ;; bits are 0.  Those 25 bits represent the fractional part
+         ;; of x·s, so what is left is the integer part, with 0x1.8p26
+         ;; added.  We now subtract 0x1.8p26 so that we get the
+         ;; integer part, but represented as a float.
          (t1 (- vf #.(parse-c-literal "0x1.8p26")))
          (ixu (f-to-i ax))
          (aix ixu))
