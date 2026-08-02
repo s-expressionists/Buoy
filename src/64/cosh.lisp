@@ -355,10 +355,10 @@
          ;; VU has the fractional bits of V0 eliminated, except for
          ;; bit 26 which is still what it was.
          (vu (logand vu tt))
-         ;;; TTT now contains the integer part of x*s, except that 0.5
+         ;;; 1T now contains the integer part of x*s, except that 0.5
          ;;; has been added to it if and only if the integer part was
          ;;; not the result of rounding up.
-         (ttt (- (i-to-f 'double-float vu)
+         (1t (- (i-to-f 'double-float vu)
                  #.(parse-c-literal "0x1.8p26")))
          (aix (f-to-i 'double-float x))
          ;; IL contains the integer part of x*s.
@@ -371,7 +371,7 @@
                (l2l +ln-2/2^12-low+))
           (multiple-value-bind (th tl)
               (compute-h-l i0 i1)
-            (let* ((dx (+ (- x (*  l2h ttt)) (* l2l ttt)))
+            (let* ((dx (+ (- x (*  l2h 1t)) (* l2l 1t)))
                    (dx2 (* dx dx))
                    (pp (evaluate-cosh-ch-polynomial dx dx2))
                    (rh 0d0)
