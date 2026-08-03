@@ -199,7 +199,7 @@
 (defun cosh-0<=x<1/4 (x)
   (if (< x #.(sim:dfloat (expt 2 -26)))
       1d0
-      (cosh-2^-26<=x<1/4)))
+      (cosh-2^-26<=x<1/4 x)))
 
 (defun compute-h-l (x0 x1)
   (let ((t0 *t0-table*)
