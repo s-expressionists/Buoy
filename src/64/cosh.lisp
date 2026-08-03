@@ -52,9 +52,9 @@
           (multiply-dd y1 y2 x2 x2l))
         (multiple-value-setq (y0 y1)
           (fast-two-sum y1 y2))
-        (let ((tu (f-to-i 'double-float y1)))
+        (let ((tu (f-to-i y1)))
           (when (zerop (logand tu (1- (ash 1 52))))
-            (let ((wu (f-to-i 'double-float y2)))
+            (let ((wu (f-to-i y2)))
               (if (zerop (ash (logxor wu tu) -63))
                   (incf tu)
                   (decf tu))))
@@ -348,8 +348,8 @@
          ;; the fractional part.  That is 2^i*2^f where 2^i is the
          ;; exponent of the result.
          (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
-         (jtu (f-to-i 'double-float v0))
-         (vu (f-to-i 'double-float v0))
+         (jtu (f-to-i v0))
+         (vu (f-to-i v0))
          ;; tt is an integer with 39 1s followed by 25 0s.
          (tt #.(ash (1- (ash 1 39)) 25))
          ;; VU has the fractional bits of V0 eliminated, except for
@@ -360,7 +360,7 @@
          ;;; not the result of rounding up.
          (1t (- (i-to-f 'double-float vu)
                  #.(parse-c-literal "0x1.8p26")))
-         (aix (f-to-i 'double-float x))
+         (aix (f-to-i x))
          ;; IL contains the integer part of x*s.
          (il (ldb (byte 10 26) jtu)))
     (multiple-value-bind (ie i0 i1)
