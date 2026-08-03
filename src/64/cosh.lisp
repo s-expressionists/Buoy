@@ -256,7 +256,7 @@
          (spf (i-to-f spu)))
     (setf rh th)
     (setf rl (+ tl (* th pp)))
-    (let* ((e (* #.(parse-c-literal "0.12e-18") th))
+    (let* ((e (* 0.12d-18 th))
            (lb (+ rh (- rl e)))
            (ub (+ rh (+ rl e))))
       (if (= lb ub)
