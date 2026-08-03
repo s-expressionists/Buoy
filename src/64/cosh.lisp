@@ -288,7 +288,7 @@
          (uli (f-to-i rl))
          (eh (logand (ash uhi -52) #x7ff))
          (el (logand (ash uli -52) #x7ff))
-         (ml (logand (+ uli 8) ...)))
+         (ml (logand (+ uli 8) (1- (ash 1 52)))))
     (incf rh rl)
     (if (or (<= ml 16) (> (- eh el) 103))
         (as-cosh-database x rh)
