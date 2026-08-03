@@ -249,7 +249,16 @@
              (ub (+ rh (+ rl e))))
         ;; fails with e = 0x1.855p-64*rh and x=0x1.dbf464fbc8795p+0
         ;; (rndz, no fma)
-        ))))
+        (if (= lb ut)
+            lb
+            (progn
+              (multiple-value-setq (th tl)
+                (cosh-as-exp-accurate ax 1t th tl))
+              (multiple-value-setq (qh ql)
+                (cosh-as-exp-accurate (- ax) (- 1t) qh ql))
+              (setf rh (+ th qh))
+              (setf rl (+ (+ (- th rh) qh) ql tl))
+              (final x rh rl)))))))
 
 (defun cosh-36.736801d0<x<=max (x)
   (let* ((spu (ash (+ 1021 ie) 52))
