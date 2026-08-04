@@ -318,7 +318,7 @@
         (ch3 +sinh-ch3+))
     (* x (+ (+ ch0 (* x ch1)) (* x2 (+ ch2 (* x ch3)))))))
 
-(defun cr-sinh (x)
+(defun cr-sinh-old (x)
   (let* ((t0 *t0-table*)
          (t1 *t1-table*)
          (s +2^12/ln-2+)
