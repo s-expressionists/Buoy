@@ -471,7 +471,8 @@
                     (setf rl (+ (- (- (- th rh) qh) ql) tl))))))))))))
 
 (defun cr-sinh (x)
-  (let ((abs-x (abs x)))
+  (let ((abs-x (abs x))
+        (x0 #.(parse-c-literal "0x1.7137449123ef7p-26")))
     (cond ((infinity-or-nan-p x)
            (error 'type-error
                   :datum x
@@ -480,8 +481,10 @@
            (error 'floating-point-overflow))
           ((< x -710.4758600739439d0)
            (error 'floating-point-underflow))
+          ((< abs-x x0)
+           (fma x #.(parse-c-literal "0x1.0p-55")))
           ((< abs-x 0.25d0)
-           (sinh-|x|<0.25 x abs-x))
+           (sinh-x0<=|x|<0.25 x abs-x))
           ((< abs-x 5d0)
            (sinh-0.25<=|x|<5 x abs-x))
           ((< abs-x 36.736801d0)
