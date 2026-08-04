@@ -469,3 +469,22 @@
                       (sinh-sinh-as-exp-accurate ax tt qh ql))
                     (setf rh (- th qh))
                     (setf rl (+ (- (- (- th rh) qh) ql) tl))))))))))))
+
+(defun cr-sinh (x)
+  (let ((abs-x (abs x)))
+    (cond ((infinity-or-nan-p x)
+           (error 'type-error
+                  :datum x
+                  :expected-type 'double-float))
+          ((> x 710.4758600739439d0)
+           (error 'floating-point-overflow))
+          ((< x -710.4758600739439d0)
+           (error 'floating-point-underflow))
+          ((< abs-x 0.25d0)
+           (sinh-|x|<0.25 x abs-x))
+          ((< abs-x 5d0)
+           (sinh-0.25<=|x|<5 x abs-x))
+          ((< abs-x 36.736801d0)
+           (sinh-5<=|x|<36.736801 x abs-x))
+          (t
+           (sinh-36.736801<=|x| x abs-x)))))
