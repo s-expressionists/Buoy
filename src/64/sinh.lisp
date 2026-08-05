@@ -462,6 +462,17 @@
 (defun expt2 (n)
   (i-to-f (ash (+ n 1023) 52)))
 
+(defun compute-multiplier (n0 n1)
+  (let ((t0 *t0-table*)
+        (t1 *t1-table*))
+    (let ((xh (aref t0 n0 1))
+          (xl (aref t0 n0 0))
+          (yh (aref t1 n1 1))
+          (yl (aref t1 n1 0)))
+      (let* ((zh (* xh yh))
+             (zl (+ (* xh yl) (* yh xl) (fma xh yh (- zh)))))
+        (values zh zl)))))
+
 (defun sinh-0.25<=|x|<5 (x)
   (let ((abs-x (abs x))
         (t0 *t0-table*)
