@@ -470,6 +470,8 @@
                     (setf rh (- th qh))
                     (setf rl (+ (- (- (- th rh) qh) ql) tl))))))))))))
 
+(defun sinh-x0<=|x|<0.25
+
 (defun cr-sinh (x)
   (let ((abs-x (abs x))
         (x0 #.(parse-c-literal "0x1.7137449123ef7p-26")))
@@ -484,10 +486,10 @@
           ((< abs-x x0)
            (fma x #.(parse-c-literal "0x1.0p-55")))
           ((< abs-x 0.25d0)
-           (sinh-x0<=|x|<0.25 x abs-x))
+           (sinh-x0<=|x|<0.25 x))
           ((< abs-x 5d0)
-           (sinh-0.25<=|x|<5 x abs-x))
+           (sinh-0.25<=|x|<5 x))
           ((< abs-x 36.736801d0)
-           (sinh-5<=|x|<36.736801 x abs-x))
+           (sinh-5<=|x|<36.736801 x))
           (t
-           (sinh-36.736801<=|x| x abs-x)))))
+           (sinh-36.736801<=|x| x)))))
