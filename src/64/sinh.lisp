@@ -455,6 +455,13 @@
          (il (ldb (byte 22 26) jt)))
     (values 1t il)))
 
+;;; Given an integer N, this function returns 2^N as a double-float.
+;;; It does this in a particularly efficient way, since the resulting
+;;; floating point representation has 0 in the mantissa bits, and
+;;; N+1023 in the exponent bits.
+(defun expt2 (n)
+  (i-to-f (ash (+ n 1023) 52)))
+
 (defun sinh-0.25<=|x|<5 (x)
   (let ((abs-x (abs x))
         (t0 *t0-table*)
