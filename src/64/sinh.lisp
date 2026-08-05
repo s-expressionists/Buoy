@@ -494,7 +494,10 @@
             (compute-multiplier j0 j1)
           (multiple-value-bind (th tl)
               (compute-multiplier i0 i1)
-        (let* ((spf (expt2 (1- ie)))
+        (let* (;; The exponents are computed minus 1, which is the
+               ;; same as the resulting value is divided by 2.  This
+               ;; way, a possible overflow is avoided.
+               (spf (expt2 (1- ie)))
                (smf (expt2 (1- je)))
                (l2h +ln-2/2^12-high+)
                (l2l +ln-2/2^12-low+)
