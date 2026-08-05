@@ -263,37 +263,6 @@
 ;;; correct value, so we use our PARSE-C-FLOAT function which uses
 ;;; DFLOAT, which is meant to be correct.
 
-;;; This function is called when the absolute value of X is less than
-;;; 0.25.
-(defun sinh-small-argument (x ax aix)
-  (when (< aix #x3e57137449123ef7)
-    ;; |x| < x0 = 0x1.7137449123ef7p-26
-    ;; We have underflow exactly when 0 < |x| < 2^-1022: for
-    ;; RNDU, sinh(2^-1022-2^-1074) would round to
-    ;; 2^-1022-2^-1075 with unbounded exponent range
-    (when (and (/= x 0d0) (< ax #.(parse-c-literal "0x1.0p-1022")))
-      (error 'floating-point-underflow))
-    ;; With p = c[0]*x^3 + c[1]*x^5 + c[2]*x^7 + c[3]*x^9 +
-    ;; c[4]*x^11, q = x + p is a minimax approximation of
-    ;; sinh(x) on [x0,1/4] such that |q - sinh(x)|/x^3 <
-    ;; 2^-56.584 
-    (let* ((c0 #.(parse-c-literal "0x1.5555555555555p-3"))
-           (c1 #.(parse-c-literal "0x1.111111111151ep-7"))
-           (c2 #.(parse-c-literal "0x1.a01a019d0c767p-13"))
-           (c3 #.(parse-c-literal "0x1.71de444a96e11p-19"))
-           (c4 #.(parse-c-literal "0x1.ae8465375242p-26"))
-           (x2 (* x x))
-           (x3 (* x2 x))
-           (x4 (* x2 x2))
-           (p (* x3
-                 (+ (+ c0 (* x2 c1))
-                    (* x4 (+ (+ c2 (* x2 c3))
-                             (* x4 c4))))))
-           (e (* x3 #.(parse-c-literal "0x1.cp-53")))
-           (lb (+ x (- p e)))
-           (ub (+ x (+ p e))))
-      (if (= ub lb) lb (as-sinh-zero x)))))
-
 (defun sinh-very-large-argument (x aix)
   (if (>= aix #x7ff0000000000000)
       (error 'floating-point-overflow)
