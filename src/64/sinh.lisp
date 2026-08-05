@@ -439,6 +439,22 @@
                     (setf rh (- th qh))
                     (setf rl (+ (- (- (- th rh) qh) ql) tl))))))))))))
 
+;;; This function returns the rounded value of the product of X and an
+;;; approximation of 2¹²/ln(2) rounded to an integer value.  The first
+;;; return value is that integer value represented as a floating-point
+;;; number.  The second return value is the same value represented as
+;;; an integer.
+(defun scale-then-round (x)
+  (let* ((s +2^12/ln-2+)
+         (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
+         (vi (f-to-i v0))
+         (tt (lognot (1- (ash 1 26))))
+         (vu (logand vi tt))
+         (1t (- (i-to-f vu) #.(parse-c-literal "0x1.8p+26")))
+         (jt (f-to-i v0))
+         (il (ldb (byte 22 26) jt)))
+    (values 1t il)))
+
 (defun sinh-x0<=|x|<0.25 (x)
   ;; With p = c[0]*x^3 + c[1]*x^5 + c[2]*x^7 + c[3]*x^9 + c[4]*x^11, q
   ;; = x + p is a minimax approximation of sinh(x) on [x0,1/4] such
