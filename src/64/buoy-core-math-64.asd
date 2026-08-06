@@ -20,6 +20,7 @@
    (:file "reduce")
    (:file "sin")
    (:file "cos")
+   (:file "tan")
    (:file "log")
    (:file "asin")
    (:file "acos")
