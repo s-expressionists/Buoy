@@ -11,3 +11,11 @@
                               (* i (expt 2 55))
                               (expt 2 55)
                               -1))))))
+
+(defun cr-tan (x)
+  (cond ((infinity-or-nan-p x)
+         (error 'type-error
+                :datum x
+                :expected-type 'double-float))
+        (t
+         (cr-tan-normal-number x))))
