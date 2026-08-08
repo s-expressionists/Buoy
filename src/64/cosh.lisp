@@ -411,4 +411,9 @@
       (cosh-x>=1/4)))
 
 (defun cr-cosh (x)
-  (cosh-x>=0 (abs x)))
+  (cond ((infinity-or-nan-p x)
+         (error 'type-error
+                :datum x
+                :expected-type 'double-float))
+        (t
+         (cosh-x>=0 (abs x)))))
