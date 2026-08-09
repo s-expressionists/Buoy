@@ -411,9 +411,12 @@
       (cosh-x>=1/4)))
 
 (defun cr-cosh (x)
-  (cond ((infinity-or-nan-p x)
-         (error 'type-error
-                :datum x
-                :expected-type 'double-float))
-        (t
-         (cosh-x>=0 (abs x)))))
+  (let ((abs-x (abs x)))
+    (cond ((infinity-or-nan-p x)
+           (error 'type-error
+                  :datum x
+                  :expected-type 'double-float))
+          ((< abs-x #.(sim:dfloat (expt 2 -26)))
+           (fma x #.(sim:dfloat (expt 2 -55)) 1))
+          (t
+           (cosh-x>=0 (abs x)))))
