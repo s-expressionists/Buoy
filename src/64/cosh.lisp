@@ -170,7 +170,7 @@
 (defconstant +cosh-c4+
   (parse-c-literal "0x1.27faff8dcc1c8p-22"))
 
-(defun cosh-2^-26<=x<1/4 (x)
+(defun cosh-2^-26<=x<1/8 (x)
   ;; q(x) = 1 + c0*x^2 + c1*x^4 + c2*x^6 + c3*x^8 + c4*x^10 is a
   ;; degree-10 polynomial approximating cosh(x) on [2^-26, 0.125] such
   ;; that: |q(x) - cosh(x)| < 2^-67.518 * x^2.  This polynomial was
@@ -196,10 +196,10 @@
           lb
           (as-cosh-zero x)))))
 
-(defun cosh-0<=x<1/4 (x)
+(defun cosh-0<=x<1/8 (x)
   (if (< x #.(sim:dfloat (expt 2 -26)))
       1d0
-      (cosh-2^-26<=x<1/4 x)))
+      (cosh-2^-26<=x<1/8 x)))
 
 (defun compute-h-l (x0 x1)
   (let ((t0 *t0-table*)
@@ -230,7 +230,7 @@
     (* x (+ (+ ch0 (* x ch1))
             (* x2 (+ ch2 (* x ch3)))))))
 
-(defun cosh-1/4<=x<=5 (x)
+(defun cosh-1/8<=x<=5 (x)
   (multiple-value-bind (qh ql)
       (compute-h-l j0 j1)
     (setf th (* th spf))
@@ -349,7 +349,7 @@
       (cosh-36.736801d0<x<=max x)
       (cosh-5<x<=36.736801d0 x)))
 
-(defun cosh-1/4<=x<=max (x)
+(defun cosh-1/8<=x<=max (x)
   (let* ((s +2^12/LN-2+)
          ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
          ;; ends up in bits 47-26 (22 bits) of the result.  So we are
@@ -387,7 +387,7 @@
                    (rl 0d0))
               (if (> x 5d0)
                   (cosh-5<x<=max x)
-                  (cosh-1/4<=x<=5 x))
+                  (cosh-1/8<=x<=5 x))
               (multiple-value-setq (rh rl)
                 (fast-two-sum rh rl))
               (let* ((uhi (f-to-i rh))
