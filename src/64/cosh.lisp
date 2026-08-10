@@ -417,4 +417,4 @@
           ((<= abs-x 5d0)
            (cosh-5<=|x|<=max))
           (t
-           (cosh-5<x<=max)))))
+           (cosh-5<|x|<=max)))))
