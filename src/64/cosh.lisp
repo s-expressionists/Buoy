@@ -400,16 +400,6 @@
                     (as-cosh-database x rh)
                     rh)))))))))
 
-(defun cosh-x>=1/4 (x)
-  (if (> x #.(parse-c-literal "0x1.633ce8fb9f87dp+9"))
-      (error 'floating-point-overflow)
-      (cosh-1/4<=x<=max x)))
-
-(defun cosh-x>=0 (x)
-  (if (< x #.(sim:dfloat 1/4))
-      (cosh-0<=x<1/4)
-      (cosh-x>=1/4)))
-
 (defun cr-cosh (x)
   (let ((abs-x (abs x)))
     (cond ((infinity-or-nan-p x)
@@ -425,4 +415,4 @@
           ((< abs-x #.(sim:dfloat (expt 2 -3)))
            (cosh-x0<=|x|<1/8 x))
           (t
-           (cosh-x>=0 (abs x)))))
+           (cosh-1/8<=x<=max)))))
