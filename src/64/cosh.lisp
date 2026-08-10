@@ -414,5 +414,7 @@
            (fma x #.(sim:dfloat (expt 2 -55)) 1))
           ((< abs-x #.(sim:dfloat (expt 2 -3)))
            (cosh-x0<=|x|<1/8 x))
+          ((<= abs-x 5d0)
+           (cosh-5<=|x|<=max))
           (t
-           (cosh-1/8<=x<=max)))))
+           (cosh-5<x<=max)))))
