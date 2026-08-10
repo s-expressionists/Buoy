@@ -416,7 +416,12 @@
            (error 'type-error
                   :datum x
                   :expected-type 'double-float))
+          ((> x #.(parse-c-literal "0x1.633ce8fb9f87dp+9"))
+           (error 'floating-point-overflow))
+          ((< x (- #.(parse-c-literal "0x1.633ce8fb9f87dp+9")))
+           (error 'floating-point-undeflow))
           ((< abs-x #.(sim:dfloat (expt 2 -26)))
            (fma x #.(sim:dfloat (expt 2 -55)) 1))
+          ((< abs-x #.(sim:dfloat (expt 2 -3)))
           (t
            (cosh-x>=0 (abs x)))))
