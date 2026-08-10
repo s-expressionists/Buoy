@@ -423,5 +423,6 @@
           ((< abs-x #.(sim:dfloat (expt 2 -26)))
            (fma x #.(sim:dfloat (expt 2 -55)) 1))
           ((< abs-x #.(sim:dfloat (expt 2 -3)))
+           (cosh-x0<=|x|<1/8 x))
           (t
            (cosh-x>=0 (abs x)))))
