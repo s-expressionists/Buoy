@@ -350,28 +350,8 @@
       (cosh-5<x<=36.736801d0 x)))
 
 (defun cosh-1/8<=x<=max (x)
-  (let* ((s +2^12/LN-2+)
-         ;; By adding 0x1.8000002p+26, the rounded integer part of x*s
-         ;; ends up in bits 47-26 (22 bits) of the result.  So we are
-         ;; going to compute 2^(i+f) where i the integer part and f is
-         ;; the fractional part.  That is 2^i*2^f where 2^i is the
-         ;; exponent of the result.
-         (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
-         (jtu (f-to-i v0))
-         (vu (f-to-i v0))
-         ;; tt is an integer with 39 1s followed by 25 0s.
-         (tt #.(ash (1- (ash 1 39)) 25))
-         ;; VU has the fractional bits of V0 eliminated, except for
-         ;; bit 26 which is still what it was.
-         (vu (logand vu tt))
-         ;;; 1T now contains the integer part of x*s, except that 0.5
-         ;;; has been added to it if and only if the integer part was
-         ;;; not the result of rounding up.
-         (1t (- (i-to-f 'double-float vu)
-                 #.(parse-c-literal "0x1.8p26")))
-         (aix (f-to-i x))
-         ;; IL contains the integer part of x*s.
-         (il (ldb (byte 10 26) jtu)))
+  (multiple-value-bind (1t il)
+      (scale-then-round x)
     (multiple-value-bind (ie i0 i1)
         (split-integer il)
       (multiple-value-bind (je j0 j1)
