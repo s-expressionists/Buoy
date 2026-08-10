@@ -451,14 +451,26 @@
 ;;; return value is that integer value represented as a floating-point
 ;;; number.  The second return value is the same value represented as
 ;;; an integer.
+;;;
+;;; By adding 0x1.8000002p+26, the rounded integer part of x*s ends up
+;;; in bits 47-26 (22 bits) of the result.  So we are going to compute
+;;; 2^(i+f) where i the integer part and f is the fractional part.
+;;; That is 2^i*2^f where 2^i is the exponent of the result.
 (defun scale-then-round (x)
   (let* ((s +2^12/ln-2+)
          (v0 (fma x s #.(parse-c-literal "0x1.8000002p+26")))
          (vi (f-to-i v0))
+         ;; tt is an integer with 39 1s followed by 25 0s.
          (tt (lognot (1- (ash 1 26))))
+         ;; VU has the fractional bits of V0 eliminated, except for
+         ;; bit 26 which is still what it was.
          (vu (logand vi tt))
+         ;;; 1T now contains the integer part of x*s, except that 0.5
+         ;;; has been added to it if and only if the integer part was
+         ;;; not the result of rounding up.
          (1t (- (i-to-f vu) #.(parse-c-literal "0x1.8p+26")))
          (jt (f-to-i v0))
+         ;; IL contains the integer part of x*s.
          (il (ldb (byte 22 26) jt)))
     (values 1t il)))
 
@@ -519,7 +531,7 @@
           (setf rh (* rh (copy-sign 1 x)))
           (setf rl (* rl (copy-sign 1 x)))
 
-          
+
 
 
 (defun sinh-x0<=|x|<0.25 (x)
