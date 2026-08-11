@@ -395,6 +395,8 @@
           ((< abs-x #.(sim:dfloat (expt 2 -3)))
            (cosh-x0<=|x|<1/8 x))
           ((<= abs-x 5d0)
-           (cosh-5<=|x|<=max))
+           (cosh-1/8<=|x|<=5 x))
+          ((<= abs-x 36.736801d0)
+           (cosh-5<|x|<=36.736801d0 x))
           (t
-           (cosh-5<|x|<=max)))))
+           (cosh-36.736801d0<x<=max x)))))
